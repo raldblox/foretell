@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
     <div className="grid grid-rows-4 min-h-screen bg-cyan-500 font-[family-name:var(--font-geist-sans)]">
