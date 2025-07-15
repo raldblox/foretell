@@ -1,7 +1,7 @@
 {
-  "name": "foretell-app",
+  "name": "foretell",
   "version": "1.0.0",
-  "description": "frontend-app",
+  "description": "sentiment + survery + prediction market",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
