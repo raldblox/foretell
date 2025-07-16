@@ -11,33 +11,45 @@ import {
   Legend,
   ReferenceLine,
   ResponsiveContainer,
+  Area as MiniArea,
+  YAxis as MiniYAxis,
 } from "recharts";
+import { Icon } from "@iconify/react";
+import { cn } from "@heroui/theme";
 
-// Polarity type and array of valid values
+// Polarity type and array
 type Polarity = -1 | 0 | 1;
 const POLARITY_VALUES: Polarity[] = [-1, 0, 1];
+const POLARITY_LABEL: Record<Polarity, string> = {
+  [-1]: "Negative",
+  0: "Neutral",
+  1: "Positive",
+};
+const POLARITY_COLOR: Record<Polarity, string> = {
+  [-1]: "#ff4d4f",
+  0: "#faad14",
+  1: "#52c41a",
+};
+const CHANGE_TYPE: Record<Polarity, "negative" | "neutral" | "positive"> = {
+  [-1]: "negative",
+  0: "neutral",
+  1: "positive",
+};
 
-// Raw user response
 interface UserRaw {
   uid: string;
   polarity: Polarity;
   score: number;
-  answer: string;
+  answer?: string;
 }
-
-// Weighted user with raw weight
 interface UserWeighted extends UserRaw {
   rawWeight: number;
 }
-
-// Final processed user data
 interface UserProcessed extends UserWeighted {
   shareInGroup: number;
   rewardUSD: number;
   pctShare: number;
 }
-
-// Data point for combined chart curves
 interface CombinedPoint {
   score: number;
   negPS?: number;
@@ -45,48 +57,29 @@ interface CombinedPoint {
   posPS?: number;
 }
 
-// Survey question
 const question = "What do you think about the new UI redesign?";
 
-// Sample dataset
+// Sample raw data
 const rawData: UserRaw[] = [
-  { uid: "U1",  polarity:  1, score: 0.9, answer: "Absolutely love it—clean, intuitive, and modern!" },
-  { uid: "U2",  polarity:  1, score: 0.88, answer: "The redesign is fantastic, much easier to navigate." },
-  { uid: "U3",  polarity:  1, score: 0.85, answer: "Really impressed with the new look and feel." },
-  { uid: "U4",  polarity:  1, score: 0.82, answer: "Sleek and fast — great job!" },
-  { uid: "U5",  polarity:  1, score: 0.80, answer: "Very user-friendly. Love the color scheme." },
-  { uid: "U6",  polarity:  1, score: 0.78, answer: "Much better than the old version, well done." },
-  { uid: "U7",  polarity:  1, score: 0.75, answer: "Smooth animations and cleaner layout, great update." },
-  { uid: "U8",  polarity:  1, score: 0.72, answer: "Really like the minimalistic approach." },
-  { uid: "U9",  polarity:  1, score: 0.70, answer: "The new icons and spacing feel very polished." },
-  { uid: "U10", polarity:  1, score: 0.68, answer: "Bright, fresh, and modern—nice work!" },
-
-  { uid: "U11", polarity:  0, score: 0.60, answer: "It’s okay. Some things improved, some are the same." },
-  { uid: "U12", polarity:  0, score: 0.58, answer: "Neutral—I don’t hate it but don’t love it either." },
-  { uid: "U13", polarity:  0, score: 0.55, answer: "It works fine, nothing groundbreaking." },
-  { uid: "U14", polarity:  0, score: 0.53, answer: "Some parts feel clunky, but overall acceptable." },
-  { uid: "U15", polarity:  0, score: 0.50, answer: "Middling – I might prefer the old toolbars." },
-  { uid: "U16", polarity:  0, score: 0.48, answer: "I’m indifferent, don’t notice a big difference." },
-  { uid: "U17", polarity:  0, score: 0.45, answer: "Slightly confusing at first but okay." },
-  { uid: "U18", polarity:  0, score: 0.42, answer: "Neutral—just another UI update." },
-  { uid: "U19", polarity:  0, score: 0.40, answer: "Fine, but icons could be clearer." },
-  { uid: "U20", polarity:  0, score: 0.38, answer: "I neither love nor hate this design." },
-
-  { uid: "U21", polarity: -1, score: 0.35, answer: "Not a fan—buttons are too small." },
-  { uid: "U22", polarity: -1, score: 0.33, answer: "I find it confusing and cluttered." },
-  { uid: "U23", polarity: -1, score: 0.30, answer: "It’s slower and uglier than before." },
-  { uid: "U24", polarity: -1, score: 0.28, answer: "Dislike the color choices—they hurt my eyes." },
-  { uid: "U25", polarity: -1, score: 0.25, answer: "The redesign feels unfinished and buggy." },
-  { uid: "U26", polarity: -1, score: 0.22, answer: "Hard to find things now—very frustrating." },
-  { uid: "U27", polarity: -1, score: 0.20, answer: "I prefer the old layout—it was simpler." },
-  { uid: "U28", polarity: -1, score: 0.18, answer: "Terrible UX—will switch back if possible." },
-  { uid: "U29", polarity: -1, score: 0.15, answer: "This is a step backward, honestly." },
-  { uid: "U30", polarity: -1, score: 0.12, answer: "Worst update in years, please revert." },
+  { uid: "U1", polarity: 1, score: 0.95 },
+  { uid: "U2", polarity: 1, score: 0.8 },
+  { uid: "U3", polarity: 0, score: 0.5 },
+  { uid: "U4", polarity: 0, score: 0.45 },
+  { uid: "U5", polarity: -1, score: 0.6 },
+  { uid: "U6", polarity: 1, score: 0.7 },
+  { uid: "U7", polarity: -1, score: 0.4 },
+  { uid: "U8", polarity: 1, score: 0.85 },
+  { uid: "U9", polarity: 0, score: 0.55 },
+  { uid: "U10", polarity: -1, score: 0.3 },
+  { uid: "U11", polarity: 1, score: 0.9 },
+  { uid: "U12", polarity: 0, score: 0.6 },
+  { uid: "U13", polarity: -1, score: 0.65 },
+  { uid: "U14", polarity: 1, score: 0.75 },
+  { uid: "U15", polarity: 0, score: 0.4 },
 ];
-
 const TOTAL_POOL = 100;
 
-// 1) Group by polarity
+// Group by polarity
 const groups: Record<Polarity, UserRaw[]> = POLARITY_VALUES.reduce(
   (acc, p) => {
     acc[p] = rawData.filter((u) => u.polarity === p);
@@ -95,7 +88,7 @@ const groups: Record<Polarity, UserRaw[]> = POLARITY_VALUES.reduce(
   {} as Record<Polarity, UserRaw[]>
 );
 
-// 2) Allocate pool per polarity
+// Pool allocation
 const groupPools: Record<Polarity, number> = POLARITY_VALUES.reduce(
   (acc, p) => {
     acc[p] = (groups[p].length / rawData.length) * TOTAL_POOL;
@@ -104,7 +97,7 @@ const groupPools: Record<Polarity, number> = POLARITY_VALUES.reduce(
   {} as Record<Polarity, number>
 );
 
-// 3) Compute stats (avg and max difference) per group
+// Stats
 const stats: Record<Polarity, { avg: number; maxDiff: number }> =
   POLARITY_VALUES.reduce(
     (acc, p) => {
@@ -117,7 +110,7 @@ const stats: Record<Polarity, { avg: number; maxDiff: number }> =
     {} as Record<Polarity, { avg: number; maxDiff: number }>
   );
 
-// 4) Compute raw weight by closeness and floor
+// Weight computation
 const MIN_WEIGHT = 0.05;
 const weighted: UserWeighted[] = rawData.map((u) => {
   const { avg, maxDiff } = stats[u.polarity];
@@ -125,7 +118,7 @@ const weighted: UserWeighted[] = rawData.map((u) => {
   return { ...u, rawWeight: closeness + MIN_WEIGHT };
 });
 
-// 5) Normalize and compute rewards
+// Final processing
 const processed: UserProcessed[] = weighted.map((u) => {
   const groupSum = weighted
     .filter((x) => x.polarity === u.polarity)
@@ -136,8 +129,8 @@ const processed: UserProcessed[] = weighted.map((u) => {
   return { ...u, shareInGroup, rewardUSD, pctShare };
 });
 
-// 6) Build combined chart data with endpoints
-const sortedPoints: CombinedPoint[] = processed
+// Combined chart data
+const sorted = processed
   .sort((a, b) => a.score - b.score)
   .map((u) => ({
     score: u.score,
@@ -147,40 +140,66 @@ const sortedPoints: CombinedPoint[] = processed
   }));
 const chartData: CombinedPoint[] = [
   { score: 0, negPS: 0, neuPS: 0, posPS: 0 },
-  ...sortedPoints,
+  ...sorted,
   { score: 1, negPS: 0, neuPS: 0, posPS: 0 },
 ];
 
+// Mini-chart data per polarity for summary cards
+const miniData: Record<Polarity, { score: number; value: number }[]> =
+  POLARITY_VALUES.reduce(
+    (acc, p) => {
+      acc[p] = groups[p]
+        .map((u) => processed.find((x) => x.uid === u.uid)!)
+        .sort((a, b) => a.score - b.score)
+        .map((u) => ({ score: u.score, value: u.pctShare }));
+      return acc;
+    },
+    {} as Record<Polarity, { score: number; value: number }[]>
+  );
+
 export default function SentimentDashboard() {
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-semibold">{question}</h1>
+    <div className="max-w-7xl mx-auto p-3 space-y-8">
+      {/* Top Summary */}
+      <section className=" p-6 rounded-lg border border-default-200">
+        <h2 className="text-lg text-default-600">Community Sentiment</h2>
+        <p className="text-xl font-semibold mb-4">"{question}"</p>
+      </section>
 
       {/* Combined Chart */}
-      <section className="bg-white p-6 rounded-lg shadow">
+      <section className=" p-6 rounded-lg border border-default-200">
         <h2 className="text-xl font-medium mb-4">
           Combined Sentiment Distribution
         </h2>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart
             data={chartData}
-            margin={{ top: 0, right: 50, left: 20, bottom: 20 }}
+            margin={{ top: 20, right: 50, left: 20, bottom: 20 }}
           >
-            {/* <defs>
-              <linearGradient id="negGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ff4d4f" stopOpacity={0} />
-                <stop offset="95%" stopColor="#ff4d4f" stopOpacity={1} />
-              </linearGradient>
-              <linearGradient id="neuGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#faad14" stopOpacity={0} />
-                <stop offset="95%" stopColor="#faad14" stopOpacity={1} />
-              </linearGradient>
-              <linearGradient id="posGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#52c41a" stopOpacity={0} />
-                <stop offset="95%" stopColor="#52c41a" stopOpacity={1} />
-              </linearGradient>
-            </defs> */}
-            <CartesianGrid strokeDasharray="2 2" />
+            <defs>
+              {POLARITY_VALUES.map((p) => (
+                <linearGradient
+                  key={p}
+                  id={`grad${p}`}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor={POLARITY_COLOR[p]}
+                    stopOpacity={0.4}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor={POLARITY_COLOR[p]}
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+              ))}
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="score"
               type="number"
@@ -189,7 +208,7 @@ export default function SentimentDashboard() {
               //   label={{
               //     value: "Score (0–1)",
               //     position: "insideBottom",
-              //     offset: 10,
+              //     offset: -10,
               //   }}
             />
             <YAxis
@@ -203,12 +222,9 @@ export default function SentimentDashboard() {
               <ReferenceLine
                 key={p}
                 x={stats[p].avg}
-                stroke={p === -1 ? "#ff4d4f" : p === 0 ? "#faad14" : "#52c41a"}
-                strokeDasharray="3 3"
-                // label={{
-                //   value: p === -1 ? "Neg Avg" : p === 0 ? "Neu Avg" : "Pos Avg",
-                //   position: "top",
-                // }}
+                stroke={POLARITY_COLOR[p]}
+                strokeDasharray="2 2"
+                // label={{ value: `${POLARITY_LABEL[p]} Avg`, position: "top" }}
               />
             ))}
             <Tooltip
@@ -219,60 +235,94 @@ export default function SentimentDashboard() {
               labelFormatter={(l) => `Score: ${l}`}
             />
             <Legend verticalAlign="bottom" />
-            <Area
-              type="basis"
-              dataKey="negPS"
-              name="Negative"
-              stroke="#ff4d4f"
-              fill="url(#negGrad)"
-              strokeWidth={3}
-              connectNulls
-            />
-            <Area
-              type="basis"
-              dataKey="neuPS"
-              name="Neutral"
-              stroke="#faad14"
-              fill="url(#neuGrad)"
-              strokeWidth={3}
-              connectNulls
-            />
-            <Area
-              type="basis"
-              dataKey="posPS"
-              name="Positive"
-              stroke="#52c41a"
-              fill="url(#posGrad)"
-              strokeWidth={3}
-              connectNulls
-            />
+            {POLARITY_VALUES.map((p) => (
+              <Area
+                key={p}
+                type="basis"
+                dataKey={p === -1 ? "negPS" : p === 0 ? "neuPS" : "posPS"}
+                name={`${POLARITY_LABEL[p]} % Share`}
+                stroke={POLARITY_COLOR[p]}
+                fill={`url(#grad${p})`}
+                strokeWidth={3}
+                connectNulls
+              />
+            ))}
           </AreaChart>
         </ResponsiveContainer>
       </section>
 
-      {/* Infographics */}
-      <section className="grid grid-cols-3 gap-4">
-        {POLARITY_VALUES.map((p) => (
-          <div key={p} className="bg-white p-4 rounded-lg shadow text-center">
-            <p className="text-sm text-gray-500">
-              {p === -1 ? "Negative" : p === 0 ? "Neutral" : "Positive"} Pool
-            </p>
-            <p className="text-2xl font-bold text-gray-800">
-              ${groupPools[p].toFixed(2)}
-            </p>
-            <p className="text-sm text-gray-600">{groups[p].length} users</p>
-            <p className="text-sm text-gray-600">
-              Avg Score {stats[p].avg.toFixed(2)}
-            </p>
+      {/* Summary Cards Below Chart */}
+      <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {POLARITY_VALUES.map((p, index) => (
+          <div
+            key={p}
+            className=" p-4 flex flex-wrap justify-between rounded-lg border border-default-200"
+          >
+            <div>
+              <dt className="text-sm font-medium text-default-500 flex items-center">
+                <Icon
+                  width={24}
+                  icon={
+                    CHANGE_TYPE[p] === "positive"
+                      ? "ix:emote-happy-filled"
+                      : CHANGE_TYPE[p] === "negative"
+                        ? "ix:emote-sad-filled"
+                        : "ix:emote-neutral-filled"
+                  }
+                  className={cn("mr-2", {
+                    "text-green-500": p === 1,
+                    "text-yellow-500": p === 0,
+                    "text-red-500": p === -1,
+                  })}
+                />
+                {POLARITY_LABEL[p]}
+              </dt>
+              <dd className="mt-2 text-3xl font-semibold text-default-800">
+                {groups[p].length}
+              </dd>
+            </div>
+            <div className="mt-10 hidden w-36 shrink-0 lg:block">
+              <ResponsiveContainer width="100%" height={60} debounce={200}>
+                <AreaChart data={miniData[p]}>
+                  <defs>
+                    <linearGradient id={`miniGrad${index}`} x1="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor={POLARITY_COLOR[p]}
+                        stopOpacity={0.3}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor={POLARITY_COLOR[p]}
+                        stopOpacity={0}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <MiniYAxis
+                    hide
+                    domain={[
+                      0,
+                      Math.ceil(Math.max(...miniData[p].map((d) => d.value))),
+                    ]}
+                  />
+                  <MiniArea
+                    type="bump"
+                    dataKey="value"
+                    stroke={POLARITY_COLOR[p]}
+                    fill={`url(#miniGrad${index})`}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         ))}
-      </section>
+      </dl>
 
-      {/* Table */}
-      <section className="bg-white p-6 rounded-lg shadow overflow-x-auto">
+      {/* User Table */}
+      <section className=" p-6 rounded-lg border border-default-200 overflow-x-auto">
         <h2 className="text-xl font-medium mb-4">User Responses & Rewards</h2>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-default-200">
+          <thead className="bg-default-50">
             <tr>
               {[
                 "UID",
@@ -284,32 +334,32 @@ export default function SentimentDashboard() {
               ].map((h) => (
                 <th
                   key={h}
-                  className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-4 py-2 text-left text-xs font-medium text-default-500 uppercase tracking-wider"
                 >
                   {h}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className=" divide-y divide-default-200">
             {processed.map((u) => (
-              <tr key={u.uid} className="hover:bg-gray-50">
-                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">
+              <tr key={u.uid} className="hover:bg-default-50">
+                <td className="px-4 py-2 whitespace-nowrap text-sm text-default-700">
                   {u.uid}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">
+                <td className="px-4 py-2 whitespace-nowrap text-sm text-default-700">
                   {u.answer}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">
+                <td className="px-4 py-2 whitespace-nowrap text-sm text-default-700">
                   {u.polarity}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">
+                <td className="px-4 py-2 whitespace-nowrap text-sm text-default-700">
                   {u.score.toFixed(2)}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">
+                <td className="px-4 py-2 whitespace-nowrap text-sm text-default-700">
                   {u.pctShare.toFixed(1)}%
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">
+                <td className="px-4 py-2 whitespace-nowrap text-sm text-default-700">
                   ${u.rewardUSD.toFixed(2)}
                 </td>
               </tr>
