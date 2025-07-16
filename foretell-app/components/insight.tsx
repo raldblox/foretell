@@ -33,7 +33,7 @@ export default function Insight(props: ForetellProps) {
   const { question, totalPool, data } = props;
   const { groups, stats, processed, chartData, miniData } = useForetell(
     data,
-    totalPool,
+    totalPool
   );
 
   return (
