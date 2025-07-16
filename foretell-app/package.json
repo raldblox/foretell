@@ -9,6 +9,7 @@
     "lint": "eslint --fix"
   },
   "dependencies": {
+    "@heroui/react": "^2.8.1",
     "@heroui/system": "2.4.19",
     "@heroui/theme": "2.4.18",
     "@iconify/react": "^6.0.0",
@@ -17,11 +18,15 @@
     "clsx": "2.1.1",
     "framer-motion": "11.18.2",
     "intl-messageformat": "10.7.16",
+    "lenis": "^1.3.5",
+    "mongodb": "^6.17.0",
     "next": "15.3.1",
     "next-themes": "0.4.6",
+    "postprocessing": "^6.37.6",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "recharts": "^3.1.0"
+    "recharts": "^3.1.0",
+    "three": "^0.167.1"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "15.3.4",
@@ -30,6 +35,7 @@
     "@types/node": "20.5.7",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
+    "@types/three": "^0.178.1",
     "@typescript-eslint/eslint-plugin": "8.34.1",
     "@typescript-eslint/parser": "8.34.1",
     "eslint": "9.25.1",

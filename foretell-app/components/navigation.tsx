@@ -16,6 +16,7 @@ import {
 } from "@heroui/react";
 
 import { Logo } from "./icons";
+import { ThemeSwitch } from "./theme-switch";
 
 const menuItems = [
   "About",
@@ -31,31 +32,33 @@ const menuItems = [
 export default function Navigation(props: NavbarProps) {
   return (
     <Navbar
+      // position="sticky"
+      // shouldHideOnScroll
       {...props}
       classNames={{
         base: "py-4 backdrop-filter-none bg-transparent",
         wrapper: "px-0 w-full justify-center bg-transparent",
         item: "hidden md:flex",
       }}
+      maxWidth="sm"
       height="54px"
     >
       <NavbarContent
-        className="gap-4 rounded-full border-small border-default-200/20 bg-background/60 px-2 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
+        className="gap-4 md:w-full rounded-full border-small border-default-200/20 bg-background/60 px-2 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
         justify="center"
       >
         {/* Toggle */}
         <NavbarMenuToggle className="ml-2 text-default-400 md:hidden" />
 
         {/* Logo */}
-        <NavbarBrand className="mr-2 w-[40vw] md:w-auto md:max-w-fit">
+        <NavbarBrand className="mr-2 w-[40vw] md:w-auto md:max-w-full">
           <div className="rounded-full bg-foreground text-background">
             <Logo />
           </div>
           <span className="ml-2 font-medium md:hidden">ACME</span>
         </NavbarBrand>
 
-        {/* Items */}
-        <NavbarItem className="hidden md:flex">
+        {/* <NavbarItem className="hidden md:flex">
           <Link className="text-default-500" href="#" size="sm">
             Home
           </Link>
@@ -79,8 +82,9 @@ export default function Navigation(props: NavbarProps) {
           <Link className="text-default-500" href="#" size="sm">
             Integrations
           </Link>
-        </NavbarItem>
-        <NavbarItem className="ml-2 !flex">
+        </NavbarItem> */}
+        <NavbarItem className="ml-2 !flex gap-3">
+          <ThemeSwitch />
           <Button radius="full" variant="flat">
             Login
           </Button>
