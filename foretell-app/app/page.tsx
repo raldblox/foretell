@@ -143,11 +143,11 @@ export default function Home() {
   return (
     <>
       <main className="flex flex-col items-center rounded-2xl md:rounded-3xl md:px-0">
-        <section className="container z-10 mx-auto max-w-7xl my-14 flex flex-col items-center justify-center gap-[18px] sm:gamd:p-6 p-3">
+        <section className="container py-12 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6">
           <GradientText
-            animationSpeed={2}
+            animationSpeed={3}
             className="border-1 border-default-100 px-[18px] py-2 text-small font-normal leading-5 rounded-full"
-            colors={["#feff94", "#e8ffc1", "#9ef5cf", "#51dacf", "#0278ae"]}
+            colors={["#f31260", "#f5a524", "#17c964", "#f5a524", "#f31260"]}
             showBorder={false}
           >
             ALL IN ONE $FORETELL
@@ -173,7 +173,7 @@ export default function Home() {
             (reviews, comments, insights), let your community bet on outcomes,
             and distribute fair rewards—no extra tools required.
           </p>
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gamd:p-6 p-3">
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row md:p-6 p-3">
             <Button
               className="h-10 w-[163px] bg-default-foreground px-[16px] py-[10px] text-small font-medium leading-5 text-background"
               radius="full"
@@ -200,7 +200,7 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="z-20 mt-12 md:p-3 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0">
+        <div className="z-20 md:p-3 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0">
           <div className="max-w-7xl mx-auto space-y-8 p-3">
             <Suspense fallback={<Loader />}>
               <Insight data={data} question={question} totalPool={totalPool} />
@@ -266,7 +266,7 @@ export default function Home() {
 
                   const offset = surveys.reduce(
                     (sum, s) => sum + s.data.length,
-                    0,
+                    0
                   );
                   const newData = makeDummy(newSampleCount, offset);
 

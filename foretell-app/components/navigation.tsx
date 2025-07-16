@@ -51,11 +51,13 @@ export default function Navigation(props: NavbarProps) {
         <NavbarMenuToggle className="ml-2 text-default-400 md:hidden" />
 
         {/* Logo */}
-        <NavbarBrand className="mr-2 w-[40vw] md:w-auto md:max-w-full">
-          <div className="rounded-full bg-foreground text-background">
+        <NavbarBrand className="mr-2 w-[40vw] md:w-auto md:max-w-full flex items-center">
+          <div className="">
             <Logo />
           </div>
-          <span className="ml-2 font-medium md:hidden">ACME</span>
+          <span className="ml-2 font-medium md:hidden text-foreground">
+            FORETELL
+          </span>
         </NavbarBrand>
 
         {/* <NavbarItem className="hidden md:flex">
