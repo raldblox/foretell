@@ -161,8 +161,8 @@ export default function SentimentDashboard() {
   return (
     <div className="max-w-7xl mx-auto p-3 space-y-8">
       {/* Top Summary */}
-      <section className=" p-6 rounded-lg border border-default-200">
-        <h2 className="text-lg text-default-600">Community Sentiment</h2>
+      <section className="p-6 rounded-lg border border-default-200 space-y-3">
+        <h2 className="text-lg text-default-600">Question</h2>
         <p className="text-xl font-semibold mb-4">"{question}"</p>
       </section>
 
