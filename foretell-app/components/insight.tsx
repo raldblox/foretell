@@ -138,7 +138,7 @@ export default function Insight(props: ForetellProps) {
       <section className="md:p-6 p-3 rounded-lg border border-default-200">
         <h2 className="text-xl font-medium mb-4">Distribution</h2>
         <ResponsiveContainer
-          className="bg-default-100 rounded-2xl"
+          className="bg-default-100 rounded-md"
           width="100%"
           height={300}
         >

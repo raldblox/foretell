@@ -14,7 +14,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
       <Textarea
         ref={ref}
         aria-label="Prompt"
-        className="min-h-[40px]"
+        className="min-h-[40px] "
         classNames={{
           ...classNames,
           label: cn("hidden", classNames?.label),
@@ -22,7 +22,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         }}
         minRows={1}
         placeholder="Enter your response"
-        radius="lg"
+        radius="sm"
         variant="bordered"
         {...props}
       />
@@ -34,7 +34,7 @@ const Response = () => {
   const [prompt, setPrompt] = React.useState<string>("");
 
   return (
-    <form className="flex w-full flex-col items-start rounded-medium bg-default-50 transition-colors">
+    <form className="flex w-full flex-col items-start rounded-md bg-default-50 transition-colors">
       <PromptInput
         classNames={{
           inputWrapper: "!bg-transparent shadow-none",

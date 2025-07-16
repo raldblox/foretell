@@ -26,9 +26,10 @@ interface RewardTableProps {
 export function RewardTable({ data, isLoading = false }: RewardTableProps) {
   return (
     <Table
+      radius="sm"
       isHeaderSticky
       aria-label="Rewards Table"
-      classNames={{ base: "max-h-[520px] overflow-auto", table: "min-w-full" }}
+      classNames={{ base: "max-h-[520px]  overflow-auto", table: "min-w-full" }}
     >
       <TableHeader>
         <TableColumn key="uid">UID</TableColumn>
