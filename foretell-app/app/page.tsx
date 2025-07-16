@@ -1,5 +1,21 @@
 "use client";
 
+import {
+  Button,
+  cn,
+  Divider,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  Skeleton,
+  Textarea,
+  useDisclosure,
+} from "@heroui/react";
+import { Icon } from "@iconify/react";
+import { Suspense, useEffect, useState } from "react";
+
 import GradientText from "@/components/GradientText/GradientText";
 import Hero from "@/components/hero-section";
 import Insight from "@/components/insight";
@@ -9,23 +25,64 @@ import {
   POLARITY_VALUES,
   UserRaw,
 } from "@/hooks/useForetell";
-import {
-  Button,
-  cn,
-  Divider,
-  Input,
-  Link,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  Skeleton,
-  Spinner,
-  Textarea,
-  useDisclosure,
-} from "@heroui/react";
-import { Icon } from "@iconify/react";
-import { Suspense, useEffect, useMemo, useState } from "react";
+
+// Remove export from Loader, make it a local component
+const Loader = () => {
+  return (
+    <div className="z-20 mt-12 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0 p-3">
+      <div className="max-w-7xl mx-auto p-3 space-y-8">
+        <div className="max-w-7xl mx-auto p-3 space-y-6">
+          <section className="md:p-6 p-3 rounded-lg border border-default-200 space-y-4">
+            <div className="flex items-start gap-3 justify-between w-full">
+              <Skeleton className="w-2/5 rounded-lg">
+                <div className="h-6 w-1/3 rounded-lg bg-default-200" />
+              </Skeleton>
+              <Skeleton className="w-1/5 rounded-lg">
+                <div className="h-6 w-[50px] rounded-lg bg-default-200" />
+              </Skeleton>
+            </div>
+
+            <Skeleton className="w-full rounded-xl">
+              <div className="h-[160px] rounded-lg bg-default-200" />
+            </Skeleton>
+          </section>
+          <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {POLARITY_VALUES.map((p, index) => (
+              <div
+                key={index}
+                className=" p-4 flex flex-wrap justify-between hover:bg-default-50 rounded-lg border border-default-200"
+              >
+                <div>
+                  <dt className="text-sm font-medium text-default-500 flex items-center">
+                    <Icon
+                      className={cn("mr-2", {
+                        "text-success": p === 1,
+                        "text-warning": p === 0,
+                        "text-danger": p === -1,
+                      })}
+                      icon={
+                        CHANGE_TYPE[p] === "positive"
+                          ? "ix:emote-happy-filled"
+                          : CHANGE_TYPE[p] === "negative"
+                            ? "ix:emote-sad-filled"
+                            : "ix:emote-neutral-filled"
+                      }
+                      width={24}
+                    />
+                    {POLARITY_LABEL[p]}
+                  </dt>
+                  <dd className="mt-2 text-3xl font-semibold text-default-800">
+                    Homies
+                  </dd>
+                </div>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Home() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -88,10 +145,10 @@ export default function Home() {
       <main className="flex flex-col items-center rounded-2xl md:rounded-3xl md:px-0">
         <section className="container z-10 mx-auto max-w-7xl my-14 flex flex-col items-center justify-center gap-[18px] sm:gamd:p-6 p-3">
           <GradientText
-            colors={["#feff94", "#e8ffc1", "#9ef5cf", "#51dacf", "#0278ae"]}
             animationSpeed={2}
-            showBorder={false}
             className="border-1 border-default-100 px-[18px] py-2 text-small font-normal leading-5 rounded-full"
+            colors={["#feff94", "#e8ffc1", "#9ef5cf", "#51dacf", "#0278ae"]}
+            showBorder={false}
           >
             ALL IN ONE $FORETELL
           </GradientText>
@@ -146,32 +203,32 @@ export default function Home() {
         <div className="z-20 mt-12 md:p-3 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0">
           <div className="max-w-7xl mx-auto space-y-8 p-3">
             <Suspense fallback={<Loader />}>
-              <Insight question={question} totalPool={totalPool} data={data} />
+              <Insight data={data} question={question} totalPool={totalPool} />
             </Suspense>
           </div>
         </div>
         <div className="">
           <div
+            className="transition-all cursor-pointer border-default-100 border-r border-dashed pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-start hover:bg-default-50 z-10 w-[20vw] absolute top-0 left-0 h-full"
             role="button"
             onClick={prev}
-            className="transition-all cursor-pointer border-default-100 border-r border-dashed pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-start hover:bg-default-50 z-10 w-[20vw] absolute top-0 left-0 h-full"
           >
             PREV
           </div>
           <div
+            className="transition-all cursor-pointer border-default-100 border-l border-dashed pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-end hover:bg-default-50 z-10 w-[20vw] absolute top-0 right-0 h-full"
             role="button"
             onClick={next}
-            className="transition-all cursor-pointer border-default-100 border-l border-dashed pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-end hover:bg-default-50 z-10 w-[20vw] absolute top-0 right-0 h-full"
           >
             NEXT
           </div>
         </div>
       </main>
       <Modal
+        className="m-3"
         isOpen={isOpen}
         shouldBlockScroll={false}
         onOpenChange={onOpenChange}
-        className="m-3"
       >
         <ModalContent>
           {(close) => (
@@ -201,7 +258,7 @@ export default function Home() {
 
                   const offset = surveys.reduce(
                     (sum, s) => sum + s.data.length,
-                    0
+                    0,
                   );
                   const newData = makeDummy(newSampleCount, offset);
 
@@ -222,36 +279,36 @@ export default function Home() {
                 }}
               >
                 <Textarea
+                  required
                   label="Topic"
+                  placeholder="e.g. What do you think of our redesign?"
                   value={newQuestion}
                   onValueChange={setNewQuestion}
-                  required
-                  placeholder="e.g. What do you think of our redesign?"
                 />
 
                 <Input
-                  type="number"
+                  required
                   label="Total Reward Pool"
+                  min={1}
+                  type="number"
                   value={String(newPool)}
                   onValueChange={(v) => setNewPool(Number(v))}
-                  required
-                  min={1}
                 />
 
                 <Input
-                  type="number"
+                  required
                   label="Sample Size"
+                  min={1}
+                  type="number"
                   value={String(newSampleCount)}
                   onValueChange={(v) => setNewSampleCount(Number(v))}
-                  required
-                  min={1}
                 />
                 <Divider className="my-2" />
                 <div className="flex justify-end gap-2 pb-4">
-                  <Button variant="flat" color="danger" onPress={close}>
+                  <Button color="danger" variant="flat" onPress={close}>
                     Cancel
                   </Button>
-                  <Button type="submit" color="primary">
+                  <Button color="primary" type="submit">
                     Create
                   </Button>
                 </div>
@@ -263,60 +320,3 @@ export default function Home() {
     </>
   );
 }
-
-export const Loader = () => {
-  return (
-    <div className="z-20 mt-12 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0 p-3">
-      <div className="max-w-7xl mx-auto p-3 space-y-8">
-        <div className="max-w-7xl mx-auto p-3 space-y-6">
-          <section className="md:p-6 p-3 rounded-lg border border-default-200 space-y-4">
-            <div className="flex items-start gap-3 justify-between w-full">
-              <Skeleton className="w-2/5 rounded-lg">
-                <div className="h-6 w-1/3 rounded-lg bg-default-200" />
-              </Skeleton>
-              <Skeleton className="w-1/5 rounded-lg">
-                <div className="h-6 w-[50px] rounded-lg bg-default-200" />
-              </Skeleton>
-            </div>
-
-            <Skeleton className="w-full rounded-xl">
-              <div className="h-[160px] rounded-lg bg-default-200" />
-            </Skeleton>
-          </section>
-          <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {POLARITY_VALUES.map((p, index) => (
-              <div
-                key={index}
-                className=" p-4 flex flex-wrap justify-between hover:bg-default-50 rounded-lg border border-default-200"
-              >
-                <div>
-                  <dt className="text-sm font-medium text-default-500 flex items-center">
-                    <Icon
-                      width={24}
-                      icon={
-                        CHANGE_TYPE[p] === "positive"
-                          ? "ix:emote-happy-filled"
-                          : CHANGE_TYPE[p] === "negative"
-                            ? "ix:emote-sad-filled"
-                            : "ix:emote-neutral-filled"
-                      }
-                      className={cn("mr-2", {
-                        "text-success": p === 1,
-                        "text-warning": p === 0,
-                        "text-danger": p === -1,
-                      })}
-                    />
-                    {POLARITY_LABEL[p]}
-                  </dt>
-                  <dd className="mt-2 text-3xl font-semibold text-default-800">
-                    Homies
-                  </dd>
-                </div>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </div>
-    </div>
-  );
-};

@@ -16,6 +16,10 @@ import {
 } from "recharts";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/theme";
+
+import { RewardTable } from "./reward-table";
+import Response from "./response";
+
 import {
   CHANGE_TYPE,
   ForetellProps,
@@ -24,14 +28,12 @@ import {
   POLARITY_VALUES,
   useForetell,
 } from "@/hooks/useForetell";
-import { RewardTable } from "./reward-table";
-import Response from "./response";
 
 export default function Insight(props: ForetellProps) {
   const { question, totalPool, data } = props;
   const { groups, stats, processed, chartData, miniData } = useForetell(
     data,
-    totalPool
+    totalPool,
   );
 
   return (
@@ -56,7 +58,11 @@ export default function Insight(props: ForetellProps) {
             <div>
               <dt className="text-sm font-medium text-default-500 flex items-center">
                 <Icon
-                  width={24}
+                  className={cn("mr-2", {
+                    "text-success": p === 1,
+                    "text-warning": p === 0,
+                    "text-danger": p === -1,
+                  })}
                   icon={
                     CHANGE_TYPE[p] === "positive"
                       ? "ix:emote-happy-filled"
@@ -64,11 +70,7 @@ export default function Insight(props: ForetellProps) {
                         ? "ix:emote-sad-filled"
                         : "ix:emote-neutral-filled"
                   }
-                  className={cn("mr-2", {
-                    "text-success": p === 1,
-                    "text-warning": p === 0,
-                    "text-danger": p === -1,
-                  })}
+                  width={24}
                 />
                 {POLARITY_LABEL[p]}
               </dt>
@@ -77,7 +79,7 @@ export default function Insight(props: ForetellProps) {
               </dd>
             </div>
             <div className=" hidden w-3/5 shrink-0 lg:block">
-              <ResponsiveContainer width="100%" height={100} debounce={200}>
+              <ResponsiveContainer debounce={200} height={100} width="100%">
                 <AreaChart data={miniData[p]}>
                   <defs>
                     <linearGradient id={`miniGrad${index}`} x1="0" y2="1">
@@ -101,17 +103,17 @@ export default function Insight(props: ForetellProps) {
                     ]}
                   />
                   <MiniArea
-                    type="natural"
                     dataKey="value"
-                    stroke={POLARITY_COLOR[p]}
                     fill={`url(#miniGrad${index})`}
+                    stroke={POLARITY_COLOR[p]}
+                    type="natural"
                   />
                   <Tooltip
-                    cursor={false}
                     content={({ payload }) => {
                       if (!payload || !payload.length) return null;
                       // grab the dragged point
                       const { uid, polarity, value } = payload[0].payload;
+
                       return (
                         <div className="bg-default-100/50 backdrop-blur-md text-default-800 p-2 rounded text-xs">
                           <div>
@@ -126,6 +128,7 @@ export default function Insight(props: ForetellProps) {
                         </div>
                       );
                     }}
+                    cursor={false}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -139,8 +142,8 @@ export default function Insight(props: ForetellProps) {
         <h2 className="text-xl font-medium mb-4">Distribution</h2>
         <ResponsiveContainer
           className="bg-default-50 rounded-md"
-          width="100%"
           height={300}
+          width="100%"
         >
           <AreaChart
             data={chartData}
@@ -152,8 +155,8 @@ export default function Insight(props: ForetellProps) {
                   key={p}
                   id={`grad${p}`}
                   x1="0"
-                  y1="0"
                   x2="0"
+                  y1="0"
                   y2="1"
                 >
                   <stop
@@ -172,9 +175,9 @@ export default function Insight(props: ForetellProps) {
             <CartesianGrid strokeDasharray="1 5" />
             <XAxis
               dataKey="score"
-              type="number"
               domain={[0, 1]}
               tickCount={11}
+              type="number"
               fontSize={10}
 
               //   label={{
@@ -194,31 +197,31 @@ export default function Insight(props: ForetellProps) {
             {POLARITY_VALUES.map((p) => (
               <ReferenceLine
                 key={p}
-                x={stats[p].avg}
                 stroke={POLARITY_COLOR[p]}
+                x={stats[p].avg}
                 strokeDasharray="5 2"
                 // label={{ value: `${POLARITY_LABEL[p]}`, position: "top" }}
               />
             ))}
             <Tooltip
+              contentStyle={{ backgroundColor: "#111", borderRadius: "8px" }}
               formatter={(v: number, name: string) => [
                 `${v}%`,
                 name.replace(/PS/, " % Share"),
               ]}
               labelFormatter={(l) => `Score: ${l}`}
-              contentStyle={{ backgroundColor: "#111", borderRadius: "8px" }}
             />
             <Legend verticalAlign="bottom" />
             {POLARITY_VALUES.map((p) => (
               <Area
                 key={p}
-                type="basis"
+                connectNulls
                 dataKey={p === -1 ? "negPS" : p === 0 ? "neuPS" : "posPS"}
+                fill={`url(#grad${p})`}
                 name={`${POLARITY_LABEL[p]}`}
                 stroke={POLARITY_COLOR[p]}
-                fill={`url(#grad${p})`}
                 strokeWidth={3}
-                connectNulls
+                type="basis"
               />
             ))}
           </AreaChart>

@@ -5,7 +5,6 @@ import type { TextAreaProps } from "@heroui/react";
 import React from "react";
 import { Button, Textarea } from "@heroui/react";
 import { cn } from "@heroui/react";
-import { Tooltip } from "recharts";
 import { Icon } from "@iconify/react";
 
 const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
@@ -27,8 +26,10 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         {...props}
       />
     );
-  }
+  },
 );
+
+PromptInput.displayName = "PromptInput";
 
 const Response = () => {
   const [prompt, setPrompt] = React.useState<string>("");
@@ -54,7 +55,7 @@ const Response = () => {
               <Icon
                 className={cn(
                   "[&>path]:stroke-[2px]",
-                  !prompt ? "text-default-600" : "text-primary-foreground"
+                  !prompt ? "text-default-600" : "text-primary-foreground",
                 )}
                 icon="solar:arrow-up-linear"
                 width={20}

@@ -40,8 +40,8 @@ export default function Navigation(props: NavbarProps) {
         wrapper: "px-0 w-full justify-center bg-transparent",
         item: "hidden md:flex",
       }}
-      maxWidth="sm"
       height="54px"
+      maxWidth="sm"
     >
       <NavbarContent
         className="gap-4 md:w-full rounded-full border-small border-default-200/20 bg-background/60 px-2 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"

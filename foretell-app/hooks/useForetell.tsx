@@ -60,11 +60,12 @@ export function useForetell(data: UserRaw[], totalPool: number) {
       POLARITY_VALUES.reduce(
         (acc, p) => {
           acc[p] = data.filter((u) => u.polarity === p);
+
           return acc;
         },
-        {} as Record<Polarity, UserRaw[]>
+        {} as Record<Polarity, UserRaw[]>,
       ),
-    [data]
+    [data],
   );
 
   // 2) stats
@@ -75,12 +76,14 @@ export function useForetell(data: UserRaw[], totalPool: number) {
           const scores = groups[p].map((u) => u.score);
           const avg = scores.reduce((s, x) => s + x, 0) / scores.length;
           const maxDiff = Math.max(...scores.map((x) => Math.abs(x - avg)));
+
           acc[p] = { avg, maxDiff };
+
           return acc;
         },
-        {} as Record<Polarity, { avg: number; maxDiff: number }>
+        {} as Record<Polarity, { avg: number; maxDiff: number }>,
       ),
-    [groups]
+    [groups],
   );
 
   // 3) weighted
@@ -90,9 +93,10 @@ export function useForetell(data: UserRaw[], totalPool: number) {
         const { avg, maxDiff } = stats[u.polarity];
         const closeness =
           maxDiff > 0 ? 1 - Math.abs(u.score - avg) / maxDiff : 1;
+
         return { ...u, rawWeight: closeness + MIN_WEIGHT };
       }),
-    [data, stats]
+    [data, stats],
   );
 
   // 4) process
@@ -107,12 +111,13 @@ export function useForetell(data: UserRaw[], totalPool: number) {
           (
             shareInGroup *
             ((groups[u.polarity].length / data.length) * totalPool)
-          ).toFixed(2)
+          ).toFixed(2),
         );
         const pctShare = parseFloat(((rewardUSD / totalPool) * 100).toFixed(1));
+
         return { ...u, shareInGroup, rewardUSD, pctShare };
       }),
-    [weighted, groups, data.length, totalPool]
+    [weighted, groups, data.length, totalPool],
   );
 
   // 5) combined chart data
@@ -125,6 +130,7 @@ export function useForetell(data: UserRaw[], totalPool: number) {
         neuPS: u.polarity === 0 ? u.pctShare : undefined,
         posPS: u.polarity === 1 ? u.pctShare : undefined,
       }));
+
     return [
       { score: 0, negPS: 0, neuPS: 0, posPS: 0 },
       ...sorted,
@@ -147,6 +153,7 @@ export function useForetell(data: UserRaw[], totalPool: number) {
         // now plotting intensity (score)
         value: u.score,
       }));
+
     return acc;
   }, {} as any);
 

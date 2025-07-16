@@ -3,16 +3,17 @@
 import { Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import React from "react";
+
 import GradientText from "./GradientText/GradientText";
 
 const Hero = () => {
   return (
     <section className="container mx-auto max-w-7xl z-20 my-14 flex flex-col items-center justify-center gap-[18px] sm:gap-6">
       <GradientText
-        colors={["#feff94", "#e8ffc1", "#9ef5cf", "#51dacf", "#0278ae"]}
         animationSpeed={2}
-        showBorder={false}
         className="border-1 border-default-100 px-[18px] py-2 text-small font-normal leading-5 rounded-full"
+        colors={["#feff94", "#e8ffc1", "#9ef5cf", "#51dacf", "#0278ae"]}
+        showBorder={false}
       >
         ALL IN ONE $FORETELL
       </GradientText>
