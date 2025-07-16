@@ -35,12 +35,12 @@ export default function Insight(props: ForetellProps) {
   );
 
   return (
-    <div className="max-w-7xl mx-auto p-3 space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8">
       {/* Top Summary */}
-      <section className="p-6 rounded-lg border border-default-200 space-y-3">
-        <div className="flex items-center justify-between">
-          <p className="text-xl font-semibold">{question}</p>
-          <p>Resolves in 1000 responses</p>
+      <section className="md:p-6 p-3 rounded-lg bg-default-100 border border-default-100 space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
+          <p className="text-xl font-semibold leading-tight">{question}</p>
+          <p className="text-sm text-default-500">Resolves in 1000 responses</p>
         </div>
 
         <Response />
@@ -51,7 +51,7 @@ export default function Insight(props: ForetellProps) {
         {POLARITY_VALUES.map((p, index) => (
           <div
             key={p}
-            className=" p-4 flex flex-wrap justify-between rounded-lg border border-default-200"
+            className="md:p-6 p-3 flex flex-wrap justify-between rounded-lg border border-default-200"
           >
             <div>
               <dt className="text-sm font-medium text-default-500 flex items-center">
@@ -135,12 +135,16 @@ export default function Insight(props: ForetellProps) {
       </dl>
 
       {/* Reward Distribution Chart */}
-      <section className=" p-6 rounded-lg border border-default-200">
+      <section className="md:p-6 p-3 rounded-lg border border-default-200">
         <h2 className="text-xl font-medium mb-4">Distribution</h2>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer
+          className="bg-default-100 rounded-2xl"
+          width="100%"
+          height={300}
+        >
           <AreaChart
             data={chartData}
-            margin={{ top: 20, right: 50, left: 20, bottom: 20 }}
+            margin={{ top: 20, right: 10, left: 10, bottom: 20 }}
           >
             <defs>
               {POLARITY_VALUES.map((p) => (
@@ -165,12 +169,13 @@ export default function Insight(props: ForetellProps) {
                 </linearGradient>
               ))}
             </defs>
-            <CartesianGrid strokeDasharray="1 10" />
+            <CartesianGrid strokeDasharray="1 5" />
             <XAxis
               dataKey="score"
               type="number"
               domain={[0, 1]}
-              tickCount={2}
+              tickCount={11}
+              fontSize={10}
 
               //   label={{
               //     value: "Score (0–1)",
@@ -183,7 +188,8 @@ export default function Insight(props: ForetellProps) {
                 0,
                 Math.ceil(Math.max(...processed.map((u) => u.pctShare))),
               ]}
-              label={{ value: "% Share", angle: -90, position: "insideLeft" }}
+              fontSize={10}
+              label={{ value: "% Share", angle: -90, position: "outsideLeft" }}
             />
             {POLARITY_VALUES.map((p) => (
               <ReferenceLine
@@ -220,7 +226,7 @@ export default function Insight(props: ForetellProps) {
       </section>
 
       {/* User Table */}
-      <section className=" p-6 rounded-lg border border-default-200 overflow-x-auto">
+      <section className="md:p-6 p-3 rounded-lg border border-default-200 overflow-x-auto">
         <h2 className="text-xl font-medium mb-4">Responses</h2>
         <RewardTable data={processed} isLoading={false} />
       </section>

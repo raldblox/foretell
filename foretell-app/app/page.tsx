@@ -85,8 +85,8 @@ export default function Home() {
 
   return (
     <>
-      <main className="flex flex-col items-center rounded-2xl px-3 md:rounded-3xl md:px-0">
-        <section className="container z-10 mx-auto max-w-7xl my-14 flex flex-col items-center justify-center gap-[18px] sm:gap-6">
+      <main className="flex flex-col items-center rounded-2xl md:rounded-3xl md:px-0">
+        <section className="container z-10 mx-auto max-w-7xl my-14 flex flex-col items-center justify-center gap-[18px] sm:gamd:p-6 p-3">
           <GradientText
             colors={["#feff94", "#e8ffc1", "#9ef5cf", "#51dacf", "#0278ae"]}
             animationSpeed={2}
@@ -116,7 +116,7 @@ export default function Home() {
             (reviews, comments, insights), let your community bet on outcomes,
             and distribute fair rewards—no extra tools required.
           </p>
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-6">
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gamd:p-6 p-3">
             <Button
               className="h-10 w-[163px] bg-default-foreground px-[16px] py-[10px] text-small font-medium leading-5 text-background"
               radius="full"
@@ -143,8 +143,8 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="z-20 mt-12 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0 p-3">
-          <div className="max-w-7xl mx-auto p-3 space-y-8">
+        <div className="z-20 mt-12 md:p-3 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0">
+          <div className="max-w-7xl mx-auto space-y-8 p-3">
             <Suspense fallback={<Loader />}>
               <Insight question={question} totalPool={totalPool} data={data} />
             </Suspense>
@@ -154,14 +154,14 @@ export default function Home() {
           <div
             role="button"
             onClick={prev}
-            className="transition-all cursor-pointer border-default-100 border-r border-dashed pt-[50vh] p-6 flex justify-start hover:bg-default-50 z-10 w-[20vw] absolute top-0 left-0 h-full"
+            className="transition-all cursor-pointer border-default-100 border-r border-dashed pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-start hover:bg-default-50 z-10 w-[20vw] absolute top-0 left-0 h-full"
           >
             PREV
           </div>
           <div
             role="button"
             onClick={next}
-            className="transition-all cursor-pointer border-default-100 border-l border-dashed pt-[50vh] p-6 flex justify-end hover:bg-default-50 z-10 w-[20vw] absolute top-0 right-0 h-full"
+            className="transition-all cursor-pointer border-default-100 border-l border-dashed pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-end hover:bg-default-50 z-10 w-[20vw] absolute top-0 right-0 h-full"
           >
             NEXT
           </div>
@@ -171,6 +171,7 @@ export default function Home() {
         isOpen={isOpen}
         shouldBlockScroll={false}
         onOpenChange={onOpenChange}
+        className="m-3"
       >
         <ModalContent>
           {(close) => (
@@ -268,7 +269,7 @@ export const Loader = () => {
     <div className="z-20 mt-12 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0 p-3">
       <div className="max-w-7xl mx-auto p-3 space-y-8">
         <div className="max-w-7xl mx-auto p-3 space-y-6">
-          <section className="p-6 rounded-lg border border-default-200 space-y-4">
+          <section className="md:p-6 p-3 rounded-lg border border-default-200 space-y-4">
             <div className="flex items-start gap-3 justify-between w-full">
               <Skeleton className="w-2/5 rounded-lg">
                 <div className="h-6 w-1/3 rounded-lg bg-default-200" />

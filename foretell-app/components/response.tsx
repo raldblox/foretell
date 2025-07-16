@@ -34,7 +34,7 @@ const Response = () => {
   const [prompt, setPrompt] = React.useState<string>("");
 
   return (
-    <form className="flex w-full flex-col items-start rounded-medium bg-default-100 transition-colors hover:bg-default-200/70">
+    <form className="flex w-full flex-col items-start rounded-medium bg-default-50 transition-colors">
       <PromptInput
         classNames={{
           inputWrapper: "!bg-transparent shadow-none",
@@ -83,7 +83,7 @@ const Response = () => {
           >
             Add stake
           </Button>
-          <Button
+          {/* <Button
             size="sm"
             startContent={
               <Icon
@@ -108,7 +108,7 @@ const Response = () => {
             variant="flat"
           >
             Templates
-          </Button>
+          </Button> */}
         </div>
         <p className="py-1 text-tiny text-default-400">{prompt.length}/2000</p>
       </div>
