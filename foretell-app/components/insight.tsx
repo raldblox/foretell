@@ -176,9 +176,9 @@ export default function Insight(props: ForetellProps) {
             <XAxis
               dataKey="score"
               domain={[0, 1]}
+              fontSize={10}
               tickCount={11}
               type="number"
-              fontSize={10}
 
               //   label={{
               //     value: "Score (0–1)",
@@ -198,8 +198,8 @@ export default function Insight(props: ForetellProps) {
               <ReferenceLine
                 key={p}
                 stroke={POLARITY_COLOR[p]}
-                x={stats[p].avg}
                 strokeDasharray="5 2"
+                x={stats[p].avg}
                 // label={{ value: `${POLARITY_LABEL[p]}`, position: "top" }}
               />
             ))}

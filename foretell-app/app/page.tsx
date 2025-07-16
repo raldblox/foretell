@@ -211,14 +211,22 @@ export default function Home() {
           <div
             className="transition-all cursor-pointer border-default-100 border-r border-dashed pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-start hover:bg-default-50 z-10 w-[20vw] absolute top-0 left-0 h-full"
             role="button"
+            tabIndex={0}
             onClick={prev}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") prev();
+            }}
           >
             PREV
           </div>
           <div
             className="transition-all cursor-pointer border-default-100 border-l border-dashed pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-end hover:bg-default-50 z-10 w-[20vw] absolute top-0 right-0 h-full"
             role="button"
+            tabIndex={0}
             onClick={next}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") next();
+            }}
           >
             NEXT
           </div>
