@@ -15,7 +15,7 @@ declare module "next-auth" {
   }
 }
 
-export const authOptions = {
+const authOptions = {
   providers: [
     TwitterProvider({
       clientId: process.env.TWITTER_CLIENT_ID!,
@@ -26,7 +26,6 @@ export const authOptions = {
   callbacks: {
     async session({ session, token }: { session: any; token: any }) {
       session.user.id = token.sub;
-      console.log("New user signed in", token.name, session.user.id);
 
       return session;
     },
@@ -36,4 +35,4 @@ export const authOptions = {
 
 const handler = NextAuth(authOptions);
 
-export { handler, handler as GET, handler as POST };
+export { handler as GET, handler as POST };

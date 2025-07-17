@@ -4,7 +4,6 @@ import React, { useState, useContext } from "react";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { useSession } from "next-auth/react";
-import { AppContext } from "@/app/providers";
 import {
   Modal,
   ModalBody,
@@ -13,13 +12,12 @@ import {
   Button,
   Input,
   Textarea,
-  Select,
-  SelectItem,
   useDisclosure,
-  DateInput,
   DatePicker,
 } from "@heroui/react";
-import { getLocalTimeZone, now, parseDate } from "@internationalized/date";
+import { parseDate } from "@internationalized/date";
+
+import { AppContext } from "@/app/providers";
 import { Survey } from "@/hooks/useForetell";
 
 const SurveySchema = z.object({
@@ -53,7 +51,7 @@ export default function CreateSurveyModal({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -64,7 +62,9 @@ export default function CreateSurveyModal({
       const date = value.toDate();
       // Format as YYYY-MM-DD
       const dateStr = date.toISOString().split("T")[0];
+
       setForm({ ...form, expiry: dateStr });
+
       return;
     }
     // If not valid, clear expiry
@@ -77,6 +77,7 @@ export default function CreateSurveyModal({
     if (!session?.user?.id) {
       setError("You must be logged in to create a survey.");
       setLoading(false);
+
       return;
     }
     const parsed = SurveySchema.safeParse({
@@ -92,6 +93,7 @@ export default function CreateSurveyModal({
 
     if (!parsed.success) {
       setError(parsed.error.issues[0].message);
+
       return;
     }
     setLoading(true);
@@ -109,11 +111,15 @@ export default function CreateSurveyModal({
     if (res.ok) {
       // Fetch latest surveys and update context
       const updated = await fetch("/api/survey");
+
       if (updated.ok) {
         const data = await updated.json();
+
         setSurveys((prev: Survey[]) => {
           const updated = [...prev, survey];
+
           setIdx(updated.length - 1);
+
           return updated;
         });
       }
@@ -128,6 +134,7 @@ export default function CreateSurveyModal({
     } else {
       const data = await res.json();
       let errorMsg = "Failed to create survey";
+
       if (typeof data.error === "string") {
         errorMsg = data.error;
       } else if (data.error?.formErrors?.length) {
@@ -152,42 +159,42 @@ export default function CreateSurveyModal({
         <ModalContent>
           <ModalHeader>Create New Survey</ModalHeader>
           <ModalBody>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3 pb-6">
+            <form className="flex flex-col gap-3 pb-6" onSubmit={handleSubmit}>
               <Input
                 isRequired
-                name="title"
+                required
                 label="Title"
+                name="title"
                 value={form.title}
                 onChange={handleChange}
-                required
               />
               <Textarea
-                name="description"
                 label="Description"
+                name="description"
                 value={form.description}
                 onChange={handleChange}
               />
 
               <DatePicker
-                isRequired
                 hideTimeZone
+                isRequired
                 showMonthAndYearPickers
-                name="expiry"
                 label="Expiry (optional)"
+                name="expiry"
                 value={form.expiry ? parseDate(form.expiry) : null}
                 onChange={handleExpiryChange}
               />
 
               <Input
                 isRequired
-                name="maxResponses"
                 label="Max Responses (optional)"
+                name="maxResponses"
+                type="number"
                 value={form.maxResponses}
                 onChange={handleChange}
-                type="number"
               />
               {error && <div className="text-danger text-sm">{error}</div>}
-              <Button type="submit" color="primary" isLoading={loading}>
+              <Button color="primary" isLoading={loading} type="submit">
                 Create Survey
               </Button>
             </form>

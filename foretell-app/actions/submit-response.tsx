@@ -29,7 +29,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 PromptInput.displayName = "PromptInput";
@@ -53,6 +53,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     if (!response.trim()) return;
     if (!userId) {
       alert("You must be logged in to submit a response.");
+
       return;
     }
     const classifier = await loadTextClassifier();
@@ -70,10 +71,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     // Use both positive and negative scores to derive a continuous score
     const categories = result.classifications?.[0]?.categories || [];
     const positive = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "positive"
+      (c) => c.categoryName?.toLowerCase() === "positive",
     );
     const negative = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "negative"
+      (c) => c.categoryName?.toLowerCase() === "negative",
     );
 
     let score = 0.5;
@@ -129,8 +130,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     if (res.ok) {
       // Optionally, re-fetch surveys or update context
       const updated = await fetch("/api/survey");
+
       if (updated.ok) {
         const data = await updated.json();
+
         setSurveys(data.surveys || []);
         // Set idx to the last survey (latest)
         if (data.surveys && data.surveys.length > 0) {
@@ -167,7 +170,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
               <Icon
                 className={cn(
                   "[&>path]:stroke-[2px]",
-                  !response ? "text-default-600" : "text-primary-foreground"
+                  !response ? "text-default-600" : "text-primary-foreground",
                 )}
                 icon="solar:arrow-up-linear"
                 width={20}

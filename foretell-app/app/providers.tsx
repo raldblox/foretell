@@ -9,7 +9,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { SessionProvider, useSession } from "next-auth/react";
 
 import { Survey } from "@/hooks/useForetell";
-import { dummySurvey } from "@/app/page"; // or wherever you define it
+import { dummySurvey } from "@/lib/dummySurvey";
 
 export const AppContext = React.createContext<any | undefined>(undefined);
 
