@@ -11,7 +11,7 @@ import GradientText from "@/components/GradientText/GradientText";
 import { Survey } from "@/hooks/useForetell";
 import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
-import { dummySurvey } from "@/lib/dummySurvey";
+import { dummySurveys } from "@/lib/dummySurvey";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -42,10 +42,10 @@ export default function Home() {
   }, [surveys.length, setSurveys, setIdx]);
 
   useEffect(() => {
-    setSurveys([dummySurvey]);
+    setSurveys(dummySurveys);
   }, []);
 
-  const currentSurvey = surveys[idx] || dummySurvey;
+  const currentSurvey = surveys[idx] || dummySurveys[0];
 
   const prev = () =>
     setIdx((i: number) => (i + surveys.length - 1) % surveys.length);

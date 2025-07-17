@@ -186,7 +186,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       setResponse("");
     } else {
       const data = await res.json();
-
       alert(data.error || "Failed to submit response");
     }
   };

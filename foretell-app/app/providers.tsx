@@ -9,7 +9,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { SessionProvider, useSession } from "next-auth/react";
 
 import { Survey } from "@/hooks/useForetell";
-import { dummySurvey } from "@/lib/dummySurvey";
+import { dummySurveys } from "@/lib/dummySurvey";
 
 export const AppContext = React.createContext<any | undefined>(undefined);
 
@@ -18,7 +18,7 @@ export const ContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [surveys, setSurveys] = React.useState<Survey[]>([]);
+  const [surveys, setSurveys] = React.useState<Survey[]>(dummySurveys);
   const [idx, setIdx] = React.useState(0);
   const { data: session } = useSession();
   const userId = session?.user?.id;
@@ -31,14 +31,12 @@ export const ContextProvider = ({
         const data = await res.json();
 
         if (data.surveys && data.surveys.length > 0) {
-          setSurveys(data.surveys);
+          setSurveys((prev) => [...dummySurveys, ...data.surveys]);
         } else {
-          setSurveys([dummySurvey]);
+          setSurveys(dummySurveys);
         }
-        console.log(data.surveys);
-        console.log(dummySurvey);
       } else {
-        setSurveys([dummySurvey]);
+        setSurveys(dummySurveys);
       }
     }
     fetchSurveys();
