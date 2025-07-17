@@ -230,11 +230,11 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
         <div className="flex w-full flex-wrap items-center justify-between gap-2 px-3 pb-3">
           <div className="flex flex-wrap gap-3">
             <Button
-              size="lg"
+              size="sm"
               startContent={
                 <Icon
                   className="text-default-500"
-                  icon="solar:paperclip-linear"
+                  icon="hugeicons:stake"
                   width={18}
                 />
               }

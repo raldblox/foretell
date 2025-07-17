@@ -50,7 +50,7 @@ export default function GetInsight(survey: Survey) {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Top Summary */}
-      <section className="md:p-6 p-3 rounded-lg border border-default-100 space-y-6">
+      <section className="md:p-6 p-3 rounded-lg border border-default-200 space-y-6">
         <div className="flex flex-col md:flex-row md:items-start gap-6 justify-between">
           <div className="flex flex-col gap-2">
             <p className="text-2xl font-semibold leading-tight">
