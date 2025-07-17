@@ -21,7 +21,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         classNames={{
           ...classNames,
           label: cn("hidden", classNames?.label),
-          input: cn("py-0", classNames?.input),
+          input: cn("py-3", classNames?.input),
         }}
         minRows={1}
         placeholder="Your thoughts here..."
@@ -50,11 +50,33 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
   const idx = propIdx !== undefined ? propIdx : contextIdx;
   const [response, setResponse] = React.useState<string>("");
 
+  const currentSurvey = surveys[idx];
+  const hasResponded = currentSurvey?.responses?.some(
+    (r: any) => r.uid === userId
+  );
+  const isExpired =
+    currentSurvey?.expiry && new Date() > new Date(currentSurvey.expiry);
+  const isFull =
+    currentSurvey?.maxResponses &&
+    currentSurvey.responses &&
+    currentSurvey.responses.length >= currentSurvey.maxResponses;
+
   const submitResponse = async () => {
     if (!response.trim()) return;
     if (!userId) {
       alert("You must be logged in to submit a response.");
-
+      return;
+    }
+    if (hasResponded) {
+      alert("You have already submitted a response to this survey.");
+      return;
+    }
+    if (isExpired) {
+      alert("This survey has expired.");
+      return;
+    }
+    if (isFull) {
+      alert("This survey has reached the maximum number of responses.");
       return;
     }
     const classifier = await loadTextClassifier();
@@ -162,63 +184,66 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
   };
 
   return (
-    <form className="flex w-full flex-col items-start rounded-md bg-default-50 transition-colors">
-      <PromptInput
-        classNames={{
-          inputWrapper: "!bg-transparent shadow-none",
-          innerWrapper: "relative",
-          input: "pt-1 pl-2 pb-6 !pr-10 text-medium",
-        }}
-        endContent={
-          <div className="flex items-end gap-2">
-            <Button
-              isIconOnly
-              color={!response ? "default" : "primary"}
-              isDisabled={!response}
-              radius="lg"
-              size="lg"
-              variant="solid"
-              onPress={submitResponse}
-            >
-              <Icon
-                className={cn(
-                  "[&>path]:stroke-[2px]",
-                  !response ? "text-default-600" : "text-primary-foreground"
-                )}
-                icon="solar:arrow-up-linear"
-                width={20}
-              />
-            </Button>
-          </div>
-        }
-        minRows={3}
-        radius="lg"
-        value={response}
-        variant="flat"
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            submitResponse();
+    <>
+      <form className="flex w-full flex-col items-start rounded-md bg-default-50 transition-colors">
+        <PromptInput
+          classNames={{
+            inputWrapper: "!bg-transparent shadow-none",
+            innerWrapper: "relative",
+            input: "py-3 text-medium",
+          }}
+          endContent={
+            <div className="flex items-end gap-2">
+              <Button
+                isIconOnly
+                color={!response ? "default" : "primary"}
+                isDisabled={!response || hasResponded || isExpired || isFull}
+                radius="lg"
+                size="lg"
+                variant="solid"
+                onPress={submitResponse}
+              >
+                <Icon
+                  className={cn(
+                    "[&>path]:stroke-[2px]",
+                    !response ? "text-default-600" : "text-primary-foreground"
+                  )}
+                  icon="solar:arrow-up-linear"
+                  width={20}
+                />
+              </Button>
+            </div>
           }
-        }}
-        onValueChange={setResponse}
-      />
-      <div className="flex w-full flex-wrap items-center justify-between gap-2 px-4 pb-4">
-        <div className="flex flex-wrap gap-3">
-          <Button
-            size="sm"
-            startContent={
-              <Icon
-                className="text-default-500"
-                icon="solar:paperclip-linear"
-                width={18}
-              />
+          minRows={3}
+          radius="lg"
+          value={response}
+          variant="flat"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              submitResponse();
             }
-            variant="flat"
-          >
-            Add stake
-          </Button>
-          {/* <Button
+          }}
+          onValueChange={setResponse}
+          disabled={hasResponded || isExpired || isFull}
+        />
+        <div className="flex w-full flex-wrap items-center justify-between gap-2 px-3 pb-3">
+          <div className="flex flex-wrap gap-3">
+            <Button
+              size="lg"
+              startContent={
+                <Icon
+                  className="text-default-500"
+                  icon="solar:paperclip-linear"
+                  width={18}
+                />
+              }
+              variant="flat"
+              isDisabled={hasResponded || isExpired || isFull}
+            >
+              Add stake
+            </Button>
+            {/* <Button
             size="sm"
             startContent={
               <Icon
@@ -244,12 +269,24 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
           >
             Templates
           </Button> */}
+          </div>
+          <p className="py-1 text-tiny text-default-400">
+            {response.length}/2000
+          </p>
         </div>
-        <p className="py-1 text-tiny text-default-400">
-          {response.length}/2000
-        </p>
-      </div>
-    </form>
+      </form>
+      {(hasResponded || isExpired || isFull) && (
+        <div className="text-danger text-sm">
+          {hasResponded
+            ? "You have already submitted a response to this survey."
+            : isExpired
+              ? "This survey has expired."
+              : isFull
+                ? "This survey has reached the maximum number of responses."
+                : null}
+        </div>
+      )}
+    </>
   );
 };
 

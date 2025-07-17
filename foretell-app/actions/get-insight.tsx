@@ -40,6 +40,7 @@ export default function GetInsight(survey: Survey) {
     surveyId,
     createdBy,
     expiry,
+    description,
   } = survey;
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
@@ -50,16 +51,19 @@ export default function GetInsight(survey: Survey) {
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Top Summary */}
       <section className="md:p-6 p-3 rounded-lg border border-default-100 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center gap-6 justify-between">
-          <p className="text-2xl font-semibold leading-tight">
-            {title && (
-              <DecryptedText
-                useOriginalCharsOnly
-                animateOn="view"
-                text={title}
-              />
-            )}
-          </p>
+        <div className="flex flex-col md:flex-row md:items-start gap-6 justify-between">
+          <div className="flex flex-col gap-2">
+            <p className="text-2xl font-semibold leading-tight">
+              {title && (
+                <DecryptedText
+                  useOriginalCharsOnly
+                  animateOn="view"
+                  text={title}
+                />
+              )}
+            </p>
+            <p className="text-sm text-default-500">{description}</p>
+          </div>
 
           <p className="text-sm text-default-500">
             Resolves in {maxResponses} responses

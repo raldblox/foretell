@@ -17,64 +17,6 @@ import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
 import { dummySurvey } from "@/lib/dummySurvey";
 
-// Remove export from Loader, make it a local component
-const Loader = () => {
-  return (
-    <div className="z-20 mt-12 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0 p-3">
-      <div className="max-w-7xl mx-auto p-3 space-y-8">
-        <div className="max-w-7xl mx-auto p-3 space-y-6">
-          <section className="md:p-6 p-3 rounded-lg border border-default-200 space-y-4">
-            <div className="flex items-start gap-3 justify-between w-full">
-              <Skeleton className="w-2/5 rounded-lg">
-                <div className="h-6 w-1/3 rounded-lg bg-default-200" />
-              </Skeleton>
-              <Skeleton className="w-1/5 rounded-lg">
-                <div className="h-6 w-[50px] rounded-lg bg-default-200" />
-              </Skeleton>
-            </div>
-
-            <Skeleton className="w-full rounded-xl">
-              <div className="h-[160px] rounded-lg bg-default-200" />
-            </Skeleton>
-          </section>
-          <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {POLARITY_VALUES.map((p, index) => (
-              <div
-                key={index}
-                className=" p-4 flex flex-wrap justify-between hover:bg-default-50 rounded-lg border border-default-200"
-              >
-                <div>
-                  <dt className="text-sm font-medium text-default-500 flex items-center">
-                    <Icon
-                      className={cn("mr-2", {
-                        "text-success": p === 1,
-                        "text-warning": p === 0,
-                        "text-danger": p === -1,
-                      })}
-                      icon={
-                        CHANGE_TYPE[p] === "positive"
-                          ? "ix:emote-happy-filled"
-                          : CHANGE_TYPE[p] === "negative"
-                            ? "ix:emote-sad-filled"
-                            : "ix:emote-neutral-filled"
-                      }
-                      width={24}
-                    />
-                    {POLARITY_LABEL[p]}
-                  </dt>
-                  <dd className="mt-2 text-3xl font-semibold text-default-800">
-                    Homies
-                  </dd>
-                </div>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 export default function Home() {
   const { surveys, setSurveys, idx, setIdx, userId } = useContext(AppContext)!;
 
@@ -82,27 +24,7 @@ export default function Home() {
     setSurveys([dummySurvey]);
   }, []);
 
-  if (surveys.length === 0) {
-    // show a spinner or hero only on SSR/client first pass
-    return (
-      <main className="flex flex-col items-center rounded-2xl px-3 md:rounded-3xl md:px-0">
-        <Hero />
-        <Loader />
-      </main>
-    );
-  }
-
-  const currentSurvey = surveys[idx];
-
-  if (!currentSurvey) {
-    return (
-      <main className="flex flex-col items-center rounded-2xl px-3 md:rounded-3xl md:px-0">
-        <Hero />
-        <Loader />
-      </main>
-    );
-  }
-  const { title, description, responses } = currentSurvey;
+  const currentSurvey = surveys[idx] || dummySurvey;
 
   const prev = () =>
     setIdx((i: number) => (i + surveys.length - 1) % surveys.length);
@@ -165,12 +87,8 @@ export default function Home() {
 
         <div className="z-20 md:p-3 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0">
           <div className="max-w-7xl mx-auto space-y-8 p-3">
-            <Suspense fallback={<Loader />}>
-              {surveys.length === 0 ? (
-                <Loader />
-              ) : (
-                <GetInsight {...currentSurvey} />
-              )}
+            <Suspense>
+              <GetInsight {...currentSurvey} />
             </Suspense>
           </div>
         </div>
