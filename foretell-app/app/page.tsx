@@ -209,7 +209,7 @@ export default function Home() {
         </div>
         <div className="">
           <div
-            className="transition-all cursor-pointer border-default-100 border-r border-dashed pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-start hover:bg-default-50 z-10 w-[20vw] absolute top-0 left-0 h-full"
+            className="cursor-pointer tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-start hover:bg-gradient-to-l from-transparent to-default-50 z-10 w-[20vw] absolute top-0 left-0 h-full"
             role="button"
             tabIndex={0}
             onClick={prev}
@@ -220,7 +220,7 @@ export default function Home() {
             PREV
           </div>
           <div
-            className="transition-all cursor-pointer border-default-100 border-l border-dashed pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-end hover:bg-default-50 z-10 w-[20vw] absolute top-0 right-0 h-full"
+            className="cursor-pointer tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-end hover:bg-gradient-to-r from-transparent to-default-50 z-10 w-[20vw] absolute top-0 right-0 h-full"
             role="button"
             tabIndex={0}
             onClick={next}
