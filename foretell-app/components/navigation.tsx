@@ -17,6 +17,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 
 import { Logo } from "./icons";
 import { ThemeSwitch } from "./theme-switch";
+import { Icon } from "@iconify/react";
 
 const menuItems = [
   "About",
@@ -69,7 +70,8 @@ export default function Navigation(props: NavbarProps) {
               variant="flat"
               onPress={() => signIn("twitter")}
             >
-              Login with Twitter
+              Connect
+              <Icon icon="hugeicons:new-twitter" width={16} className="" />
             </Button>
           ) : (
             <Button radius="full" variant="flat" onPress={() => signOut()}>
