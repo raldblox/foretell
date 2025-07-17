@@ -43,7 +43,7 @@ export default function GetInsight(survey: Survey) {
   } = survey;
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
-    rewardPool,
+    rewardPool
   );
 
   return (

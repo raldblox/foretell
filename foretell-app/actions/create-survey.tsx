@@ -4,6 +4,7 @@ import React, { useState, useContext } from "react";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { useSession } from "next-auth/react";
+import { AppContext } from "@/app/providers";
 import {
   Modal,
   ModalBody,
@@ -12,12 +13,14 @@ import {
   Button,
   Input,
   Textarea,
+  Select,
+  SelectItem,
   useDisclosure,
+  DateInput,
   DatePicker,
 } from "@heroui/react";
-import { parseDate } from "@internationalized/date";
-
-import { AppContext } from "@/app/providers";
+import { getLocalTimeZone, now, parseDate } from "@internationalized/date";
+import { Survey } from "@/hooks/useForetell";
 
 const SurveySchema = z.object({
   surveyId: z.string().optional(),
@@ -36,7 +39,7 @@ export default function CreateSurveyModal({
   onSuccess?: () => void;
 }) {
   const { data: session } = useSession();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -45,12 +48,12 @@ export default function CreateSurveyModal({
     expiry: "",
     maxResponses: "",
   });
-  const { setSurveys } = useContext(AppContext)!;
+  const { setSurveys, setIdx } = useContext(AppContext)!;
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -61,9 +64,7 @@ export default function CreateSurveyModal({
       const date = value.toDate();
       // Format as YYYY-MM-DD
       const dateStr = date.toISOString().split("T")[0];
-
       setForm({ ...form, expiry: dateStr });
-
       return;
     }
     // If not valid, clear expiry
@@ -76,7 +77,6 @@ export default function CreateSurveyModal({
     if (!session?.user?.id) {
       setError("You must be logged in to create a survey.");
       setLoading(false);
-
       return;
     }
     const parsed = SurveySchema.safeParse({
@@ -92,7 +92,6 @@ export default function CreateSurveyModal({
 
     if (!parsed.success) {
       setError(parsed.error.issues[0].message);
-
       return;
     }
     setLoading(true);
@@ -110,11 +109,13 @@ export default function CreateSurveyModal({
     if (res.ok) {
       // Fetch latest surveys and update context
       const updated = await fetch("/api/survey");
-
       if (updated.ok) {
         const data = await updated.json();
-
-        setSurveys(data.surveys || []);
+        setSurveys((prev: Survey[]) => {
+          const updated = [...prev, survey];
+          setIdx(updated.length - 1);
+          return updated;
+        });
       }
       setForm({
         title: "",
@@ -123,10 +124,10 @@ export default function CreateSurveyModal({
         maxResponses: "",
       });
       if (onSuccess) onSuccess();
+      onClose();
     } else {
       const data = await res.json();
       let errorMsg = "Failed to create survey";
-
       if (typeof data.error === "string") {
         errorMsg = data.error;
       } else if (data.error?.formErrors?.length) {
@@ -149,49 +150,44 @@ export default function CreateSurveyModal({
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
-          <ModalHeader className="flex-col items-center gap-1 px-0 text-center">
-            <h2 className="text-xl font-semibold">Create New Survey</h2>
-            <p className="text-sm text-default-500">
-              Define your online survey.
-            </p>
-          </ModalHeader>
+          <ModalHeader>Create New Survey</ModalHeader>
           <ModalBody>
-            <form className="flex flex-col gap-3 pb-6" onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3 pb-6">
               <Input
                 isRequired
-                required
-                label="Topic"
                 name="title"
+                label="Title"
                 value={form.title}
                 onChange={handleChange}
+                required
               />
               <Textarea
-                label="Description"
                 name="description"
+                label="Description"
                 value={form.description}
                 onChange={handleChange}
               />
 
               <DatePicker
                 isRequired
-                label="Expiry"
+                hideTimeZone
+                showMonthAndYearPickers
+                name="expiry"
+                label="Expiry (optional)"
                 value={form.expiry ? parseDate(form.expiry) : null}
                 onChange={handleExpiryChange}
-                showMonthAndYearPickers
-                // defaultValue={now(getLocalTimeZone())}
-                name="expiry"
               />
 
               <Input
                 isRequired
-                label="Max Responses"
                 name="maxResponses"
-                type="number"
+                label="Max Responses (optional)"
                 value={form.maxResponses}
                 onChange={handleChange}
+                type="number"
               />
               {error && <div className="text-danger text-sm">{error}</div>}
-              <Button color="primary" isLoading={loading} type="submit">
+              <Button type="submit" color="primary" isLoading={loading}>
                 Create Survey
               </Button>
             </form>

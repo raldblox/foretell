@@ -16,20 +16,20 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
       <Textarea
         ref={ref}
         aria-label="Prompt"
-        className="min-h-[40px] "
+        className="min-h-[40px] p-3"
         classNames={{
           ...classNames,
           label: cn("hidden", classNames?.label),
           input: cn("py-0", classNames?.input),
         }}
         minRows={1}
-        placeholder="Enter your response"
+        placeholder="Your thoughts here..."
         radius="sm"
         variant="bordered"
         {...props}
       />
     );
-  },
+  }
 );
 
 PromptInput.displayName = "PromptInput";
@@ -44,12 +44,17 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     setSurveys,
     idx: contextIdx,
     userId,
+    setIdx,
   } = useContext(AppContext)!;
   const idx = propIdx !== undefined ? propIdx : contextIdx;
   const [response, setResponse] = React.useState<string>("");
 
   const submitResponse = async () => {
     if (!response.trim()) return;
+    if (!userId) {
+      alert("You must be logged in to submit a response.");
+      return;
+    }
     const classifier = await loadTextClassifier();
 
     if (!classifier) {
@@ -65,10 +70,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     // Use both positive and negative scores to derive a continuous score
     const categories = result.classifications?.[0]?.categories || [];
     const positive = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "positive",
+      (c) => c.categoryName?.toLowerCase() === "positive"
     );
     const negative = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "negative",
+      (c) => c.categoryName?.toLowerCase() === "negative"
     );
 
     let score = 0.5;
@@ -124,11 +129,13 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     if (res.ok) {
       // Optionally, re-fetch surveys or update context
       const updated = await fetch("/api/survey");
-
       if (updated.ok) {
         const data = await updated.json();
-
         setSurveys(data.surveys || []);
+        // Set idx to the last survey (latest)
+        if (data.surveys && data.surveys.length > 0) {
+          setIdx(data.surveys.length - 1);
+        }
       }
       setResponse("");
     } else {
@@ -153,14 +160,14 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
               color={!response ? "default" : "primary"}
               isDisabled={!response}
               radius="lg"
-              size="sm"
+              size="lg"
               variant="solid"
               onPress={submitResponse}
             >
               <Icon
                 className={cn(
                   "[&>path]:stroke-[2px]",
-                  !response ? "text-default-600" : "text-primary-foreground",
+                  !response ? "text-default-600" : "text-primary-foreground"
                 )}
                 icon="solar:arrow-up-linear"
                 width={20}
