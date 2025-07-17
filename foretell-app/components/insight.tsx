@@ -41,7 +41,7 @@ export default function Insight(props: ForetellProps) {
   return (
     <div className="max-w-7xl mx-auto space-y-8">
       {/* Top Summary */}
-      <section className="md:p-6 p-3 rounded-lg bg-default-100 border border-default-100 space-y-3">
+      <section className="md:p-6 p-3 rounded-lg bg-default-100 border border-default-100 space-y-6">
         <div className="flex flex-col md:flex-row md:items-center gap-6 justify-between">
           <p className="text-2xl font-semibold leading-tight">
             {isLoading ? (

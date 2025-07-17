@@ -14,6 +14,9 @@ export interface ForetellProps {
   totalPool: number;
   data: UserRaw[];
   isLoading?: boolean;
+  visibility?: boolean;
+  
+  idx?: number;
 }
 
 export interface UserWeighted extends UserRaw {
@@ -65,9 +68,9 @@ export function useForetell(data: UserRaw[], totalPool: number) {
 
           return acc;
         },
-        {} as Record<Polarity, UserRaw[]>,
+        {} as Record<Polarity, UserRaw[]>
       ),
-    [data],
+    [data]
   );
 
   // 2) stats
@@ -83,9 +86,9 @@ export function useForetell(data: UserRaw[], totalPool: number) {
 
           return acc;
         },
-        {} as Record<Polarity, { avg: number; maxDiff: number }>,
+        {} as Record<Polarity, { avg: number; maxDiff: number }>
       ),
-    [groups],
+    [groups]
   );
 
   // 3) weighted
@@ -98,7 +101,7 @@ export function useForetell(data: UserRaw[], totalPool: number) {
 
         return { ...u, rawWeight: closeness + MIN_WEIGHT };
       }),
-    [data, stats],
+    [data, stats]
   );
 
   // 4) process
@@ -113,13 +116,13 @@ export function useForetell(data: UserRaw[], totalPool: number) {
           (
             shareInGroup *
             ((groups[u.polarity].length / data.length) * totalPool)
-          ).toFixed(2),
+          ).toFixed(2)
         );
         const pctShare = parseFloat(((rewardUSD / totalPool) * 100).toFixed(1));
 
         return { ...u, shareInGroup, rewardUSD, pctShare };
       }),
-    [weighted, groups, data.length, totalPool],
+    [weighted, groups, data.length, totalPool]
   );
 
   // 5) combined chart data
