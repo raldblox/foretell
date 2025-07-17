@@ -24,7 +24,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
           input: cn("py-3", classNames?.input),
         }}
         minRows={1}
-        placeholder="Your thoughts here..."
+        placeholder="Got reviews, thoughts, comments? Drop them here."
         radius="sm"
         variant="bordered"
         {...props}
