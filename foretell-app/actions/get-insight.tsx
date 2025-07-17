@@ -16,7 +16,7 @@ import {
 } from "recharts";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/theme";
-import { Chip } from "@heroui/react";
+import { Chip, Snippet } from "@heroui/react";
 
 import SubmitResponse from "./submit-response";
 
@@ -71,31 +71,42 @@ export default function GetInsight(survey: Survey) {
         </div>
 
         <SubmitResponse />
-        <div className="flex flex-wrap items-center justify-start gap-2">
-          <Chip
-            className="border-1 text-default-500"
-            size="sm"
-            variant="bordered"
-          >
-            <span className="font-semibold">Survey ID:</span> {surveyId}
-          </Chip>
-          <Chip
-            className="border-1 text-default-500"
-            size="sm"
-            variant="bordered"
-          >
-            <span className="font-semibold">Created By:</span> {createdBy}
-          </Chip>
-          {expiry && (
+        <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-3">
+          <div className="flex flex-wrap items-center justify-start gap-2">
             <Chip
               className="border-1 text-default-500"
               size="sm"
               variant="bordered"
             >
-              <span className="font-semibold">Expiry:</span>{" "}
-              {new Date(expiry).toLocaleString()}
+              <span className="font-semibold">Survey ID:</span> {surveyId}
             </Chip>
-          )}
+            <Chip
+              className="border-1 text-default-500"
+              size="sm"
+              variant="bordered"
+            >
+              <span className="font-semibold">Created By:</span> {createdBy}
+            </Chip>
+            {expiry && (
+              <Chip
+                className="border-1 text-default-500"
+                size="sm"
+                variant="bordered"
+              >
+                <span className="font-semibold">Expiry:</span>{" "}
+                {new Date(expiry).toLocaleString()}
+              </Chip>
+            )}
+          </div>
+          <Snippet
+            className="pl-4"
+            size="sm"
+            radius="sm"
+            hideSymbol
+            codeString={`${window.location.origin}${window.location.pathname}?surveyId=${surveyId}`}
+          >
+            Copy Link
+          </Snippet>
         </div>
       </section>
 

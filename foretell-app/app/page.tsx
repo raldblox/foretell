@@ -3,6 +3,7 @@
 import { Button, cn, Skeleton } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { Suspense, useContext, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { AppContext } from "./providers";
 
@@ -12,6 +13,7 @@ import {
   CHANGE_TYPE,
   POLARITY_LABEL,
   POLARITY_VALUES,
+  Survey,
 } from "@/hooks/useForetell";
 import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
@@ -19,6 +21,23 @@ import { dummySurvey } from "@/lib/dummySurvey";
 
 export default function Home() {
   const { surveys, setSurveys, idx, setIdx, userId } = useContext(AppContext)!;
+  const searchParams = useSearchParams();
+  const surveyIdFromUrl = searchParams?.get("surveyId");
+
+  useEffect(() => {
+    if (!surveyIdFromUrl || !surveys.length) return;
+    const idxInList = surveys.findIndex(
+      (s: Survey) => s.surveyId === surveyIdFromUrl
+    );
+    if (idxInList > 0) {
+      setSurveys((prev: Survey[]) => {
+        const found = prev[idxInList];
+        const rest = prev.filter((_: Survey, i: number) => i !== idxInList);
+        return [found, ...rest];
+      });
+      setIdx(0);
+    }
+  }, [surveyIdFromUrl, surveys.length]);
 
   useEffect(() => {
     setSurveys([dummySurvey]);

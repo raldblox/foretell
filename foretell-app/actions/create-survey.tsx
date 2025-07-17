@@ -156,6 +156,7 @@ export default function CreateSurveyModal({
         Create Survey
       </Button>
       <Modal
+        isDismissable
         className="m-6"
         placement="top-center"
         isOpen={isOpen}
