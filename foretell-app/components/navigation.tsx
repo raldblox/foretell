@@ -40,11 +40,11 @@ export default function Navigation(props: NavbarProps) {
       // shouldHideOnScroll
       {...props}
       classNames={{
-        base: "py-4 backdrop-filter-none bg-transparent",
+        base: "py-6 backdrop-filter-none bg-transparent",
         wrapper: "px-0 w-full justify-center bg-transparent",
         item: "hidden md:flex",
       }}
-      height="54px"
+      height="50px"
       maxWidth="sm"
     >
       <NavbarContent
@@ -52,16 +52,14 @@ export default function Navigation(props: NavbarProps) {
         justify="center"
       >
         {/* Toggle */}
-        <NavbarMenuToggle className="ml-2 text-default-400 md:hidden" />
+        {/* <NavbarMenuToggle className="ml-2 text-default-400 md:hidden" /> */}
 
         {/* Logo */}
-        <NavbarBrand className="mr-2 w-[40vw] md:w-auto md:max-w-full flex items-center">
+        <NavbarBrand className="mr-2 md:w-auto md:max-w-full flex items-center">
           <div className="">
             <Logo />
           </div>
-          <span className="ml-2 font-medium md:hidden text-foreground">
-            FORETELL
-          </span>
+          <span className="ml-2 text-sm text-foreground">FORETELL</span>
         </NavbarBrand>
 
         <NavbarItem className="ml-2 !flex gap-3">
