@@ -7,6 +7,51 @@ import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
+import { UserRaw } from "@/hooks/useForetell";
+
+export interface AppContextType {
+  surveys: {
+    question: string;
+    totalPool: number;
+    data: UserRaw[];
+  }[];
+  setSurveys: React.Dispatch<
+    React.SetStateAction<
+      {
+        question: string;
+        totalPool: number;
+        data: UserRaw[];
+      }[]
+    >
+  >;
+  idx: number;
+  setIdx: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export const AppContext = React.createContext<AppContextType | undefined>(
+  undefined,
+);
+
+export const ContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [surveys, setSurveys] = React.useState<
+    {
+      question: string;
+      totalPool: number;
+      data: UserRaw[];
+    }[]
+  >([]);
+  const [idx, setIdx] = React.useState(0);
+
+  const value: AppContextType = { surveys, setSurveys, idx, setIdx };
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+};
+// --- End Custom App Context ---
+
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
@@ -25,7 +70,9 @@ export function Providers({ children, themeProps }: ProvidersProps) {
 
   return (
     <HeroUIProvider navigate={router.push}>
-      <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+      <ContextProvider>
+        <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+      </ContextProvider>
     </HeroUIProvider>
   );
 }
