@@ -85,7 +85,7 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="z-20 md:p-3 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl  bg-default-50/70 backdrop-blur-md bg-opacity-0">
+        <div className="z-20 md:p-3 shadow-md w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl  bg-default-50/70 backdrop-blur-md bg-opacity-0">
           <div className="max-w-7xl mx-auto space-y-8 p-3">
             <Suspense>
               <GetInsight {...currentSurvey} />
