@@ -17,6 +17,7 @@ import {
 
 import { Logo } from "./icons";
 import { ThemeSwitch } from "./theme-switch";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 const menuItems = [
   "About",
@@ -30,6 +31,8 @@ const menuItems = [
 ];
 
 export default function Navigation(props: NavbarProps) {
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
   return (
     <Navbar
       // position="sticky"
@@ -60,55 +63,40 @@ export default function Navigation(props: NavbarProps) {
           </span>
         </NavbarBrand>
 
-        {/* <NavbarItem className="hidden md:flex">
-          <Link className="text-default-500" href="#" size="sm">
-            Home
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link className="text-default-500" href="#" size="sm">
-            Features
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive>
-          <Link aria-current="page" color="foreground" href="#" size="sm">
-            Customers
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link className="text-default-500" href="#" size="sm">
-            About Us
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link className="text-default-500" href="#" size="sm">
-            Integrations
-          </Link>
-        </NavbarItem> */}
         <NavbarItem className="ml-2 !flex gap-3">
           <ThemeSwitch />
-          <Button radius="full" variant="flat">
-            Login
-          </Button>
+          {!session ? (
+            <Button
+              radius="full"
+              variant="flat"
+              onPress={() => signIn("twitter")}
+            >
+              Login with Twitter
+            </Button>
+          ) : (
+            <Button radius="full" variant="flat" onPress={() => signOut()}>
+              {userId || "Logout"}
+            </Button>
+          )}
         </NavbarItem>
       </NavbarContent>
 
       {/* Menu */}
-      <NavbarMenu
-        className="top-[calc(var(--navbar-height)/2)] mx-auto mt-16 max-h-[40vh] max-w-[80vw] rounded-large border-small border-default-200/20 bg-background/60 py-6 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
-        motionProps={{
-          initial: { opacity: 0, y: -20 },
-          animate: { opacity: 1, y: 0 },
-          exit: { opacity: 0, y: -20 },
-          transition: {
-            ease: "easeInOut",
-            duration: 0.2,
-          },
-        }}
-      >
+      <NavbarMenu>
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item}-${index}`}>
-            <Link className="w-full text-default-500" href="#" size="md">
+            <Link
+              className="w-full"
+              color={
+                index === 2
+                  ? "primary"
+                  : index === menuItems.length - 1
+                    ? "danger"
+                    : "foreground"
+              }
+              href="#"
+              size="lg"
+            >
               {item}
             </Link>
           </NavbarMenuItem>

@@ -6,31 +6,11 @@ import * as React from "react";
 import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { SessionProvider, useSession } from "next-auth/react";
 
 import { UserRaw } from "@/hooks/useForetell";
 
-export interface AppContextType {
-  surveys: {
-    question: string;
-    totalPool: number;
-    data: UserRaw[];
-  }[];
-  setSurveys: React.Dispatch<
-    React.SetStateAction<
-      {
-        question: string;
-        totalPool: number;
-        data: UserRaw[];
-      }[]
-    >
-  >;
-  idx: number;
-  setIdx: React.Dispatch<React.SetStateAction<number>>;
-}
-
-export const AppContext = React.createContext<AppContextType | undefined>(
-  undefined,
-);
+export const AppContext = React.createContext<any | undefined>(undefined);
 
 export const ContextProvider = ({
   children,
@@ -44,9 +24,12 @@ export const ContextProvider = ({
       data: UserRaw[];
     }[]
   >([]);
-  const [idx, setIdx] = React.useState(0);
 
-  const value: AppContextType = { surveys, setSurveys, idx, setIdx };
+  const [idx, setIdx] = React.useState(0);
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+
+  const value: any = { surveys, setSurveys, idx, setIdx, userId };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
@@ -75,4 +58,8 @@ export function Providers({ children, themeProps }: ProvidersProps) {
       </ContextProvider>
     </HeroUIProvider>
   );
+}
+
+export function NextAuthProvider({ children }: { children: React.ReactNode }) {
+  return <SessionProvider>{children}</SessionProvider>;
 }

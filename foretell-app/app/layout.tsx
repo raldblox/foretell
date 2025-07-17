@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
 
-import { Providers } from "./providers";
+import { Providers, NextAuthProvider } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
@@ -38,16 +38,18 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-dvh text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div className="relative flex flex-col overflow-hidden">
-            <Navigation />
-            <main className="w-full flex flex-col flex-grow">{children}</main>
-          </div>
-          <Footer />
-        </Providers>
+        <NextAuthProvider>
+          <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+            <div className="relative flex flex-col overflow-hidden">
+              <Navigation />
+              <main className="w-full flex flex-col flex-grow">{children}</main>
+            </div>
+            <Footer />
+          </Providers>
+        </NextAuthProvider>
       </body>
     </html>
   );
