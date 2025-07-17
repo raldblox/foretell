@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   AreaChart,
   Area,
@@ -46,6 +46,14 @@ export default function GetInsight(survey: Survey) {
     responses || [],
     rewardPool
   );
+  const [codeString, setCodeString] = useState("");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCodeString(
+        `${window.location.origin}${window.location.pathname}?surveyId=${surveyId}`
+      );
+    }
+  }, [surveyId]);
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -103,7 +111,7 @@ export default function GetInsight(survey: Survey) {
             size="sm"
             radius="sm"
             hideSymbol
-            codeString={`${window.location.origin}${window.location.pathname}?surveyId=${surveyId}`}
+            codeString={codeString}
           >
             Copy Link
           </Snippet>
