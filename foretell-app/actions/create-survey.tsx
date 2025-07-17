@@ -51,7 +51,7 @@ export default function CreateSurveyModal({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -158,8 +158,8 @@ export default function CreateSurveyModal({
       <Modal
         isDismissable
         className="m-6"
-        placement="top-center"
         isOpen={isOpen}
+        placement="top-center"
         onOpenChange={onOpenChange}
       >
         <ModalContent>

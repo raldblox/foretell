@@ -30,7 +30,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 PromptInput.displayName = "PromptInput";
@@ -52,7 +52,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
   const currentSurvey = surveys[idx];
   const hasResponded = currentSurvey?.responses?.some(
-    (r: any) => r.uid === userId
+    (r: any) => r.uid === userId,
   );
   const isExpired =
     currentSurvey?.expiry && new Date() > new Date(currentSurvey.expiry);
@@ -65,18 +65,22 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     if (!response.trim()) return;
     if (!userId) {
       alert("You must be logged in to submit a response.");
+
       return;
     }
     if (hasResponded) {
       alert("You have already submitted a response to this survey.");
+
       return;
     }
     if (isExpired) {
       alert("This survey has expired.");
+
       return;
     }
     if (isFull) {
       alert("This survey has reached the maximum number of responses.");
+
       return;
     }
     const classifier = await loadTextClassifier();
@@ -94,10 +98,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     // Use both positive and negative scores to derive a continuous score
     const categories = result.classifications?.[0]?.categories || [];
     const positive = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "positive"
+      (c) => c.categoryName?.toLowerCase() === "positive",
     );
     const negative = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "negative"
+      (c) => c.categoryName?.toLowerCase() === "negative",
     );
 
     let score = 0.5;
@@ -153,8 +157,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     if (res.ok) {
       // Optionally, re-fetch surveys or update context
       const updated = await fetch("/api/survey");
+
       if (updated.ok) {
         const data = await updated.json();
+
         // Optimistically add the new response to the corresponding survey
         setSurveys((prev: Survey[]) => {
           const newSurveys = prev.map((survey: Survey, i: number) => {
@@ -164,8 +170,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                 responses: [...(survey.responses || []), RawEntry],
               };
             }
+
             return survey;
           });
+
           return newSurveys;
         });
         // After updating, check if there is a next survey
@@ -192,6 +200,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
             innerWrapper: "relative",
             input: "py-3 text-medium",
           }}
+          disabled={hasResponded || isExpired || isFull}
           endContent={
             <div className="flex items-end gap-2">
               <Button
@@ -206,7 +215,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                 <Icon
                   className={cn(
                     "[&>path]:stroke-[2px]",
-                    !response ? "text-default-600" : "text-primary-foreground"
+                    !response ? "text-default-600" : "text-primary-foreground",
                   )}
                   icon="solar:arrow-up-linear"
                   width={20}
@@ -225,11 +234,11 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
             }
           }}
           onValueChange={setResponse}
-          disabled={hasResponded || isExpired || isFull}
         />
         <div className="flex w-full flex-wrap items-center justify-between gap-2 px-3 pb-3">
           <div className="flex flex-wrap gap-3">
             <Button
+              isDisabled={hasResponded || isExpired || isFull}
               size="sm"
               startContent={
                 <Icon
@@ -239,7 +248,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                 />
               }
               variant="flat"
-              isDisabled={hasResponded || isExpired || isFull}
             >
               Add stake
             </Button>

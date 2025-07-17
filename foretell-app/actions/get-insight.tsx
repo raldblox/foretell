@@ -44,13 +44,14 @@ export default function GetInsight(survey: Survey) {
   } = survey;
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
-    rewardPool
+    rewardPool,
   );
   const [codeString, setCodeString] = useState("");
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setCodeString(
-        `${window.location.origin}${window.location.pathname}?surveyId=${surveyId}`
+        `${window.location.origin}${window.location.pathname}?surveyId=${surveyId}`,
       );
     }
   }, [surveyId]);
@@ -107,11 +108,11 @@ export default function GetInsight(survey: Survey) {
             )}
           </div>
           <Snippet
-            className="pl-4"
-            size="sm"
-            radius="sm"
             hideSymbol
+            className="pl-4"
             codeString={codeString}
+            radius="sm"
+            size="sm"
           >
             Copy Link
           </Snippet>

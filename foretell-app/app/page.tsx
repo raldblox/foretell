@@ -2,32 +2,34 @@
 
 import { Button, cn, Skeleton } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { Suspense, useContext, useEffect } from "react";
+import { Suspense, useContext, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { AppContext } from "./providers";
 
 import GradientText from "@/components/GradientText/GradientText";
-import Hero from "@/components/hero-section";
-import {
-  CHANGE_TYPE,
-  POLARITY_LABEL,
-  POLARITY_VALUES,
-  Survey,
-} from "@/hooks/useForetell";
+import { Survey } from "@/hooks/useForetell";
 import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
 import { dummySurvey } from "@/lib/dummySurvey";
 
 export default function Home() {
-  const { surveys, setSurveys, idx, setIdx, userId } = useContext(AppContext)!;
   const searchParams = useSearchParams();
-  const surveyIdFromUrl = searchParams?.get("surveyId");
+  const surveyIdFromUrl = useRef<string | null>(null);
+  const { surveys, setSurveys, idx, setIdx, userId } = useContext(AppContext)!;
 
   useEffect(() => {
-    if (!surveyIdFromUrl || !surveys.length) return;
+    const invite = searchParams?.get("surveyId");
+
+    if (invite) {
+      surveyIdFromUrl.current = invite;
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!surveyIdFromUrl.current || !surveys.length) return;
     const idxInList = surveys.findIndex(
-      (s: Survey) => s.surveyId === surveyIdFromUrl
+      (s: Survey) => s.surveyId === surveyIdFromUrl.current
     );
     if (idxInList > 0) {
       setSurveys((prev: Survey[]) => {
@@ -37,7 +39,7 @@ export default function Home() {
       });
       setIdx(0);
     }
-  }, [surveyIdFromUrl, surveys.length]);
+  }, [surveyIdFromUrl.current, surveys.length]);
 
   useEffect(() => {
     setSurveys([dummySurvey]);
