@@ -7,6 +7,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  ScrollShadow,
 } from "@heroui/react";
 
 export interface RewardEntry {
@@ -33,7 +34,7 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
     >
       <TableHeader>
         <TableColumn key="uid">UID</TableColumn>
-        <TableColumn key="answer">Response</TableColumn>
+        {/* <TableColumn key="answer">Response</TableColumn> */}
         <TableColumn key="polarity">Polarity</TableColumn>
         <TableColumn key="score">Score</TableColumn>
         <TableColumn key="pctShare">Closeness</TableColumn>
@@ -49,15 +50,33 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
           <TableRow key={item.uid} className="hover:bg-default-100">
             {(columnKey) => (
               <TableCell>
-                {columnKey === "pctShare"
-                  ? `${item.pctShare.toFixed(1)}%`
-                  : columnKey === "rewardUSD"
-                    ? `${item.rewardUSD.toFixed(4)}`
-                    : columnKey === "score"
-                      ? typeof item.score === "number"
-                        ? item.score.toFixed(4)
-                        : item.score
-                      : (item as any)[columnKey]}
+                {columnKey === "pctShare" ? (
+                  `${item.pctShare.toFixed(1)}%`
+                ) : columnKey === "rewardUSD" ? (
+                  `${item.rewardUSD.toFixed(2)}%`
+                ) : columnKey === "score" ? (
+                  typeof item.score === "number" ? (
+                    item.score.toFixed(4)
+                  ) : (
+                    item.score
+                  )
+                ) : columnKey === "answer" ? (
+                  <ScrollShadow
+                    className="w-40 whitespace-nowrap"
+                    orientation="horizontal"
+                  >
+                    {(item as any)[columnKey]}
+                  </ScrollShadow>
+                ) : columnKey === "uid" ? (
+                  <ScrollShadow
+                    className="w-24 whitespace-nowrap"
+                    orientation="horizontal"
+                  >
+                    {(item as any)[columnKey]}
+                  </ScrollShadow>
+                ) : (
+                  (item as any)[columnKey]
+                )}
               </TableCell>
             )}
           </TableRow>

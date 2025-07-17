@@ -35,15 +35,15 @@ export default function Insight(props: ForetellProps) {
   const { question, totalPool, data, isLoading } = props;
   const { groups, stats, processed, chartData, miniData } = useForetell(
     data,
-    totalPool,
+    totalPool
   );
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
       {/* Top Summary */}
-      <section className="md:p-6 p-3 rounded-lg bg-default-100 border border-default-100 space-y-3">
-        <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
-          <p className="text-xl font-semibold leading-tight">
+      <section className="md:p-6 p-3 rounded-lg bg-default-100 border border-default-100 space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center gap-6 justify-between">
+          <p className="text-2xl font-semibold leading-tight">
             {isLoading ? (
               <Skeleton className="w-2/5 rounded-lg">
                 <div className="h-6 w-1/3 rounded-lg bg-default-200" />
@@ -83,9 +83,10 @@ export default function Insight(props: ForetellProps) {
                 className="md:p-6 p-3 flex flex-wrap justify-between rounded-lg border border-default-200"
               >
                 <div>
-                  <dt className="text-sm font-medium text-default-500 flex items-center">
+                  <dt className="text-3xl font-medium text-default-800 flex items-center">
+                    {groups[p].length}
                     <Icon
-                      className={cn("mr-2", {
+                      className={cn("ml-3", {
                         "text-success": p === 1,
                         "text-warning": p === 0,
                         "text-danger": p === -1,
@@ -97,12 +98,12 @@ export default function Insight(props: ForetellProps) {
                             ? "ix:emote-sad-filled"
                             : "ix:emote-neutral-filled"
                       }
-                      width={24}
+                      width={30}
                     />
-                    {POLARITY_LABEL[p]}
+                    {/* {POLARITY_LABEL[p]} */}
                   </dt>
-                  <dd className="mt-2 text-3xl font-semibold text-default-800">
-                    {groups[p].length}
+                  <dd className="mt-2 text-sm font-semibold text-default-500">
+                    {POLARITY_LABEL[p]}
                   </dd>
                 </div>
                 <div className=" hidden w-3/5 shrink-0 lg:block">
@@ -127,7 +128,7 @@ export default function Insight(props: ForetellProps) {
                         domain={[
                           0,
                           Math.ceil(
-                            Math.max(...miniData[p].map((d) => d.value)),
+                            Math.max(...miniData[p].map((d) => d.value))
                           ),
                         ]}
                       />
