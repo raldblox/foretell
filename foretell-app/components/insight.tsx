@@ -41,7 +41,7 @@ export default function Insight(props: ForetellProps) {
   return (
     <div className="max-w-7xl mx-auto space-y-8">
       {/* Top Summary */}
-      <section className="md:p-6 p-3 rounded-lg bg-default-100 border border-default-100 space-y-6">
+      <section className="md:p-6 p-3 rounded-lg bg-default-100 border border-default-100 space-y-3">
         <div className="flex flex-col md:flex-row md:items-center gap-6 justify-between">
           <p className="text-2xl font-semibold leading-tight">
             {isLoading ? (
@@ -83,10 +83,9 @@ export default function Insight(props: ForetellProps) {
                 className="md:p-6 p-3 flex flex-wrap justify-between rounded-lg border border-default-200"
               >
                 <div>
-                  <dt className="text-3xl font-medium text-default-800 flex items-center">
-                    {groups[p].length}
+                  <dt className="text-sm font-medium text-default-500 flex items-center">
                     <Icon
-                      className={cn("ml-3", {
+                      className={cn("mr-2", {
                         "text-success": p === 1,
                         "text-warning": p === 0,
                         "text-danger": p === -1,
@@ -98,15 +97,15 @@ export default function Insight(props: ForetellProps) {
                             ? "ix:emote-sad-filled"
                             : "ix:emote-neutral-filled"
                       }
-                      width={30}
+                      width={24}
                     />
-                    {/* {POLARITY_LABEL[p]} */}
-                  </dt>
-                  <dd className="mt-2 text-sm font-semibold text-default-500">
                     {POLARITY_LABEL[p]}
+                  </dt>
+                  <dd className="mt-2 text-3xl font-semibold text-default-800">
+                    {groups[p].length}
                   </dd>
                 </div>
-                <div className="w-3/5 shrink-0 block">
+                <div className=" w-3/5 shrink-0 block">
                   <ResponsiveContainer debounce={200} height={100} width="100%">
                     <AreaChart data={miniData[p]}>
                       <defs>
