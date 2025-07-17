@@ -41,7 +41,7 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
         <TableColumn key="polarity">Polarity</TableColumn>
         <TableColumn key="score">Score</TableColumn>
         <TableColumn key="pctShare">Closeness</TableColumn>
-        <TableColumn key="rewardUSD">Rewards</TableColumn>
+        <TableColumn key="rewardUSD">Share</TableColumn>
       </TableHeader>
 
       <TableBody
