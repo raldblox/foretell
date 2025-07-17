@@ -6,12 +6,14 @@ export interface UserRaw {
   uid: string;
   polarity: Polarity;
   score: number;
+  intensity?: number;
   answer?: string;
 }
 export interface ForetellProps {
   question: string;
   totalPool: number;
   data: UserRaw[];
+  isLoading?: boolean;
 }
 
 export interface UserWeighted extends UserRaw {
@@ -143,16 +145,34 @@ export function useForetell(data: UserRaw[], totalPool: number) {
     Polarity,
     { uid: string; polarity: Polarity; score: number; value: number }[]
   > = POLARITY_VALUES.reduce((acc, p) => {
-    acc[p] = groups[p]
-      .map((u) => processed.find((x) => x.uid === u.uid)!)
-      .sort((a, b) => a.score - b.score)
-      .map((u) => ({
-        uid: u.uid,
-        polarity: u.polarity,
-        score: u.score,
-        // now plotting intensity (score)
-        value: u.score,
-      }));
+    let group = groups[p].map((u) => processed.find((x) => x.uid === u.uid)!);
+
+    acc[p] = group
+      .map((u) => {
+        let intensity =
+          typeof u.intensity === "number"
+            ? u.intensity
+            : (() => {
+                if (u.polarity === -1) {
+                  return 1 - Math.min(Math.max(u.score / 0.3, 0), 1);
+                } else if (u.polarity === 0) {
+                  return 1 - Math.min(Math.abs(u.score - 0.5) / 0.2, 1);
+                } else if (u.polarity === 1) {
+                  return Math.min(Math.max((u.score - 0.7) / 0.3, 0), 1);
+                }
+
+                return 0;
+              })();
+
+        return {
+          uid: u.uid,
+          polarity: u.polarity,
+          score: u.score,
+          intensity,
+          value: intensity,
+        };
+      })
+      .sort((a, b) => a.value - b.value);
 
     return acc;
   }, {} as any);

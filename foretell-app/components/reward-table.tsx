@@ -35,7 +35,7 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
         <TableColumn key="uid">UID</TableColumn>
         <TableColumn key="answer">Response</TableColumn>
         <TableColumn key="polarity">Polarity</TableColumn>
-        <TableColumn key="score">Intensity</TableColumn>
+        <TableColumn key="score">Score</TableColumn>
         <TableColumn key="pctShare">Closeness</TableColumn>
         <TableColumn key="rewardUSD">Rewards</TableColumn>
       </TableHeader>
@@ -53,7 +53,11 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
                   ? `${item.pctShare.toFixed(1)}%`
                   : columnKey === "rewardUSD"
                     ? `${item.rewardUSD.toFixed(4)}`
-                    : (item as any)[columnKey]}
+                    : columnKey === "score"
+                      ? typeof item.score === "number"
+                        ? item.score.toFixed(4)
+                        : item.score
+                      : (item as any)[columnKey]}
               </TableCell>
             )}
           </TableRow>

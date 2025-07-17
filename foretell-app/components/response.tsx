@@ -2,10 +2,13 @@
 
 import type { TextAreaProps } from "@heroui/react";
 
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Textarea } from "@heroui/react";
 import { cn } from "@heroui/react";
 import { Icon } from "@iconify/react";
+
+import { AppContext } from "@/app/providers";
+import { loadTextClassifier } from "@/model/text-classify";
 
 const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ classNames = {}, ...props }, ref) => {
@@ -31,8 +34,95 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
 PromptInput.displayName = "PromptInput";
 
-const Response = () => {
-  const [prompt, setPrompt] = React.useState<string>("");
+interface ResponseProps {
+  idx?: number;
+}
+
+const Response = ({ idx: propIdx }: ResponseProps) => {
+  const { surveys, setSurveys, idx: contextIdx } = useContext(AppContext)!;
+  const idx = propIdx !== undefined ? propIdx : contextIdx;
+  const [response, setResponse] = React.useState<string>("");
+
+  const submitResponse = async () => {
+    if (!response.trim()) return;
+    const classifier = await loadTextClassifier();
+
+    if (!classifier) {
+      console.error("Text classifier failed to load");
+
+      return;
+    }
+
+    const result = await classifier.classify(response);
+
+    console.log("Classification result:", result);
+
+    // Use both positive and negative scores to derive a continuous score
+    const categories = result.classifications?.[0]?.categories || [];
+    const positive = categories.find(
+      (c) => c.categoryName?.toLowerCase() === "positive",
+    );
+    const negative = categories.find(
+      (c) => c.categoryName?.toLowerCase() === "negative",
+    );
+
+    let score = 0.5;
+
+    if (positive) {
+      score = positive.score;
+    } else if (negative) {
+      score = 1 - negative.score;
+    }
+
+    // Define neutral range
+    let polarity: -1 | 0 | 1 = 0;
+
+    if (score > 0.7) polarity = 1;
+    else if (score < 0.3) polarity = -1;
+    else polarity = 0;
+
+    let intensity = 0;
+
+    if (polarity === -1) {
+      // Negative: 1 at 0, 0 at 0.3
+      intensity = 1 - Math.min(Math.max(score / 0.3, 0), 1);
+    } else if (polarity === 0) {
+      // Neutral: 1 at 0.5, 0 at 0.3 or 0.7
+      intensity = 1 - Math.min(Math.abs(score - 0.5) / 0.2, 1);
+    } else if (polarity === 1) {
+      // Positive: 0 at 0.7, 1 at 1
+      intensity = Math.min(Math.max((score - 0.7) / 0.3, 0), 1);
+    }
+
+    // Generate a unique uid (timestamp + random)
+    const uid = `U${Date.now()}${Math.floor(Math.random() * 1000)}`;
+
+    // Create UserRaw
+    const userRaw = {
+      uid,
+      polarity,
+      score,
+      intensity,
+      answer: response,
+    };
+
+    console.log(userRaw);
+
+    // Add to the current survey (by idx)
+    setSurveys((prev) => {
+      if (!prev.length || idx < 0 || idx >= prev.length) return prev;
+      const updated = [...prev];
+
+      updated[idx] = {
+        ...updated[idx],
+        data: [...updated[idx].data, userRaw],
+      };
+
+      return updated;
+    });
+
+    setResponse("");
+  };
 
   return (
     <form className="flex w-full flex-col items-start rounded-md bg-default-50 transition-colors">
@@ -46,16 +136,17 @@ const Response = () => {
           <div className="flex items-end gap-2">
             <Button
               isIconOnly
-              color={!prompt ? "default" : "primary"}
-              isDisabled={!prompt}
+              color={!response ? "default" : "primary"}
+              isDisabled={!response}
               radius="lg"
               size="sm"
               variant="solid"
+              onPress={submitResponse}
             >
               <Icon
                 className={cn(
                   "[&>path]:stroke-[2px]",
-                  !prompt ? "text-default-600" : "text-primary-foreground",
+                  !response ? "text-default-600" : "text-primary-foreground",
                 )}
                 icon="solar:arrow-up-linear"
                 width={20}
@@ -65,9 +156,15 @@ const Response = () => {
         }
         minRows={3}
         radius="lg"
-        value={prompt}
+        value={response}
         variant="flat"
-        onValueChange={setPrompt}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            submitResponse();
+          }
+        }}
+        onValueChange={setResponse}
       />
       <div className="flex w-full flex-wrap items-center justify-between gap-2 px-4 pb-4">
         <div className="flex flex-wrap gap-3">
@@ -111,7 +208,9 @@ const Response = () => {
             Templates
           </Button> */}
         </div>
-        <p className="py-1 text-tiny text-default-400">{prompt.length}/2000</p>
+        <p className="py-1 text-tiny text-default-400">
+          {response.length}/2000
+        </p>
       </div>
     </form>
   );

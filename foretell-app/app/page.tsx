@@ -14,7 +14,9 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
+
+import { AppContext } from "./providers";
 
 import GradientText from "@/components/GradientText/GradientText";
 import Hero from "@/components/hero-section";
@@ -86,13 +88,7 @@ const Loader = () => {
 
 export default function Home() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [surveys, setSurveys] = useState<
-    {
-      question: string;
-      totalPool: number;
-      data: UserRaw[];
-    }[]
-  >([]);
+  const { surveys, setSurveys, idx, setIdx } = useContext(AppContext)!;
 
   // NEW: form state
   const [newQuestion, setNewQuestion] = useState("");
@@ -124,8 +120,6 @@ export default function Home() {
     ]);
   }, []);
 
-  const [idx, setIdx] = useState(0);
-
   if (surveys.length === 0) {
     // show a spinner or hero only on SSR/client first pass
     return (
@@ -137,8 +131,9 @@ export default function Home() {
   }
 
   const { question, totalPool, data } = surveys[idx];
-  const prev = () => setIdx((i) => (i + surveys.length - 1) % surveys.length);
-  const next = () => setIdx((i) => (i + 1) % surveys.length);
+  const prev = () =>
+    setIdx((i: number) => (i + surveys.length - 1) % surveys.length);
+  const next = () => setIdx((i: number) => (i + 1) % surveys.length);
 
   return (
     <>
@@ -173,6 +168,7 @@ export default function Home() {
             (reviews, comments, insights), let your community bet on outcomes,
             and distribute fair rewards—no extra tools required.
           </p>
+
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row md:p-6 p-3">
             <Button
               className="h-10 w-[163px] bg-default-foreground px-[16px] py-[10px] text-small font-medium leading-5 text-background"
@@ -203,13 +199,21 @@ export default function Home() {
         <div className="z-20 md:p-3 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0">
           <div className="max-w-7xl mx-auto space-y-8 p-3">
             <Suspense fallback={<Loader />}>
-              <Insight data={data} question={question} totalPool={totalPool} />
+              {surveys.length === 0 ? (
+                <Loader />
+              ) : (
+                <Insight
+                  data={data}
+                  question={question}
+                  totalPool={totalPool}
+                />
+              )}
             </Suspense>
           </div>
         </div>
         <div className="">
           <div
-            className="cursor-pointer tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-start hover:bg-gradient-to-l from-transparent to-default-50 z-10 w-[20vw] absolute top-0 left-0 h-full"
+            className="cursor-pointer tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-start hover:bg-gradient-to-l from-transparent to-default-100 z-10 w-[20vw] absolute top-0 left-0 h-full"
             role="button"
             tabIndex={0}
             onClick={prev}
@@ -220,7 +224,7 @@ export default function Home() {
             PREV
           </div>
           <div
-            className="cursor-pointer tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-end hover:bg-gradient-to-r from-transparent to-default-50 z-10 w-[20vw] absolute top-0 right-0 h-full"
+            className="cursor-pointer tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-end hover:bg-gradient-to-r from-transparent to-default-100 z-10 w-[20vw] absolute top-0 right-0 h-full"
             role="button"
             tabIndex={0}
             onClick={next}
@@ -252,30 +256,13 @@ export default function Home() {
                 className="flex w-full flex-col gap-2"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  // client-only dummy generator
-                  function makeDummy(n: number, offset = 0): UserRaw[] {
-                    return Array.from({ length: n }, (_, i) => ({
-                      uid: `U${offset + i + 1}`,
-                      polarity: (Math.floor(Math.random() * 3) - 1) as
-                        | -1
-                        | 0
-                        | 1,
-                      score: parseFloat(Math.random().toFixed(2)),
-                    }));
-                  }
-
-                  const offset = surveys.reduce(
-                    (sum, s) => sum + s.data.length,
-                    0
-                  );
-                  const newData = makeDummy(newSampleCount, offset);
 
                   setSurveys([
                     ...surveys,
                     {
                       question: newQuestion,
                       totalPool: newPool,
-                      data: newData,
+                      data: [],
                     },
                   ]);
 
@@ -303,14 +290,14 @@ export default function Home() {
                   onValueChange={(v) => setNewPool(Number(v))}
                 />
 
-                <Input
+                {/* <Input
                   required
                   label="Sample Size"
                   min={1}
                   type="number"
                   value={String(newSampleCount)}
                   onValueChange={(v) => setNewSampleCount(Number(v))}
-                />
+                /> */}
                 <Divider className="my-2" />
                 <div className="flex justify-end gap-2 pb-4">
                   <Button color="danger" variant="flat" onPress={close}>
