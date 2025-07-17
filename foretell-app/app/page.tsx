@@ -81,8 +81,8 @@ export default function Home() {
           <p className="text-center text-default-500 max-w-2xl">
             Foretell brings online surveys, live three-way markets, and
             automated payouts into one seamless platform. Collect any feedback
-            (reviews, comments, insights), let your community bet on outcomes,
-            and distribute fair rewards—no extra tools required.
+            (reviews, comments, insights), let anyone bet on outcomes, and
+            distribute fair rewards—no extra tools required.
           </p>
 
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row md:p-6 p-3">

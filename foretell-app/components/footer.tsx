@@ -9,11 +9,11 @@ const Footer = () => {
       <Link
         isExternal
         className="flex items-center gap-1 text-current"
-        href="https://heroui.com?utm_source=next-app-template"
+        href="https://onchainsupply.net"
         title="heroui.com homepage"
       >
         <span className="text-default-600">Powered by</span>
-        <p className="text-primary">HeroUI</p>
+        <p className="">onchainsupply</p>
       </Link>
     </footer>
   );
