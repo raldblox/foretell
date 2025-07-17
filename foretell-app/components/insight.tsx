@@ -106,7 +106,7 @@ export default function Insight(props: ForetellProps) {
                     {POLARITY_LABEL[p]}
                   </dd>
                 </div>
-                <div className=" hidden w-3/5 shrink-0 lg:block">
+                <div className="w-3/5 shrink-0 block">
                   <ResponsiveContainer debounce={200} height={100} width="100%">
                     <AreaChart data={miniData[p]}>
                       <defs>
