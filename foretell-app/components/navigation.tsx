@@ -70,12 +70,17 @@ export default function Navigation(props: NavbarProps) {
               variant="flat"
               onPress={() => signIn("twitter")}
             >
-              Connect
+              Sign in with
               <Icon icon="hugeicons:new-twitter" width={16} className="" />
             </Button>
           ) : (
             <Button radius="full" variant="flat" onPress={() => signOut()}>
-              {userId || "Logout"}
+              {"Sign out"}
+              <Icon
+                icon="majesticons:logout-half-circle"
+                width={20}
+                className="text-danger"
+              />
             </Button>
           )}
         </NavbarItem>
