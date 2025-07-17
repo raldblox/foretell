@@ -39,7 +39,7 @@ export default function Home() {
       });
       setIdx(0);
     }
-  }, [surveyIdFromUrl.current, surveys.length]);
+  }, [surveys.length, setSurveys, setIdx]);
 
   useEffect(() => {
     setSurveys([dummySurvey]);

@@ -8,6 +8,7 @@ import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: {
@@ -38,14 +39,16 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-dvh text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
         <NextAuthProvider>
           <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
             <div className="relative flex flex-col overflow-hidden">
               <Navigation />
-              <main className="w-full flex flex-col flex-grow">{children}</main>
+              <main className="w-full flex flex-col flex-grow">
+                <Suspense>{children}</Suspense>
+              </main>
             </div>
             <Footer />
           </Providers>
