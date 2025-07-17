@@ -14,10 +14,10 @@ import {
   Link,
   Button,
 } from "@heroui/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 import { Logo } from "./icons";
 import { ThemeSwitch } from "./theme-switch";
-import { signIn, signOut, useSession } from "next-auth/react";
 
 const menuItems = [
   "About",
@@ -33,6 +33,7 @@ const menuItems = [
 export default function Navigation(props: NavbarProps) {
   const { data: session } = useSession();
   const userId = session?.user?.id;
+
   return (
     <Navbar
       // position="sticky"

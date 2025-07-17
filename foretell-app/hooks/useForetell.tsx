@@ -2,28 +2,48 @@ import { useMemo } from "react";
 
 // --- Types & Interfaces ---
 export type Polarity = -1 | 0 | 1;
-export interface UserRaw {
+export type Resolution = "time" | "quantity";
+export interface RawEntry {
   uid: string;
   polarity: Polarity;
   score: number;
   intensity?: number;
   answer?: string;
 }
-export interface ForetellProps {
+
+export interface Reward {
+  chainId: string;
+  nativeToken: boolean;
+  rewardPool: number;
+  tokenAddress: string;
+}
+export interface Survey {
+  surveyId: string;
+  title: string;
+  description?: string;
+  createdBy: string;
+  createdAt: string;
+  expiry?: string;
+  maxResponses?: number;
+  responses?: RawEntry[];
+  rewardPool?: Reward;
+}
+export interface SurveyProps {
   question: string;
-  totalPool: number;
-  data: UserRaw[];
+  rewardPool?: Reward;
+  surveyData: RawEntry[];
   isLoading?: boolean;
   visibility?: boolean;
-  
+  resolution?: Resolution;
+  expiry?: number;
   idx?: number;
 }
 
-export interface UserWeighted extends UserRaw {
+export interface WeightedEntry extends RawEntry {
   rawWeight: number;
 }
 
-export interface UserProcessed extends UserWeighted {
+export interface ProcessedEntry extends WeightedEntry {
   shareInGroup: number;
   rewardUSD: number;
   pctShare: number;
@@ -58,19 +78,21 @@ export const CHANGE_TYPE: Record<
   1: "positive",
 };
 
-export function useForetell(data: UserRaw[], totalPool: number) {
+export function useForetell(surveyData: RawEntry[], pool?: Reward) {
+  const totalPool = pool?.rewardPool ? pool.rewardPool : 100;
+
   // 1) group
   const groups = useMemo(
     () =>
       POLARITY_VALUES.reduce(
         (acc, p) => {
-          acc[p] = data.filter((u) => u.polarity === p);
+          acc[p] = surveyData.filter((u) => u.polarity === p);
 
           return acc;
         },
-        {} as Record<Polarity, UserRaw[]>
+        {} as Record<Polarity, RawEntry[]>,
       ),
-    [data]
+    [surveyData],
   );
 
   // 2) stats
@@ -86,26 +108,26 @@ export function useForetell(data: UserRaw[], totalPool: number) {
 
           return acc;
         },
-        {} as Record<Polarity, { avg: number; maxDiff: number }>
+        {} as Record<Polarity, { avg: number; maxDiff: number }>,
       ),
-    [groups]
+    [groups],
   );
 
   // 3) weighted
-  const weighted: UserWeighted[] = useMemo(
+  const weighted: WeightedEntry[] = useMemo(
     () =>
-      data.map((u) => {
+      surveyData.map((u) => {
         const { avg, maxDiff } = stats[u.polarity];
         const closeness =
           maxDiff > 0 ? 1 - Math.abs(u.score - avg) / maxDiff : 1;
 
         return { ...u, rawWeight: closeness + MIN_WEIGHT };
       }),
-    [data, stats]
+    [surveyData, stats],
   );
 
   // 4) process
-  const processed: UserProcessed[] = useMemo(
+  const processed: ProcessedEntry[] = useMemo(
     () =>
       weighted.map((u) => {
         const groupSum = weighted
@@ -115,17 +137,17 @@ export function useForetell(data: UserRaw[], totalPool: number) {
         const rewardUSD = parseFloat(
           (
             shareInGroup *
-            ((groups[u.polarity].length / data.length) * totalPool)
-          ).toFixed(2)
+            ((groups[u.polarity].length / surveyData.length) * totalPool)
+          ).toFixed(2),
         );
         const pctShare = parseFloat(((rewardUSD / totalPool) * 100).toFixed(1));
 
         return { ...u, shareInGroup, rewardUSD, pctShare };
       }),
-    [weighted, groups, data.length, totalPool]
+    [weighted, groups, surveyData.length, totalPool],
   );
 
-  // 5) combined chart data
+  // 5) combined chart surveyData
   const chartData: CombinedPoint[] = useMemo(() => {
     const sorted = processed
       .sort((a, b) => a.score - b.score)
@@ -143,7 +165,7 @@ export function useForetell(data: UserRaw[], totalPool: number) {
     ];
   }, [processed]);
 
-  // 6) mini spark data
+  // 6) mini spark surveyData
   const miniData: Record<
     Polarity,
     { uid: string; polarity: Polarity; score: number; value: number }[]

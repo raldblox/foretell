@@ -1,32 +1,21 @@
 "use client";
 
-import {
-  Button,
-  cn,
-  Divider,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  Skeleton,
-  Textarea,
-  useDisclosure,
-} from "@heroui/react";
+import { Button, cn, Skeleton } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { Suspense, useContext, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect } from "react";
 
 import { AppContext } from "./providers";
 
 import GradientText from "@/components/GradientText/GradientText";
 import Hero from "@/components/hero-section";
-import Insight from "@/components/insight";
 import {
   CHANGE_TYPE,
   POLARITY_LABEL,
   POLARITY_VALUES,
-  UserRaw,
+  Survey,
 } from "@/hooks/useForetell";
+import CreateSurvey from "@/actions/create-survey";
+import GetInsight from "@/actions/get-insight";
 
 // Remove export from Loader, make it a local component
 const Loader = () => {
@@ -86,38 +75,44 @@ const Loader = () => {
   );
 };
 
-export default function Home() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { surveys, setSurveys, idx, setIdx } = useContext(AppContext)!;
+export const dummySurvey: Survey = {
+  surveyId: "dummy123",
+  title: "What is your sentiment about AI in 2024?",
+  description: "Share your thoughts on the impact of AI this year.",
+  createdBy: "user_abc",
+  createdAt: new Date().toISOString(),
+  expiry: "2024-12-31T23:59:59Z", // ISO string, optional
+  maxResponses: 100, // optional
+  responses: [
+    {
+      uid: "user1",
+      polarity: 1,
+      score: 0.85,
+      intensity: 0.9,
+      answer: "AI is making life easier!",
+    },
+    {
+      uid: "user2",
+      polarity: -1,
+      score: 0.1,
+      intensity: 0.8,
+      answer: "I'm worried about job loss.",
+    },
+    {
+      uid: "user3",
+      polarity: 0,
+      score: 0.5,
+      intensity: 1,
+      answer: "It's a mixed bag.",
+    },
+  ],
+};
 
-  // NEW: form state
-  const [newQuestion, setNewQuestion] = useState("");
-  const [newPool, setNewPool] = useState(100);
-  const [newSampleCount, setNewSampleCount] = useState(50);
+export default function Home() {
+  const { surveys, setSurveys, idx, setIdx, userId } = useContext(AppContext)!;
 
   useEffect(() => {
-    // Build on the client only
-    function makeDummy(n: number, offset = 0): UserRaw[] {
-      return Array.from({ length: n }, (_, i) => ({
-        uid: `U${offset + i + 1}`,
-        polarity: (Math.floor(Math.random() * 3) - 1) as -1 | 0 | 1,
-        score: parseFloat(Math.random().toFixed(2)),
-      }));
-    }
-
-    setSurveys([
-      { question: "New UI redesign?", totalPool: 100, data: makeDummy(50, 0) },
-      {
-        question: "Next product launch success?",
-        totalPool: 200,
-        data: makeDummy(80, 50),
-      },
-      {
-        question: "Favorite project meme?",
-        totalPool: 150,
-        data: makeDummy(60, 130),
-      },
-    ]);
+    setSurveys([dummySurvey]);
   }, []);
 
   if (surveys.length === 0) {
@@ -130,7 +125,18 @@ export default function Home() {
     );
   }
 
-  const { question, totalPool, data } = surveys[idx];
+  const currentSurvey = surveys[idx];
+
+  if (!currentSurvey) {
+    return (
+      <main className="flex flex-col items-center rounded-2xl px-3 md:rounded-3xl md:px-0">
+        <Hero />
+        <Loader />
+      </main>
+    );
+  }
+  const { title, description, responses } = currentSurvey;
+
   const prev = () =>
     setIdx((i: number) => (i + surveys.length - 1) % surveys.length);
   const next = () => setIdx((i: number) => (i + 1) % surveys.length);
@@ -170,13 +176,7 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row md:p-6 p-3">
-            <Button
-              className="h-10 w-[163px] bg-default-foreground px-[16px] py-[10px] text-small font-medium leading-5 text-background"
-              radius="full"
-              onPress={onOpen}
-            >
-              Create Survey
-            </Button>
+            <CreateSurvey />
             <Button
               className="h-10 w-[163px] border-1 border-default-100 px-[16px] py-[10px] text-small font-medium leading-5"
               endContent={
@@ -202,11 +202,7 @@ export default function Home() {
               {surveys.length === 0 ? (
                 <Loader />
               ) : (
-                <Insight
-                  data={data}
-                  question={question}
-                  totalPool={totalPool}
-                />
+                <GetInsight {...currentSurvey} />
               )}
             </Suspense>
           </div>
@@ -236,82 +232,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-      <Modal
-        className="m-3"
-        isOpen={isOpen}
-        shouldBlockScroll={false}
-        onOpenChange={onOpenChange}
-      >
-        <ModalContent>
-          {(close) => (
-            <ModalBody>
-              <ModalHeader className="flex-col items-center gap-1 px-0 text-center">
-                <h2 className="text-xl font-semibold">Create New Survey</h2>
-                <p className="text-sm text-default-500">
-                  Define your question, total reward pool, and sample size.
-                </p>
-              </ModalHeader>
-
-              <form
-                className="flex w-full flex-col gap-2"
-                onSubmit={(e) => {
-                  e.preventDefault();
-
-                  setSurveys([
-                    ...surveys,
-                    {
-                      question: newQuestion,
-                      totalPool: newPool,
-                      data: [],
-                    },
-                  ]);
-
-                  setIdx(surveys.length);
-                  setNewQuestion("");
-                  setNewPool(100);
-                  setNewSampleCount(50);
-                  close();
-                }}
-              >
-                <Textarea
-                  required
-                  label="Topic"
-                  placeholder="e.g. What do you think of our redesign?"
-                  value={newQuestion}
-                  onValueChange={setNewQuestion}
-                />
-
-                <Input
-                  required
-                  label="Total Reward Pool"
-                  min={1}
-                  type="number"
-                  value={String(newPool)}
-                  onValueChange={(v) => setNewPool(Number(v))}
-                />
-
-                {/* <Input
-                  required
-                  label="Sample Size"
-                  min={1}
-                  type="number"
-                  value={String(newSampleCount)}
-                  onValueChange={(v) => setNewSampleCount(Number(v))}
-                /> */}
-                <Divider className="my-2" />
-                <div className="flex justify-end gap-2 pb-4">
-                  <Button color="danger" variant="flat" onPress={close}>
-                    Cancel
-                  </Button>
-                  <Button color="primary" type="submit">
-                    Create
-                  </Button>
-                </div>
-              </form>
-            </ModalBody>
-          )}
-        </ModalContent>
-      </Modal>
     </>
   );
 }

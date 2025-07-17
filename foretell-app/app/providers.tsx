@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { SessionProvider, useSession } from "next-auth/react";
 
-import { UserRaw } from "@/hooks/useForetell";
+import { Survey } from "@/hooks/useForetell";
+import { dummySurvey } from "@/app/page"; // or wherever you define it
 
 export const AppContext = React.createContext<any | undefined>(undefined);
 
@@ -17,17 +18,31 @@ export const ContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [surveys, setSurveys] = React.useState<
-    {
-      question: string;
-      totalPool: number;
-      data: UserRaw[];
-    }[]
-  >([]);
-
+  const [surveys, setSurveys] = React.useState<Survey[]>([]);
   const [idx, setIdx] = React.useState(0);
   const { data: session } = useSession();
   const userId = session?.user?.id;
+
+  React.useEffect(() => {
+    async function fetchSurveys() {
+      const res = await fetch("/api/survey");
+
+      if (res.ok) {
+        const data = await res.json();
+
+        if (data.surveys && data.surveys.length > 0) {
+          setSurveys(data.surveys);
+        } else {
+          setSurveys([dummySurvey]);
+        }
+        console.log(data.surveys);
+        console.log(dummySurvey);
+      } else {
+        setSurveys([dummySurvey]);
+      }
+    }
+    fetchSurveys();
+  }, []);
 
   const value: any = { surveys, setSurveys, idx, setIdx, userId };
 

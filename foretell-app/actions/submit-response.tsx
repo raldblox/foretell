@@ -29,7 +29,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 PromptInput.displayName = "PromptInput";
@@ -38,7 +38,7 @@ interface ResponseProps {
   idx?: number;
 }
 
-const Response = ({ idx: propIdx }: ResponseProps) => {
+const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
   const {
     surveys,
     setSurveys,
@@ -65,10 +65,10 @@ const Response = ({ idx: propIdx }: ResponseProps) => {
     // Use both positive and negative scores to derive a continuous score
     const categories = result.classifications?.[0]?.categories || [];
     const positive = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "positive"
+      (c) => c.categoryName?.toLowerCase() === "positive",
     );
     const negative = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "negative"
+      (c) => c.categoryName?.toLowerCase() === "negative",
     );
 
     let score = 0.5;
@@ -98,8 +98,8 @@ const Response = ({ idx: propIdx }: ResponseProps) => {
       // Positive: 0 at 0.7, 1 at 1
       intensity = Math.min(Math.max((score - 0.7) / 0.3, 0), 1);
     }
-    // Create UserRaw
-    const userRaw = {
+    // Create RawEntry
+    const RawEntry = {
       uid: userId,
       polarity,
       score,
@@ -107,22 +107,35 @@ const Response = ({ idx: propIdx }: ResponseProps) => {
       answer: response,
     };
 
-    console.log(userRaw);
+    console.log(RawEntry);
 
-    // Add to the current survey (by idx)
-    setSurveys((prev: any) => {
-      if (!prev.length || idx < 0 || idx >= prev.length) return prev;
-      const updated = [...prev];
+    // Get the current surveyId
+    const surveyId = surveys[idx]?.surveyId;
 
-      updated[idx] = {
-        ...updated[idx],
-        data: [...updated[idx].data, userRaw],
-      };
+    if (!surveyId) return;
 
-      return updated;
+    // POST to API
+    const res = await fetch("/api/response", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ surveyId, response: RawEntry }),
     });
 
-    setResponse("");
+    if (res.ok) {
+      // Optionally, re-fetch surveys or update context
+      const updated = await fetch("/api/survey");
+
+      if (updated.ok) {
+        const data = await updated.json();
+
+        setSurveys(data.surveys || []);
+      }
+      setResponse("");
+    } else {
+      const data = await res.json();
+
+      alert(data.error || "Failed to submit response");
+    }
   };
 
   return (
@@ -147,7 +160,7 @@ const Response = ({ idx: propIdx }: ResponseProps) => {
               <Icon
                 className={cn(
                   "[&>path]:stroke-[2px]",
-                  !response ? "text-default-600" : "text-primary-foreground"
+                  !response ? "text-default-600" : "text-primary-foreground",
                 )}
                 icon="solar:arrow-up-linear"
                 width={20}
@@ -217,4 +230,4 @@ const Response = ({ idx: propIdx }: ResponseProps) => {
   );
 };
 
-export default Response;
+export default SubmitResponse;

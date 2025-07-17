@@ -27,6 +27,7 @@ export const authOptions = {
     async session({ session, token }: { session: any; token: any }) {
       session.user.id = token.sub;
       console.log("New user signed in", token.name, session.user.id);
+
       return session;
     },
   },

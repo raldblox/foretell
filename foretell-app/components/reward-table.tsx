@@ -25,6 +25,9 @@ interface RewardTableProps {
 }
 
 export function RewardTable({ data, isLoading = false }: RewardTableProps) {
+  // Add a unique _rowIdx to each item for keying
+  const keyedData = data.map((item, i) => ({ ...item, _rowIdx: i }));
+
   return (
     <Table
       isHeaderSticky
@@ -43,11 +46,14 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
 
       <TableBody
         isLoading={isLoading}
-        items={data}
+        items={keyedData}
         loadingContent={<Spinner color="white" />}
       >
         {(item) => (
-          <TableRow key={item.uid} className="hover:bg-default-100">
+          <TableRow
+            key={item.uid + "-" + item._rowIdx}
+            className="hover:bg-default-100"
+          >
             {(columnKey) => (
               <TableCell>
                 {columnKey === "pctShare" ? (
