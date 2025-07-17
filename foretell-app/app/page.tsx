@@ -80,12 +80,12 @@ export default function Home() {
               radius="full"
               variant="bordered"
             >
-              See our plans
+              How it works
             </Button>
           </div>
         </section>
 
-        <div className="z-20 md:p-3 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-default-50/50 backdrop-blur-md bg-opacity-0">
+        <div className="z-20 md:p-3 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl  bg-default-50/70 backdrop-blur-md bg-opacity-0">
           <div className="max-w-7xl mx-auto space-y-8 p-3">
             <Suspense>
               <GetInsight {...currentSurvey} />
@@ -94,7 +94,7 @@ export default function Home() {
         </div>
         <div className="">
           <div
-            className="cursor-pointer tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-start hover:bg-gradient-to-l from-transparent to-default-100 z-10 w-[20vw] absolute top-0 left-0 h-full"
+            className="cursor-pointer tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-start hover:bg-gradient-to-l from-transparent to-default-100 z-10 w-[25vw] absolute top-0 left-0 h-full"
             role="button"
             tabIndex={0}
             onClick={prev}
@@ -105,7 +105,7 @@ export default function Home() {
             PREV
           </div>
           <div
-            className="cursor-pointer tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-end hover:bg-gradient-to-r from-transparent to-default-100 z-10 w-[20vw] absolute top-0 right-0 h-full"
+            className="cursor-pointer tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[75vh] md:pt-[50vh] md:p-6 p-3 flex justify-end hover:bg-gradient-to-r from-transparent to-default-100 z-10 w-[25vw] absolute top-0 right-0 h-full"
             role="button"
             tabIndex={0}
             onClick={next}
