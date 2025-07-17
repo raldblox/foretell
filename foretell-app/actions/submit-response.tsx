@@ -192,17 +192,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
   return (
     <>
-      {(hasResponded || isExpired || isFull) && (
-        <div className="text-danger text-sm">
-          {hasResponded
-            ? "You have already submitted a response to this survey."
-            : isExpired
-              ? "This survey has expired."
-              : isFull
-                ? "This survey has reached the maximum number of responses."
-                : null}
-        </div>
-      )}
       <form className="flex w-full flex-col items-start rounded-md bg-default-50 transition-colors">
         <PromptInput
           classNames={{
@@ -293,6 +282,17 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
           </p>
         </div>
       </form>
+      {(hasResponded || isExpired || isFull) && (
+        <div className="text-danger text-sm">
+          {hasResponded
+            ? "You have already submitted a response to this survey."
+            : isExpired
+              ? "This survey has expired."
+              : isFull
+                ? "This survey has reached the maximum number of responses."
+                : null}
+        </div>
+      )}
     </>
   );
 };

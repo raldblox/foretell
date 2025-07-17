@@ -59,7 +59,7 @@ export default function Navigation(props: NavbarProps) {
           <div className="">
             <Logo />
           </div>
-          <span className="ml-2 text-sm text-foreground">FORETELL</span>
+          {/* <span className="ml-2 text-sm text-foreground">FORETELL</span> */}
         </NavbarBrand>
 
         <NavbarItem className="ml-2 !flex gap-3">
