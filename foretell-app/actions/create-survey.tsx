@@ -51,7 +51,7 @@ export default function CreateSurveyModal({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -169,7 +169,7 @@ export default function CreateSurveyModal({
               <Input
                 isRequired
                 required
-                label="Title"
+                label="Topic"
                 name="title"
                 value={form.title}
                 onChange={handleChange}
@@ -185,7 +185,7 @@ export default function CreateSurveyModal({
                 hideTimeZone
                 isRequired
                 showMonthAndYearPickers
-                label="Expiry (optional)"
+                label="Expiry"
                 name="expiry"
                 value={form.expiry ? parseDate(form.expiry) : null}
                 onChange={handleExpiryChange}
@@ -193,7 +193,7 @@ export default function CreateSurveyModal({
 
               <Input
                 isRequired
-                label="Max Responses (optional)"
+                label="Maximum Responses"
                 name="maxResponses"
                 type="number"
                 value={form.maxResponses}

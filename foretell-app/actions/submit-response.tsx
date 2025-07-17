@@ -30,7 +30,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         {...props}
       />
     );
-  },
+  }
 );
 
 PromptInput.displayName = "PromptInput";
@@ -52,7 +52,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
   const currentSurvey = surveys[idx];
   const hasResponded = currentSurvey?.responses?.some(
-    (r: any) => r.uid === userId,
+    (r: any) => r.uid === userId
   );
   const isExpired =
     currentSurvey?.expiry && new Date() > new Date(currentSurvey.expiry);
@@ -98,10 +98,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     // Use both positive and negative scores to derive a continuous score
     const categories = result.classifications?.[0]?.categories || [];
     const positive = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "positive",
+      (c) => c.categoryName?.toLowerCase() === "positive"
     );
     const negative = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "negative",
+      (c) => c.categoryName?.toLowerCase() === "negative"
     );
 
     let score = 0.5;
@@ -215,7 +215,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                 <Icon
                   className={cn(
                     "[&>path]:stroke-[2px]",
-                    !response ? "text-default-600" : "text-primary-foreground",
+                    !response ? "text-default-600" : "text-primary-foreground"
                   )}
                   icon="solar:arrow-up-linear"
                   width={20}
@@ -238,7 +238,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
         <div className="flex w-full flex-wrap items-center justify-between gap-2 px-3 pb-3">
           <div className="flex flex-wrap gap-3">
             <Button
-              isDisabled={hasResponded || isExpired || isFull}
+              isDisabled={true}
               size="sm"
               startContent={
                 <Icon

@@ -87,7 +87,7 @@ export default function Home() {
 
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row md:p-6 p-3">
             <CreateSurvey />
-            <Button
+            {/* <Button
               className="h-10 w-[163px] border-1 border-default-100 px-[16px] py-[10px] text-small font-medium leading-5"
               endContent={
                 <span className="pointer-events-none flex h-[22px] w-[22px] items-center justify-center rounded-full bg-default-100">
@@ -102,7 +102,7 @@ export default function Home() {
               variant="bordered"
             >
               How it works
-            </Button>
+            </Button> */}
           </div>
         </section>
 
