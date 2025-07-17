@@ -44,14 +44,14 @@ export default function GetInsight(survey: Survey) {
   } = survey;
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
-    rewardPool,
+    rewardPool
   );
   const [codeString, setCodeString] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       setCodeString(
-        `${window.location.origin}${window.location.pathname}?surveyId=${surveyId}`,
+        `${window.location.origin}${window.location.pathname}?surveyId=${surveyId}`
       );
     }
   }, [surveyId]);
@@ -73,15 +73,19 @@ export default function GetInsight(survey: Survey) {
             </p>
             <p className="text-sm text-default-500">{description}</p>
           </div>
-
-          <p className="text-sm text-default-500">
-            Resolves in {maxResponses} responses
-          </p>
         </div>
 
         <SubmitResponse />
         <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-3">
           <div className="flex flex-wrap items-center justify-start gap-2">
+            <Chip
+              className="border-1 text-default-500"
+              size="sm"
+              variant="bordered"
+            >
+              <span className="font-semibold">Resolution:</span> {maxResponses}{" "}
+              responses
+            </Chip>
             <Chip
               className="border-1 text-default-500"
               size="sm"
@@ -109,7 +113,7 @@ export default function GetInsight(survey: Survey) {
           </div>
           <Snippet
             hideSymbol
-            className="pl-4"
+            className="pl-4 w-fit rounded-full"
             codeString={codeString}
             radius="sm"
             size="sm"

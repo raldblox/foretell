@@ -7,7 +7,7 @@ export const dummySurveys: Survey[] = [
     description: "Share your thoughts on the impact of AI this year.",
     createdBy: "user_abc",
     createdAt: new Date().toISOString(),
-    expiry: "2025-06-31T23:59:59Z",
+    expiry: "2025-06-12T23:59:59Z",
     maxResponses: 100,
     responses: [
       {
