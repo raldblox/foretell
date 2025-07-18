@@ -39,7 +39,7 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-dvh text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
         <NextAuthProvider>
@@ -49,8 +49,8 @@ export default function RootLayout({
               <main className="w-full flex flex-col flex-grow">
                 <Suspense>{children}</Suspense>
               </main>
+              <Footer />
             </div>
-            <Footer />
           </Providers>
         </NextAuthProvider>
       </body>

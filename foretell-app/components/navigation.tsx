@@ -18,6 +18,7 @@ import { Icon } from "@iconify/react";
 
 import { Logo } from "./icons";
 import { ThemeSwitch } from "./theme-switch";
+import GradientText from "./GradientText/GradientText";
 
 const menuItems = [
   "About",
@@ -59,7 +60,16 @@ export default function Navigation(props: NavbarProps) {
           <div className="">
             <Logo />
           </div>
-          {/* <span className="ml-2 text-sm text-foreground">FORETELL</span> */}
+          <span>
+            <GradientText
+              className="bg-transparent px-3"
+              animationSpeed={3}
+              colors={["#f31260", "#f5a524", "#17c964", "#f5a524", "#f31260"]}
+              showBorder={false}
+            >
+              FORETELL
+            </GradientText>
+          </span>
         </NavbarBrand>
 
         <NavbarItem className="ml-2 !flex gap-3">
@@ -67,10 +77,11 @@ export default function Navigation(props: NavbarProps) {
           {!session ? (
             <Button
               radius="full"
+              size="sm"
               variant="flat"
               onPress={() => signIn("twitter")}
             >
-              Sign in with
+              Connect
               <Icon className="" icon="hugeicons:new-twitter" width={16} />
             </Button>
           ) : (
@@ -84,6 +95,7 @@ export default function Navigation(props: NavbarProps) {
               // }
               color="danger"
               radius="full"
+              size="sm"
               variant="flat"
               onPress={() => signOut()}
             >
