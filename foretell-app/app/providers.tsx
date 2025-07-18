@@ -24,20 +24,31 @@ export const ContextProvider = ({
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
+  function shuffle(array: any[]) {
+    let arr = array.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
   React.useEffect(() => {
     async function fetchSurveys() {
       const res = await fetch("/api/survey");
+
+      
 
       if (res.ok) {
         const data = await res.json();
 
         if (data.surveys && data.surveys.length > 0) {
-          setSurveys((prev) => [...dummySurveys, ...data.surveys]);
+          setSurveys((prev) => shuffle([...dummySurveys, ...data.surveys]));
         } else {
-          setSurveys(dummySurveys);
+          setSurveys(shuffle(dummySurveys));
         }
       } else {
-        setSurveys(dummySurveys);
+        setSurveys(shuffle(dummySurveys));
       }
     }
     fetchSurveys();

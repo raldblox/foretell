@@ -50,7 +50,16 @@ export default function Home() {
   }, [surveys.length, setSurveys, setIdx]);
 
   useEffect(() => {
-    setSurveys(dummySurveys);
+    // Shuffle surveys before setting
+    function shuffle(array: any[]) {
+      let arr = array.slice();
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+    setSurveys(shuffle(dummySurveys));
   }, []);
 
   const currentSurvey = surveys[idx] || dummySurveys[0];
