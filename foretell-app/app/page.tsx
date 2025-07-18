@@ -35,7 +35,7 @@ export default function Home() {
   useEffect(() => {
     if (!surveyIdFromUrl.current || !surveys.length) return;
     const idxInList = surveys.findIndex(
-      (s: Survey) => s.surveyId === surveyIdFromUrl.current,
+      (s: Survey) => s.surveyId === surveyIdFromUrl.current
     );
 
     if (idxInList > 0) {
@@ -48,19 +48,6 @@ export default function Home() {
       setIdx(0);
     }
   }, [surveys.length, setSurveys, setIdx]);
-
-  useEffect(() => {
-    // Shuffle surveys before setting
-    function shuffle(array: any[]) {
-      let arr = array.slice();
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-    setSurveys(shuffle(dummySurveys));
-  }, []);
 
   const currentSurvey = surveys[idx] || dummySurveys[0];
 
