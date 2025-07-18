@@ -3,7 +3,7 @@
 import type { TextAreaProps } from "@heroui/react";
 
 import React, { useContext } from "react";
-import { Button, Textarea } from "@heroui/react";
+import { addToast, Alert, Button, Textarea } from "@heroui/react";
 import { cn } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
@@ -30,7 +30,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 PromptInput.displayName = "PromptInput";
@@ -52,7 +52,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
   const currentSurvey = surveys[idx];
   const hasResponded = currentSurvey?.responses?.some(
-    (r: any) => r.uid === userId
+    (r: any) => r.uid === userId,
   );
   const isExpired =
     currentSurvey?.expiry && new Date() > new Date(currentSurvey.expiry);
@@ -61,9 +61,20 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     currentSurvey.responses &&
     currentSurvey.responses.length >= currentSurvey.maxResponses;
 
+  // Handle anonymous UID
+  let anonUid = null;
+
+  if (typeof window !== "undefined" && currentSurvey?.allowAnonymity) {
+    anonUid = localStorage.getItem(`anonUid_${currentSurvey.surveyId}`);
+    if (!anonUid) {
+      anonUid = `anon#${Math.random().toString(36).slice(2, 10)}`;
+      localStorage.setItem(`anonUid_${currentSurvey.surveyId}`, anonUid);
+    }
+  }
+
   const submitResponse = async () => {
     if (!response.trim()) return;
-    if (!userId) {
+    if (!userId && !currentSurvey?.allowAnonymity) {
       alert("You must be logged in to submit a response.");
 
       return;
@@ -90,20 +101,17 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
       return;
     }
-
     const result = await classifier.classify(response);
 
     console.log("Classification result:", result);
-
     // Use both positive and negative scores to derive a continuous score
     const categories = result.classifications?.[0]?.categories || [];
     const positive = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "positive"
+      (c) => c.categoryName?.toLowerCase() === "positive",
     );
     const negative = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "negative"
+      (c) => c.categoryName?.toLowerCase() === "negative",
     );
-
     let score = 0.5;
 
     if (positive) {
@@ -111,14 +119,12 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     } else if (negative) {
       score = 1 - negative.score;
     }
-
     // Define neutral range
     let polarity: -1 | 0 | 1 = 0;
 
     if (score > 0.7) polarity = 1;
     else if (score < 0.3) polarity = -1;
     else polarity = 0;
-
     let intensity = 0;
 
     if (polarity === -1) {
@@ -133,7 +139,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     }
     // Create RawEntry
     const RawEntry = {
-      uid: userId,
+      uid: currentSurvey?.allowAnonymity ? anonUid : userId,
       polarity,
       score,
       intensity,
@@ -141,12 +147,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     };
 
     console.log(RawEntry);
-
     // Get the current surveyId
     const surveyId = surveys[idx]?.surveyId;
 
     if (!surveyId) return;
-
     // POST to API
     const res = await fetch("/api/response", {
       method: "POST",
@@ -160,6 +164,12 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
       if (updated.ok) {
         const data = await updated.json();
+
+        addToast({
+          title: "Your response has been recorded.",
+          description: "Thanks for your feedback!",
+          color: "success",
+        });
 
         // Optimistically add the new response to the corresponding survey
         setSurveys((prev: Survey[]) => {
@@ -186,7 +196,12 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       setResponse("");
     } else {
       const data = await res.json();
-      alert(data.error || "Failed to submit response");
+
+      addToast({
+        title: "Failed to submit response.",
+        description: data.error,
+        color: "danger",
+      });
     }
   };
 
@@ -214,7 +229,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                 <Icon
                   className={cn(
                     "[&>path]:stroke-[2px]",
-                    !response ? "text-default-600" : "text-primary-foreground"
+                    !response ? "text-default-600" : "text-primary-foreground",
                   )}
                   icon="solar:arrow-up-linear"
                   width={20}
@@ -282,8 +297,9 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
           </p>
         </div>
       </form>
+
       {(hasResponded || isExpired || isFull) && (
-        <div className="text-danger text-sm">
+        <Alert color="warning">
           {hasResponded
             ? "You have already submitted a response to this survey."
             : isExpired
@@ -291,7 +307,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
               : isFull
                 ? "This survey has reached the maximum number of responses."
                 : null}
-        </div>
+        </Alert>
       )}
     </>
   );

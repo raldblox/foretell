@@ -7,6 +7,7 @@ import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { SessionProvider, useSession } from "next-auth/react";
+import { ToastProvider } from "@heroui/react";
 
 import { Survey } from "@/hooks/useForetell";
 import { dummySurveys } from "@/lib/dummySurvey";
@@ -66,6 +67,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
 
   return (
     <HeroUIProvider navigate={router.push}>
+      <ToastProvider />
       <ContextProvider>
         <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
       </ContextProvider>

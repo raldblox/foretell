@@ -13,6 +13,7 @@ const SurveySchema = z.object({
   expiry: z.string().optional(),
   maxResponses: z.number().int().positive().optional(),
   responses: z.array(z.any()).optional(),
+  allowAnonymity: z.boolean().optional(),
 });
 
 export async function POST(req: NextRequest) {

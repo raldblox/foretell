@@ -14,6 +14,7 @@ import {
   Textarea,
   useDisclosure,
   DatePicker,
+  Switch,
 } from "@heroui/react";
 import { parseDate } from "@internationalized/date";
 
@@ -29,6 +30,7 @@ const SurveySchema = z.object({
   expiry: z.string().optional(),
   maxResponses: z.number().optional(),
   responses: z.array(z.any()).optional(),
+  allowAnonymity: z.boolean().optional(),
 });
 
 export default function CreateSurveyModal({
@@ -45,13 +47,14 @@ export default function CreateSurveyModal({
     description: "",
     expiry: "",
     maxResponses: "",
+    allowAnonymity: false,
   });
   const { setSurveys, setIdx } = useContext(AppContext)!;
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -69,6 +72,10 @@ export default function CreateSurveyModal({
     }
     // If not valid, clear expiry
     setForm({ ...form, expiry: "" });
+  };
+
+  const handleToggleAnonymity = (value: boolean) => {
+    setForm((prev) => ({ ...prev, allowAnonymity: value }));
   };
 
   async function handleSubmit(e: React.FormEvent) {
@@ -89,6 +96,7 @@ export default function CreateSurveyModal({
       expiry: form.expiry ? new Date(form.expiry).toISOString() : undefined,
       maxResponses: form.maxResponses ? Number(form.maxResponses) : undefined,
       responses: [],
+      allowAnonymity: form.allowAnonymity,
     });
 
     if (!parsed.success) {
@@ -128,6 +136,7 @@ export default function CreateSurveyModal({
         description: "",
         expiry: "",
         maxResponses: "",
+        allowAnonymity: false,
       });
       if (onSuccess) onSuccess();
       onClose();
@@ -153,8 +162,9 @@ export default function CreateSurveyModal({
         radius="full"
         onPress={onOpen}
       >
-        Create Survey
+        Create Your Survey
       </Button>
+
       <Modal
         isDismissable
         className="m-6"
@@ -163,7 +173,7 @@ export default function CreateSurveyModal({
         onOpenChange={onOpenChange}
       >
         <ModalContent>
-          <ModalHeader>Create New Survey</ModalHeader>
+          <ModalHeader>Create Your Survey</ModalHeader>
           <ModalBody>
             <form className="flex flex-col gap-3 pb-6" onSubmit={handleSubmit}>
               <Input
@@ -199,6 +209,12 @@ export default function CreateSurveyModal({
                 value={form.maxResponses}
                 onChange={handleChange}
               />
+              <Switch
+                isSelected={form.allowAnonymity}
+                onValueChange={handleToggleAnonymity}
+              >
+                Allow Anonymous Responses
+              </Switch>
               {error && <div className="text-danger text-sm">{error}</div>}
               <Button color="primary" isLoading={loading} type="submit">
                 Create Survey

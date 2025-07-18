@@ -27,6 +27,7 @@ export interface Survey {
   maxResponses?: number;
   responses?: RawEntry[];
   rewardPool?: Reward;
+  allowAnonymity?: boolean;
 }
 export interface SurveyProps {
   question: string;
@@ -34,6 +35,7 @@ export interface SurveyProps {
   surveyData: RawEntry[];
   isLoading?: boolean;
   visibility?: boolean;
+  allowAnonymity?: boolean;
   resolution?: Resolution;
   expiry?: number;
   idx?: number;

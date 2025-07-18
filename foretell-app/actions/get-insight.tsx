@@ -44,14 +44,14 @@ export default function GetInsight(survey: Survey) {
   } = survey;
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
-    rewardPool
+    rewardPool,
   );
   const [codeString, setCodeString] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       setCodeString(
-        `${window.location.origin}${window.location.pathname}?surveyId=${surveyId}`
+        `${window.location.origin}${window.location.pathname}?surveyId=${surveyId}`,
       );
     }
   }, [surveyId]);
@@ -59,10 +59,10 @@ export default function GetInsight(survey: Survey) {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Top Summary */}
-      <section className="md:p-6 p-3 rounded-lg border border-default-200 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-start gap-6 justify-between">
+      <section className="p-6 rounded-lg border border-default-200 space-y-6">
+        <div className="flex flex-col md:flex-row md:items-start gap-x-12 justify-between">
           <div className="flex flex-col gap-2">
-            <p className="text-2xl font-semibold leading-tight">
+            <p className="text-lg md:text-2xl font-semibold leading-tight">
               {title && (
                 <DecryptedText
                   useOriginalCharsOnly
@@ -76,8 +76,8 @@ export default function GetInsight(survey: Survey) {
         </div>
 
         <SubmitResponse />
-        <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-3">
-          <div className="flex flex-wrap items-center justify-start gap-2">
+        <div className="flex flex-col md:flex-row md:items-start justify-between w-full gap-3">
+          <div className="flex flex-wrap max-w-2xl items-start justify-start gap-2">
             <Chip
               className="border-1 text-default-500"
               size="sm"
@@ -85,13 +85,6 @@ export default function GetInsight(survey: Survey) {
             >
               <span className="font-semibold">Resolution:</span> {maxResponses}{" "}
               responses
-            </Chip>
-            <Chip
-              className="border-1 text-default-500"
-              size="sm"
-              variant="bordered"
-            >
-              <span className="font-semibold">Survey ID:</span> {surveyId}
             </Chip>
             <Chip
               className="border-1 text-default-500"
@@ -108,6 +101,11 @@ export default function GetInsight(survey: Survey) {
               >
                 <span className="font-semibold">Expiry:</span>{" "}
                 {new Date(expiry).toLocaleString()}
+              </Chip>
+            )}
+            {survey.allowAnonymity && (
+              <Chip color="primary" size="sm" variant="bordered">
+                Anonymous responses allowed
               </Chip>
             )}
           </div>

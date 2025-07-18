@@ -14,10 +14,10 @@ import {
   Button,
 } from "@heroui/react";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { Icon } from "@iconify/react";
 
 import { Logo } from "./icons";
 import { ThemeSwitch } from "./theme-switch";
-import { Icon } from "@iconify/react";
 
 const menuItems = [
   "About",
@@ -71,16 +71,23 @@ export default function Navigation(props: NavbarProps) {
               onPress={() => signIn("twitter")}
             >
               Sign in with
-              <Icon icon="hugeicons:new-twitter" width={16} className="" />
+              <Icon className="" icon="hugeicons:new-twitter" width={16} />
             </Button>
           ) : (
-            <Button radius="full" variant="flat" onPress={() => signOut()}>
-              {"Sign out"}
-              <Icon
-                icon="majesticons:logout-half-circle"
-                width={20}
-                className="text-danger"
-              />
+            <Button
+              // startContent={
+              //   <Icon
+              //     icon="majesticons:logout-half-circle"
+              //     width={20}
+              //     className="text-danger"
+              //   />
+              // }
+              color="danger"
+              radius="full"
+              variant="flat"
+              onPress={() => signOut()}
+            >
+              Sign out
             </Button>
           )}
         </NavbarItem>
