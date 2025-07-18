@@ -1,6 +1,6 @@
 "use client";
 
-import { Spacer } from "@heroui/react";
+import { Chip, Spacer } from "@heroui/react";
 import React, {
   useState,
   useCallback,
@@ -22,7 +22,8 @@ import { dummySurveys } from "@/lib/dummySurvey";
 export default function Home() {
   const searchParams = useSearchParams();
   const surveyIdFromUrl = useRef<string | null>(null);
-  const { surveys, setSurveys, idx, setIdx, userId } = useContext(AppContext)!;
+  const { surveys, setSurveys, idx, setIdx, bertLoaded } =
+    useContext(AppContext)!;
 
   useEffect(() => {
     const invite = searchParams?.get("surveyId");
@@ -109,9 +110,17 @@ export default function Home() {
           >
             ALL IN ONE $FORETELL
           </GradientText> */}
+          <Chip
+            variant="dot"
+            color={bertLoaded ? "success" : "warning"}
+            radius="full"
+            className="text-xs border-1"
+          >
+            Sentiment Analyzer
+          </Chip>
 
           <div className="flex max-w-2xl flex-col text-center">
-            <h1 className="bg-hero-section-title text-4xl md:text-5xl bg-clip-text font-medium text-balance text-transparent dark:from-[#FFFFFF] dark:to-[#ffffff97]">
+            <h1 className="bg-hero-section-title text-4xl md:text-5xl bg-clip-text font-medium text-balance text-transparent dark:from-[#FFFFFF] dark:to-[#ffffffcd]">
               Surveys, Markets & Rewards in One Foretell
             </h1>
             <Spacer y={4} />
@@ -129,7 +138,7 @@ export default function Home() {
         <div className="z-20 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl ">
           <div className="grid grid-cols-2 opacity-50 border border-default-100 rounded-2xl mb-3 overflow-hidden">
             <div
-              className="w-full flex items-center justify-start p-3 hover:bg-default-100"
+              className="w-full flex items-center justify-start p-3 transition-all hover:bg-gradient-to-l from-transparent to-red-950"
               role="button"
               tabIndex={0}
               onClick={prev}
@@ -148,7 +157,7 @@ export default function Home() {
               <span>PREV</span>
             </div>
             <div
-              className="w-full flex items-center justify-end p-3 hover:bg-default-100"
+              className="w-full flex items-center justify-end p-3 transition-all hover:bg-gradient-to-r from-transparent to-green-950"
               role="button"
               tabIndex={0}
               onClick={next}
@@ -176,7 +185,7 @@ export default function Home() {
         <div className="">
           <div
             ref={prevRef}
-            className={`tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[50vh] md:pt-[50vh] md:p-6 p-3 flex justify-start  z-10 w-[25vw] absolute top-0 left-0 h-full ${hoveredSide === "prev" ? "cursor-none" : "cursor-pointer"}`}
+            className={`tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[50vh] md:pt-[50vh] md:p-6 p-3 flex justify-start z-10 w-[25vw] absolute top-0 left-0 h-full ${hoveredSide === "prev" ? "cursor-none" : "cursor-pointer"}`}
             id="prev"
             role="button"
             tabIndex={0}
@@ -189,7 +198,20 @@ export default function Home() {
             onMouseMove={
               hoveredSide === "prev" ? handlePrevMouseMove : undefined
             }
+            style={{ background: "transparent" }}
           >
+            <motion.div
+              style={{
+                position: "absolute",
+                inset: 0,
+                pointerEvents: "none",
+                background: "linear-gradient(to left, transparent, #be123c33)",
+                zIndex: 0,
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: hoveredSide === "prev" ? 1 : 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+            />
             <AnimatePresence>
               {hoveredSide === "prev" && (
                 <motion.span
@@ -248,7 +270,20 @@ export default function Home() {
             onMouseMove={
               hoveredSide === "next" ? handleNextMouseMove : undefined
             }
+            style={{ background: "transparent" }}
           >
+            <motion.div
+              style={{
+                position: "absolute",
+                inset: 0,
+                pointerEvents: "none",
+                background: "linear-gradient(to right, transparent, #22c55e33)",
+                zIndex: 0,
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: hoveredSide === "next" ? 1 : 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+            />
             <AnimatePresence>
               {hoveredSide === "next" && (
                 <motion.span

@@ -30,7 +30,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         {...props}
       />
     );
-  },
+  }
 );
 
 PromptInput.displayName = "PromptInput";
@@ -46,13 +46,14 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     idx: contextIdx,
     userId,
     setIdx,
+    classifier,
   } = useContext(AppContext)!;
   const idx = propIdx !== undefined ? propIdx : contextIdx;
   const [response, setResponse] = React.useState<string>("");
 
   const currentSurvey = surveys[idx];
   const hasResponded = currentSurvey?.responses?.some(
-    (r: any) => r.uid === userId,
+    (r: any) => r.uid === userId
   );
   const isExpired =
     currentSurvey?.expiry && new Date() > new Date(currentSurvey.expiry);
@@ -94,23 +95,22 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
       return;
     }
-    const classifier = await loadTextClassifier();
 
     if (!classifier) {
       console.error("Text classifier failed to load");
-
       return;
     }
+
     const result = await classifier.classify(response);
 
     console.log("Classification result:", result);
     // Use both positive and negative scores to derive a continuous score
     const categories = result.classifications?.[0]?.categories || [];
     const positive = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "positive",
+      (c: any) => c.categoryName?.toLowerCase() === "positive"
     );
     const negative = categories.find(
-      (c) => c.categoryName?.toLowerCase() === "negative",
+      (c: any) => c.categoryName?.toLowerCase() === "negative"
     );
     let score = 0.5;
 
@@ -187,11 +187,11 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
           return newSurveys;
         });
         // After updating, check if there is a next survey
-        if (idx + 1 < (data.surveys?.length || 0)) {
-          setIdx(idx + 1);
-        } else {
-          setIdx(0);
-        }
+        // if (idx + 1 < (data.surveys?.length || 0)) {
+        //   setIdx(idx + 1);
+        // } else {
+        //   setIdx(0);
+        // }
       }
       setResponse("");
     } else {
@@ -229,7 +229,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                 <Icon
                   className={cn(
                     "[&>path]:stroke-[2px]",
-                    !response ? "text-default-600" : "text-primary-foreground",
+                    !response ? "text-default-600" : "text-primary-foreground"
                   )}
                   icon="solar:arrow-up-linear"
                   width={20}

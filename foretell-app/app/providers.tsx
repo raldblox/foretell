@@ -11,6 +11,7 @@ import { ToastProvider } from "@heroui/react";
 
 import { Survey } from "@/hooks/useForetell";
 import { dummySurveys } from "@/lib/dummySurvey";
+import { loadTextClassifier } from "@/text-classify";
 
 export const AppContext = React.createContext<any | undefined>(undefined);
 
@@ -21,8 +22,11 @@ export const ContextProvider = ({
 }) => {
   const [surveys, setSurveys] = React.useState<Survey[]>(dummySurveys);
   const [idx, setIdx] = React.useState(0);
+  const [bertLoaded, setBertLoaded] = React.useState(false);
+  const [classifier, setClassifier] = React.useState<any>(null)
   const { data: session } = useSession();
   const userId = session?.user?.id;
+  
 
   function shuffle(array: any[]) {
     let arr = array.slice();
@@ -36,8 +40,6 @@ export const ContextProvider = ({
   React.useEffect(() => {
     async function fetchSurveys() {
       const res = await fetch("/api/survey");
-
-      
 
       if (res.ok) {
         const data = await res.json();
@@ -54,7 +56,20 @@ export const ContextProvider = ({
     fetchSurveys();
   }, []);
 
-  const value: any = { surveys, setSurveys, idx, setIdx, userId };
+  
+  React.useEffect(() => {
+    async function loadBert() {
+      const classifier = await loadTextClassifier();
+      if (classifier) {
+        setBertLoaded(true);
+        setClassifier(classifier);
+      }
+    }
+
+    loadBert();
+  }, []);
+
+  const value: any = { surveys, setSurveys, idx, setIdx, userId, bertLoaded,classifier };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
