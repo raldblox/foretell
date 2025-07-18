@@ -5,15 +5,15 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="w-full flex border-t border-default-100 items-center justify-center py-6">
+    <footer className="w-full z-50 flex pt-12 border-t bg-background/50 border-default-100 items-center justify-center py-6">
       <Link
         isExternal
-        className="flex items-center gap-1 text-current"
+        className="flex items-center gap-1 font-bold text-default-800"
         href="https://onchainsupply.net"
         title="heroui.com homepage"
       >
-        <span className="text-default-600">Powered by</span>
-        <p className="">onchainsupply</p>
+        Foretell -
+        <span className="text-default-600">Powered by OnChainSupply</span>
       </Link>
     </footer>
   );

@@ -138,7 +138,7 @@ export default function Home() {
         <div className="z-20 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl ">
           <div className="grid grid-cols-2 opacity-50 border border-default-100 rounded-2xl mb-3 overflow-hidden">
             <div
-              className="w-full flex items-center justify-start p-3 transition-all hover:bg-gradient-to-l from-transparent to-red-950"
+              className="w-full flex items-center justify-start p-3 transition-all cursor-pointer hover:bg-gradient-to-l from-transparent to-red-950"
               role="button"
               tabIndex={0}
               onClick={prev}
@@ -157,7 +157,7 @@ export default function Home() {
               <span>PREV</span>
             </div>
             <div
-              className="w-full flex items-center justify-end p-3 transition-all hover:bg-gradient-to-r from-transparent to-green-950"
+              className="w-full flex items-center justify-end p-3 transition-all cursor-pointer hover:bg-gradient-to-r from-transparent to-green-950"
               role="button"
               tabIndex={0}
               onClick={next}
