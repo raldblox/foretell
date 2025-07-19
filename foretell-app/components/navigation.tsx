@@ -57,10 +57,8 @@ export default function Navigation(props: NavbarProps) {
 
         {/* Logo */}
         <NavbarBrand className="mr-2 md:w-auto md:max-w-full flex items-center">
-          <div className="">
+          <Link href="/" className="text-foreground">
             <Logo />
-          </div>
-          <span>
             <GradientText
               className="bg-transparent px-3"
               animationSpeed={3}
@@ -69,7 +67,7 @@ export default function Navigation(props: NavbarProps) {
             >
               FORETELL
             </GradientText>
-          </span>
+          </Link>
         </NavbarBrand>
 
         <NavbarItem className="ml-2 !flex gap-3">

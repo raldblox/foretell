@@ -16,7 +16,7 @@ import {
 } from "recharts";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/theme";
-import { Chip, Snippet } from "@heroui/react";
+import { Chip, Snippet, Button } from "@heroui/react";
 
 import SubmitResponse from "./submit-response";
 
@@ -30,8 +30,10 @@ import {
 } from "@/hooks/useForetell";
 import DecryptedText from "@/components/DecryptedText/DecryptedText";
 import { RewardTable } from "@/components/reward-table";
+import { signIn, useSession } from "next-auth/react";
 
 export default function GetInsight(survey: Survey) {
+  const { data: session } = useSession();
   const {
     title,
     rewardPool,
@@ -104,7 +106,12 @@ export default function GetInsight(survey: Survey) {
               </Chip>
             )}
             {survey.allowAnonymity && (
-              <Chip color="primary" size="sm" variant="bordered">
+              <Chip
+                className="border-1"
+                color="primary"
+                size="sm"
+                variant="bordered"
+              >
                 Anonymous responses allowed
               </Chip>
             )}
@@ -320,10 +327,30 @@ export default function GetInsight(survey: Survey) {
           </ResponsiveContainer>
         </section>
 
-        {/* User Table */}
-        <section className="md:p-6 p-3 rounded-lg border border-default-200 overflow-x-auto">
-          <h2 className="text-xl font-medium mb-4">Responses</h2>
-          <RewardTable data={processed} isLoading={false} />
+        {/* Connect X Button */}
+        <section className="md:p-6 p-3 rounded-lg border border-default-200">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl text-left font-medium">Responses</h2>
+            {!session && (
+              <Button
+                className="w-fit"
+                color="default"
+                variant="flat"
+                radius="full"
+                size="sm"
+                onPress={() => signIn("twitter")}
+              >
+                Connect <Icon icon="hugeicons:new-twitter" width={16} /> to view
+                responses
+              </Button>
+            )}
+          </div>
+
+          {session && (
+            <div className="mt-4">
+              <RewardTable data={processed} isLoading={false} />
+            </div>
+          )}
         </section>
       </>
     </div>

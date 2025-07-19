@@ -9,7 +9,7 @@ import React, {
   useContext,
   Suspense,
 } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 
 import { AppContext } from "./providers";
@@ -21,17 +21,26 @@ import { dummySurveys } from "@/lib/dummySurvey";
 
 export default function Home() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const surveyIdFromUrl = useRef<string | null>(null);
+  const [showHero, setShowHero] = useState(true);
   const { surveys, setSurveys, idx, setIdx, bertLoaded } =
     useContext(AppContext)!;
 
   useEffect(() => {
     const invite = searchParams?.get("surveyId");
+    console.log("URL params:", { invite, pathname, showHero: showHero });
 
     if (invite) {
       surveyIdFromUrl.current = invite;
+      setShowHero(false);
+      console.log("Setting showHero to false due to surveyId");
+    } else {
+      surveyIdFromUrl.current = null;
+      setShowHero(true);
+      console.log("Setting showHero to true - no surveyId");
     }
-  }, [searchParams]);
+  }, [searchParams, pathname]);
 
   useEffect(() => {
     if (!surveyIdFromUrl.current || !surveys.length) return;
@@ -98,11 +107,21 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
+  console.log("Current state:", {
+    showHero,
+    pathname,
+    surveyId: surveyIdFromUrl.current,
+  });
+
   return (
     <>
       <main className="flex flex-col items-center rounded-2xl md:rounded-3xl md:px-0">
-        <section className="container mb-12 py-12 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6">
-          {/* <GradientText
+        {showHero && (
+          <section
+            id="hero"
+            className="container mb-12 py-12 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6"
+          >
+            {/* <GradientText
             animationSpeed={3}
             className="border-1 border-default-100 px-[18px] py-2 text-small font-normal leading-5 rounded-full"
             colors={["#f31260", "#f5a524", "#17c964", "#f5a524", "#f31260"]}
@@ -110,30 +129,31 @@ export default function Home() {
           >
             ALL IN ONE $FORETELL
           </GradientText> */}
-          <Chip
-            variant="dot"
-            color={bertLoaded ? "success" : "warning"}
-            radius="full"
-            className="text-xs border-1"
-          >
-            Sentiment Analyzer
-          </Chip>
+            <Chip
+              variant="dot"
+              color={bertLoaded ? "success" : "warning"}
+              radius="full"
+              className="text-xs border-1"
+            >
+              Sentiment Analyzer
+            </Chip>
 
-          <div className="flex max-w-2xl flex-col text-center">
-            <h1 className="bg-hero-section-title text-4xl md:text-5xl bg-clip-text font-medium text-balance text-transparent dark:from-[#FFFFFF] dark:to-[#ffffffcd]">
-              Surveys, Markets & Rewards in One Foretell
-            </h1>
-            <Spacer y={4} />
-            <h2 className="text-large text-default-500 text-balance">
-              Ask any question, open a live 3-way market, and automatically
-              distribute your reward pool—no extra tools required.
-            </h2>
-            <Spacer y={4} />
-            <div className="flex w-full justify-center gap-2">
-              <CreateSurvey />
+            <div className="flex max-w-2xl flex-col text-center">
+              <h1 className="bg-hero-section-title text-4xl md:text-5xl bg-clip-text font-medium text-balance text-transparent dark:from-[#FFFFFF] dark:to-[#ffffffcd]">
+                Surveys, Markets & Rewards in One Foretell
+              </h1>
+              <Spacer y={4} />
+              <h2 className="text-large text-default-500 text-balance">
+                Ask any question, open a live 3-way market, and automatically
+                distribute your reward pool—no extra tools required.
+              </h2>
+              <Spacer y={4} />
+              <div className="flex w-full justify-center gap-2">
+                <CreateSurvey />
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <div className="z-20 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl ">
           <div className="grid grid-cols-2 opacity-50 border border-default-100 rounded-2xl mb-3 overflow-hidden">

@@ -67,10 +67,7 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
                     item.score
                   )
                 ) : columnKey === "answer" ? (
-                  <ScrollShadow
-                    className="w-40 whitespace-nowrap"
-                    orientation="horizontal"
-                  >
+                  <ScrollShadow className="" orientation="horizontal">
                     {(item as any)[columnKey]}
                   </ScrollShadow>
                 ) : columnKey === "uid" ? (
