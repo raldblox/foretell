@@ -2,7 +2,7 @@
 
 import type { NavbarProps } from "@heroui/react";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -12,14 +12,15 @@ import {
   NavbarMenuItem,
   Link,
   Button,
+  addToast,
 } from "@heroui/react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, signOut, useSession, getCsrfToken } from "next-auth/react";
 import { Icon } from "@iconify/react";
 
 import { Logo } from "./icons";
 import { ThemeSwitch } from "./theme-switch";
 import GradientText from "./GradientText/GradientText";
-import { useProfile } from "@farcaster/auth-kit";
+import { useProfile, SignInButton } from "@farcaster/auth-kit";
 import {
   useMiniKit,
   useNotification,
@@ -40,10 +41,9 @@ const menuItems = [
 export default function Navigation(props: NavbarProps) {
   // TWITtER AUTH //
   const { data: session } = useSession();
-  const { profile } = useProfile();
   const { isFrameReady: isCoinbase } = useMiniKit();
   const [isFarcasterFrame, setIsFarcasterFrame] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   // Detect Farcaster frame on mount (client-side only)
   useEffect(() => {
@@ -57,10 +57,44 @@ export default function Navigation(props: NavbarProps) {
     }
   }, []);
 
+  // Get nonce for Farcaster sign-in
+  const getNonce = useCallback(async () => {
+    const nonce = await getCsrfToken();
+    if (!nonce) throw new Error("Unable to generate nonce");
+    return nonce;
+  }, []);
+
+  // Handle Farcaster sign-in success
+  const handleFarcasterSuccess = useCallback((res: any) => {
+    signIn("credentials", {
+      message: res.message,
+      signature: res.signature,
+      name: res.username,
+      pfp: res.pfpUrl,
+      redirect: false,
+    });
+    addToast({
+      title: "Farcaster is connected!",
+      description: `UID: ${res.fid}`,
+      color: "secondary",
+    });
+  }, []);
+
   // Render logic
   let connectButton = null;
-  if (isCoinbase) {
-    // Only show Coinbase connect (TODO: add connect logic if available)
+  if (session) {
+    connectButton = (
+      <Button
+        color="danger"
+        radius="full"
+        size="sm"
+        variant="flat"
+        onPress={() => signOut()}
+      >
+        Sign out
+      </Button>
+    );
+  } else if (isCoinbase) {
     connectButton = (
       <Button
         radius="full"
@@ -71,32 +105,19 @@ export default function Navigation(props: NavbarProps) {
         Connect Coinbase
       </Button>
     );
-  } else if (isFarcasterFrame && profile && !profile.fid) {
-    // Only show Farcaster connect if in Farcaster frame
+  } else if (isFarcasterFrame) {
     connectButton = (
-      <Button
-        radius="full"
-        size="sm"
-        variant="flat"
-        disabled
-        // TODO: Add connect logic when available
-      >
-        Connect Farcaster
-      </Button>
-    );
-  } else if (isFarcasterFrame && profile && profile.fid) {
-    connectButton = (
-      <Button
-        radius="full"
-        size="sm"
-        variant="flat"
-      >
-        {profile?.username || "Farcaster User"}
-      </Button>
+      <>
+        <SignInButton
+          nonce={getNonce}
+          onSuccess={handleFarcasterSuccess}
+          onError={() => setError(true)}
+        />
+        {error && <div>Unable to sign in with Farcaster at this time.</div>}
+      </>
     );
   } else {
-    // Fallback to Twitter
-    connectButton = !session ? (
+    connectButton = (
       <Button
         radius="full"
         size="sm"
@@ -105,16 +126,6 @@ export default function Navigation(props: NavbarProps) {
       >
         Connect
         <Icon className="" icon="hugeicons:new-twitter" width={16} />
-      </Button>
-    ) : (
-      <Button
-        color="danger"
-        radius="full"
-        size="sm"
-        variant="flat"
-        onPress={() => signOut()}
-      >
-        Sign out
       </Button>
     );
   }

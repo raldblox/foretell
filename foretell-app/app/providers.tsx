@@ -21,8 +21,8 @@ import { SignInButton } from "@farcaster/auth-kit";
 
 const farcasterConfig = {
   rpcUrl: "https://mainnet.optimism.io",
-  domain: "example.com",
-  siweUri: "https://example.com/login",
+  domain: "foretell.one",
+  siweUri: "https://foretell.one/login",
 };
 
 export const AppContext = React.createContext<any | undefined>(undefined);
