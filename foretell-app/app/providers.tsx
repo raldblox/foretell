@@ -12,6 +12,8 @@ import { ToastProvider } from "@heroui/react";
 import { Survey } from "@/hooks/useForetell";
 import { dummySurveys } from "@/lib/dummySurvey";
 import { loadTextClassifier } from "@/text-classify";
+import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
+import { base } from "viem/chains";
 
 export const AppContext = React.createContext<any | undefined>(undefined);
 
@@ -23,10 +25,9 @@ export const ContextProvider = ({
   const [surveys, setSurveys] = React.useState<Survey[]>(dummySurveys);
   const [idx, setIdx] = React.useState(0);
   const [bertLoaded, setBertLoaded] = React.useState(false);
-  const [classifier, setClassifier] = React.useState<any>(null)
+  const [classifier, setClassifier] = React.useState<any>(null);
   const { data: session } = useSession();
   const userId = session?.user?.id;
-  
 
   function shuffle(array: any[]) {
     let arr = array.slice();
@@ -50,10 +51,11 @@ export const ContextProvider = ({
           const filteredSurveys = data.surveys.filter((survey: Survey) => {
             // Check if survey is discoverable (true or undefined)
             const isDiscoverable = survey.discoverable !== false;
-            
+
             // Check if survey is not expired
-            const isNotExpired = !survey.expiry || new Date(survey.expiry) > now;
-            
+            const isNotExpired =
+              !survey.expiry || new Date(survey.expiry) > now;
+
             return isDiscoverable && isNotExpired;
           });
 
@@ -68,7 +70,6 @@ export const ContextProvider = ({
     fetchSurveys();
   }, []);
 
-  
   React.useEffect(() => {
     async function loadBert() {
       const classifier = await loadTextClassifier();
@@ -81,7 +82,15 @@ export const ContextProvider = ({
     loadBert();
   }, []);
 
-  const value: any = { surveys, setSurveys, idx, setIdx, userId, bertLoaded,classifier };
+  const value: any = {
+    surveys,
+    setSurveys,
+    idx,
+    setIdx,
+    userId,
+    bertLoaded,
+    classifier,
+  };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
@@ -104,12 +113,17 @@ export function Providers({ children, themeProps }: ProvidersProps) {
   const router = useRouter();
 
   return (
-    <HeroUIProvider navigate={router.push}>
-      <ToastProvider />
-      <ContextProvider>
-        <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
-      </ContextProvider>
-    </HeroUIProvider>
+    <MiniKitProvider
+      apiKey={process.env.NEXT_PUBLIC_CDP_CLIENT_API_KEY}
+      chain={base}
+    >
+      <HeroUIProvider navigate={router.push}>
+        <ToastProvider />
+        <ContextProvider>
+          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+        </ContextProvider>
+      </HeroUIProvider>
+    </MiniKitProvider>
   );
 }
 

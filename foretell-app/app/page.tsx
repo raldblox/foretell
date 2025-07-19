@@ -18,8 +18,10 @@ import { Survey } from "@/hooks/useForetell";
 import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
 import { dummySurveys } from "@/lib/dummySurvey";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 export default function Home() {
+  const { setFrameReady, isFrameReady } = useMiniKit();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const surveyIdFromUrl = useRef<string | null>(null);
@@ -58,6 +60,12 @@ export default function Home() {
       setIdx(0);
     }
   }, [surveys.length, setSurveys, setIdx]);
+
+  useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+    }
+  }, [setFrameReady, isFrameReady]);
 
   const currentSurvey = surveys[idx] || dummySurveys[0];
 
@@ -107,19 +115,13 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  console.log("Current state:", {
-    showHero,
-    pathname,
-    surveyId: surveyIdFromUrl.current,
-  });
-
   return (
     <>
       <main className="flex flex-col items-center rounded-2xl md:rounded-3xl md:px-0">
         {showHero && (
           <section
             id="hero"
-            className="container mb-12 py-12 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6"
+            className="container py-12 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6"
           >
             {/* <GradientText
             animationSpeed={3}

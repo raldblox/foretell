@@ -1,0 +1,30 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjkxNTIsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgwMmVmNzkwRGQ3OTkzQTM1ZkQ4NDdDMDUzRURkQUU5NDBEMDU1NTk2In0",
+    "payload": "eyJkb21haW4iOiJyZXdhcmRzLndhcnBjYXN0LmNvbSJ9",
+    "signature": "MHgxMGQwZGU4ZGYwZDUwZTdmMGIxN2YxMTU2NDI1MjRmZTY0MTUyZGU4ZGU1MWU0MThiYjU4ZjVmZmQxYjRjNDBiNGVlZTRhNDcwNmVmNjhlMzQ0ZGQ5MDBkYmQyMmNlMmVlZGY5ZGQ0N2JlNWRmNzMwYzUxNjE4OWVjZDJjY2Y0MDFj"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Foretell Mini App",
+    "iconUrl": "https://foretell.one/app.png",
+    "splashImageUrl": "https://foretell.one/logo.png",
+    "splashBackgroundColor": "#000000",
+    "homeUrl": "https://foretell.one",
+    "webhookUrl": "https://foretell.one/api/webhook",
+    "subtitle": "It's foretelling time",
+    "description": "Online surveys and markets",
+    "screenshotUrls": [
+      "https://foretell.one/app.png",
+      "https://foretell.one/app.png",
+      "https://foretell.one/app.png"
+    ],
+    "primaryCategory": "social",
+    "tags": ["example", "mini app", "coinbase wallet"],
+    "heroImageUrl": "https://foretell.one/app.png",
+    "tagline": "Foretell Mini App tagline",
+    "ogTitle": "Foretell Mini App",
+    "ogDescription": "It's foretelling time!",
+    "ogImageUrl": "https://foretell.one/app.png"
+  }
+}

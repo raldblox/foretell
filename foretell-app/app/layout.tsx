@@ -10,15 +10,38 @@ import { fontSans } from "@/config/fonts";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 
-export const metadata: Metadata = {
-  title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-  icons: {
-    icon: "/favicon.ico",
-  },
+// export const metadata: Metadata = {
+//   title: {
+//     default: siteConfig.name,
+//     template: `%s - ${siteConfig.name}`,
+//   },
+//   description: siteConfig.description,
+//   icons: {
+//     icon: "/favicon.ico",
+//   },
+// };
+
+export const generateMetadata = (): Metadata => {
+  return {
+    title: "Foretell",
+    description: "Tell us what is fore",
+    other: {
+      "fc:frame": JSON.stringify({
+        version: process.env.NEXT_PUBLIC_VERSION,
+        imageUrl: process.env.NEXT_PUBLIC_IMAGE_URL,
+        button: {
+          title: `Launch ${process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME}`,
+          action: {
+            type: "launch_frame",
+            name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
+            url: URL,
+            splashImageUrl: process.env.NEXT_PUBLIC_SPLASH_IMAGE_URL,
+            splashBackgroundColor: `#${process.env.NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR}`,
+          },
+        },
+      }),
+    },
+  };
 };
 
 export const viewport: Viewport = {
