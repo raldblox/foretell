@@ -13,6 +13,7 @@ import {
   Link,
   Button,
   addToast,
+  Image,
 } from "@heroui/react";
 import { signIn, signOut, useSession, getCsrfToken } from "next-auth/react";
 import { Icon } from "@iconify/react";
@@ -26,7 +27,7 @@ import {
   useNotification,
   useViewProfile,
 } from "@coinbase/onchainkit/minikit";
-import { sdk } from '@farcaster/miniapp-sdk';
+import { sdk } from "@farcaster/miniapp-sdk";
 
 const menuItems = [
   "About",
@@ -45,7 +46,7 @@ export default function Navigation(props: NavbarProps) {
   const { isFrameReady: isCoinbase } = useMiniKit();
   const [isMiniApp, setIsMiniApp] = useState(false);
   const [miniAppFid, setMiniAppFid] = useState<string | null>(null);
-  
+
   useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
@@ -54,7 +55,9 @@ export default function Navigation(props: NavbarProps) {
           setIsMiniApp(result);
           if (result) {
             const context = await sdk.context;
-            setMiniAppFid(context?.user?.fid ? context.user.fid.toString() : null);
+            setMiniAppFid(
+              context?.user?.fid ? context.user.fid.toString() : null
+            );
           }
         } catch {}
       }
@@ -80,9 +83,18 @@ export default function Navigation(props: NavbarProps) {
       <div className="flex items-center gap-2">
         <Button radius="full" size="sm" variant="flat" disabled>
           {(() => {
-            if (provider === "twitter") return <Icon icon="hugeicons:new-twitter" width={16} className="mr-1" />;
-            if (provider === "farcaster") return <Icon icon="mdi:castle" width={16} className="mr-1" />;
-            if (provider === "coinbase") return <Icon icon="mdi:coin" width={16} className="mr-1" />;
+            if (provider === "twitter")
+              return (
+                <Icon
+                  icon="hugeicons:new-twitter"
+                  width={16}
+                  className="mr-1"
+                />
+              );
+            if (provider === "farcaster")
+              return <Icon icon="mdi:castle" width={16} className="mr-1" />;
+            if (provider === "coinbase")
+              return <Icon icon="mdi:coin" width={16} className="mr-1" />;
             return null;
           })()}
           {nameOrId}
@@ -117,8 +129,8 @@ export default function Navigation(props: NavbarProps) {
           }
         }}
       >
-        <Icon icon="mdi:castle" width={18} className="mr-1" />
-       {miniAppFid}
+        <Image src="/farcaster.svg" width={18} height={18} alt="Farcaster" />
+        {miniAppFid}
       </Button>
     ) : (
       <Button
@@ -130,14 +142,17 @@ export default function Navigation(props: NavbarProps) {
           try {
             const nonce = await getCsrfToken();
             if (!nonce) throw new Error("Unable to generate nonce");
-            const result = await sdk.actions.signIn({ nonce, acceptAuthAddress: true });
+            const result = await sdk.actions.signIn({
+              nonce,
+              acceptAuthAddress: true,
+            });
             addToast({
               title: "Farcaster sign-in initiated",
               description: "Check your Farcaster app for the sign-in prompt.",
               color: "success",
             });
           } catch (error: any) {
-            if (error.name === 'RejectedByUser') {
+            if (error.name === "RejectedByUser") {
               addToast({
                 title: "Sign-in rejected",
                 description: "You rejected the sign-in request.",
@@ -153,7 +168,6 @@ export default function Navigation(props: NavbarProps) {
           }
         }}
       >
-        <Icon icon="mdi:castle" width={18} className="mr-1" />
         Connect Farcaster
       </Button>
     );
@@ -171,7 +185,7 @@ export default function Navigation(props: NavbarProps) {
         Connect Coinbase (coming soon)
       </Button>
     );
-  }  else {
+  } else {
     connectButton = (
       <Button
         radius="full"
@@ -179,26 +193,29 @@ export default function Navigation(props: NavbarProps) {
         variant="flat"
         className="flex items-center gap-2"
         onPress={() => signIn("twitter", { callbackUrl: "/" })}
-        onContextMenu={e => {
+        onContextMenu={(e) => {
           e.preventDefault();
           window.location.href = "/login";
         }}
-        onPointerDown={e => {
+        onPointerDown={(e) => {
           if (e.pointerType === "touch") {
             (e.target as HTMLElement).setAttribute("data-longpress", "start");
             setTimeout(() => {
-              if ((e.target as HTMLElement).getAttribute("data-longpress") === "start") {
+              if (
+                (e.target as HTMLElement).getAttribute("data-longpress") ===
+                "start"
+              ) {
                 window.location.href = "/login";
               }
             }, 500);
           }
         }}
-        onPointerUp={e => {
+        onPointerUp={(e) => {
           if (e.pointerType === "touch") {
             (e.target as HTMLElement).removeAttribute("data-longpress");
           }
         }}
-      >        
+      >
         Connect
         <Icon icon="hugeicons:new-twitter" width={18} className="mr-1" />
       </Button>
