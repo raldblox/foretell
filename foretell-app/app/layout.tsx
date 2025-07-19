@@ -28,13 +28,12 @@ export const generateMetadata = (): Metadata => {
     other: {
       "fc:frame": JSON.stringify({
         version: "1",
-        imageUrl: "",
+        imageUrl: "https://foretell.one/image.png",
         button: {
           title: "Launch Foretell",
           action: {
             type: "launch_frame",
             name: "Foretell",
-            url: "https://foretell.one",
             splashImageUrl: "https://foretell.one/app.png",
             splashBackgroundColor: "#000000",
           },
@@ -42,13 +41,12 @@ export const generateMetadata = (): Metadata => {
       }),
       "fc:miniapp": JSON.stringify({
         version: "1",
-        imageUrl: "",
+        imageUrl: "https://foretell.one/image.png",
         button: {
           title: "Launch Foretell",
           action: {
             type: "launch_miniapp",
             name: "Foretell",
-            url: "https://foretell.one",
             splashImageUrl: "https://foretell.one/app.png",
             splashBackgroundColor: "#000000",
           },
