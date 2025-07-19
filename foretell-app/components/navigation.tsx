@@ -116,43 +116,46 @@ export default function Navigation(props: NavbarProps) {
         <NavbarItem className="ml-2 !flex gap-3">
           <ThemeSwitch />
 
-          {isFrameReady && (
+          {isFrameReady && fid ? (
             <Button
               radius="full"
               size="sm"
               variant="flat"
               onPress={handleViewProfile}
             >
-              Profile
-            </Button>
-          )}
-          {!session ? (
-            <Button
-              radius="full"
-              size="sm"
-              variant="flat"
-              onPress={() => signIn("twitter")}
-            >
-              Connect
-              <Icon className="" icon="hugeicons:new-twitter" width={16} />
+              {username}
             </Button>
           ) : (
-            <Button
-              // startContent={
-              //   <Icon
-              //     icon="majesticons:logout-half-circle"
-              //     width={20}
-              //     className="text-danger"
-              //   />
-              // }
-              color="danger"
-              radius="full"
-              size="sm"
-              variant="flat"
-              onPress={() => signOut()}
-            >
-              Sign out
-            </Button>
+            <>
+              {!session ? (
+                <Button
+                  radius="full"
+                  size="sm"
+                  variant="flat"
+                  onPress={() => signIn("twitter")}
+                >
+                  Connect
+                  <Icon className="" icon="hugeicons:new-twitter" width={16} />
+                </Button>
+              ) : (
+                <Button
+                  // startContent={
+                  //   <Icon
+                  //     icon="majesticons:logout-half-circle"
+                  //     width={20}
+                  //     className="text-danger"
+                  //   />
+                  // }
+                  color="danger"
+                  radius="full"
+                  size="sm"
+                  variant="flat"
+                  onPress={() => signOut()}
+                >
+                  Sign out
+                </Button>
+              )}
+            </>
           )}
         </NavbarItem>
       </NavbarContent>
