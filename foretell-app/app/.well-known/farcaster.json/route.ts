@@ -3,9 +3,11 @@ export async function GET() {
 
   return Response.json({
     accountAssociation: {
-      header: process.env.FARCASTER_HEADER,
-      payload: process.env.FARCASTER_PAYLOAD,
-      signature: process.env.FARCASTER_SIGNATURE,
+      header:
+        "eyJmaWQiOjQ1OTA4OSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweGFCODVFYzIxQzlmRDQ4M2I5QUM3ODg0QTg0MjBEYjkyQ2IzNUZmMWIifQ",
+      payload: "eyJkb21haW4iOiJmb3JldGVsbC5vbmUifQ",
+      signature:
+        "MHhkOWQ1OGQwYzg5YjgxMjliMDRjY2MzMmFkYjA1ZTk0NWZjNzliOGZmMWE5ZmYxODBhNjIyYjYxZjVjY2RlMjBkNjFlZTM3NjFlNWM5ZGMyY2E2ZDY5ZjE1NzkzNTRiN2ViNWVjZDk4NWE3OGUwOTU5ZjM1MDE0ZTU5ZjE1NDNmMDFj",
     },
     frame: {
       name: "Foretell",
