@@ -2,7 +2,7 @@
 
 import type { NavbarProps } from "@heroui/react";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -40,13 +40,86 @@ const menuItems = [
 export default function Navigation(props: NavbarProps) {
   // TWITtER AUTH //
   const { data: session } = useSession();
+  const { profile } = useProfile();
+  const { isFrameReady: isCoinbase } = useMiniKit();
+  const [isFarcasterFrame, setIsFarcasterFrame] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Detect Farcaster frame on mount (client-side only)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        // @ts-ignore
+        if (typeof window.frameContext === "string" || typeof window.farcaster === "object") {
+          setIsFarcasterFrame(true);
+        }
+      } catch {}
+    }
+  }, []);
+
+  // Render logic
+  let connectButton = null;
+  if (isCoinbase) {
+    // Only show Coinbase connect (TODO: add connect logic if available)
+    connectButton = (
+      <Button
+        radius="full"
+        size="sm"
+        variant="flat"
+        // onPress={connectCoinbase} // Not available in current hook
+      >
+        Connect Coinbase
+      </Button>
+    );
+  } else if (isFarcasterFrame && profile && !profile.fid) {
+    // Only show Farcaster connect if in Farcaster frame
+    connectButton = (
+      <Button
+        radius="full"
+        size="sm"
+        variant="flat"
+        disabled
+        // TODO: Add connect logic when available
+      >
+        Connect Farcaster
+      </Button>
+    );
+  } else if (isFarcasterFrame && profile && profile.fid) {
+    connectButton = (
+      <Button
+        radius="full"
+        size="sm"
+        variant="flat"
+      >
+        {profile?.username || "Farcaster User"}
+      </Button>
+    );
+  } else {
+    // Fallback to Twitter
+    connectButton = !session ? (
+      <Button
+        radius="full"
+        size="sm"
+        variant="flat"
+        onPress={() => signIn("twitter")}
+      >
+        Connect
+        <Icon className="" icon="hugeicons:new-twitter" width={16} />
+      </Button>
+    ) : (
+      <Button
+        color="danger"
+        radius="full"
+        size="sm"
+        variant="flat"
+        onPress={() => signOut()}
+      >
+        Sign out
+      </Button>
+    );
+  }
 
   // FARCASTER FRAMES //
-
-  const {
-    isAuthenticated,
-    profile: { username, fid },
-  } = useProfile(); // farcaster
 
   const viewProfile = useViewProfile();
 
@@ -115,48 +188,7 @@ export default function Navigation(props: NavbarProps) {
 
         <NavbarItem className="ml-2 !flex gap-3">
           <ThemeSwitch />
-
-          {isFrameReady && fid ? (
-            <Button
-              radius="full"
-              size="sm"
-              variant="flat"
-              onPress={handleViewProfile}
-            >
-              {username}
-            </Button>
-          ) : (
-            <>
-              {!session ? (
-                <Button
-                  radius="full"
-                  size="sm"
-                  variant="flat"
-                  onPress={() => signIn("twitter")}
-                >
-                  Connect
-                  <Icon className="" icon="hugeicons:new-twitter" width={16} />
-                </Button>
-              ) : (
-                <Button
-                  // startContent={
-                  //   <Icon
-                  //     icon="majesticons:logout-half-circle"
-                  //     width={20}
-                  //     className="text-danger"
-                  //   />
-                  // }
-                  color="danger"
-                  radius="full"
-                  size="sm"
-                  variant="flat"
-                  onPress={() => signOut()}
-                >
-                  Sign out
-                </Button>
-              )}
-            </>
-          )}
+          {connectButton}
         </NavbarItem>
       </NavbarContent>
 
