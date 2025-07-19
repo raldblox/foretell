@@ -78,8 +78,18 @@ export default function GetInsight(survey: Survey) {
         </div>
 
         <SubmitResponse />
-        <div className="flex flex-col md:flex-row md:items-start justify-between w-full gap-3">
+        <div className="flex flex-col md:flex-row md:items-end justify-between w-full gap-3">
           <div className="flex flex-wrap max-w-2xl items-start justify-start gap-2">
+            {survey.allowAnonymity && (
+              <Chip
+                className="border-1"
+                color="primary"
+                size="sm"
+                variant="bordered"
+              >
+                Anonymous responses allowed
+              </Chip>
+            )}
             <Chip
               className="border-1 text-default-500"
               size="sm"
@@ -105,16 +115,6 @@ export default function GetInsight(survey: Survey) {
                 {new Date(expiry).toLocaleString()}
               </Chip>
             )}
-            {survey.allowAnonymity && (
-              <Chip
-                className="border-1"
-                color="primary"
-                size="sm"
-                variant="bordered"
-              >
-                Anonymous responses allowed
-              </Chip>
-            )}
           </div>
           <Snippet
             hideSymbol
@@ -123,7 +123,7 @@ export default function GetInsight(survey: Survey) {
             radius="sm"
             size="sm"
           >
-            Copy Link
+            Copy Survey Link
           </Snippet>
         </div>
       </section>
