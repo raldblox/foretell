@@ -42,125 +42,13 @@ export default function Navigation(props: NavbarProps) {
   // TWITtER AUTH //
   const { data: session } = useSession();
   const { isFrameReady: isCoinbase } = useMiniKit();
-  const [isFarcasterFrame, setIsFarcasterFrame] = useState(false);
-  const [error, setError] = useState(false);
-
-  // Detect Farcaster frame on mount (client-side only)
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        // @ts-ignore
-        if (typeof window.frameContext === "string" || typeof window.farcaster === "object") {
-          setIsFarcasterFrame(true);
-        }
-      } catch {}
-    }
-  }, []);
-
-  // Get nonce for Farcaster sign-in
-  const getNonce = useCallback(async () => {
-    const nonce = await getCsrfToken();
-    if (!nonce) throw new Error("Unable to generate nonce");
-    return nonce;
-  }, []);
-
-  // Handle Farcaster sign-in success
-  const handleFarcasterSuccess = useCallback((res: any) => {
-    signIn("credentials", {
-      message: res.message,
-      signature: res.signature,
-      name: res.username,
-      pfp: res.pfpUrl,
-      redirect: false,
-    });
-    addToast({
-      title: "Farcaster is connected!",
-      description: `UID: ${res.fid}`,
-      color: "secondary",
-    });
-  }, []);
 
   // Render logic
   let connectButton = null;
-  if (session) {
-    connectButton = (
-      <Button
-        color="danger"
-        radius="full"
-        size="sm"
-        variant="flat"
-        onPress={() => signOut()}
-      >
-        Sign out
-      </Button>
-    );
-  } else if (isCoinbase) {
-    connectButton = (
-      <Button
-        radius="full"
-        size="sm"
-        variant="flat"
-        // onPress={connectCoinbase} // Not available in current hook
-      >
-        Connect Coinbase
-      </Button>
-    );
-  } else if (isFarcasterFrame) {
-    connectButton = (
-      <>
-        <SignInButton
-          nonce={getNonce}
-          onSuccess={handleFarcasterSuccess}
-          onError={() => setError(true)}
-        />
-        {error && <div>Unable to sign in with Farcaster at this time.</div>}
-      </>
-    );
-  } else {
-    connectButton = (
-      <Button
-        radius="full"
-        size="sm"
-        variant="flat"
-        onPress={() => signIn("twitter")}
-      >
-        Connect
-        <Icon className="" icon="hugeicons:new-twitter" width={16} />
-      </Button>
-    );
-  }
 
   // FARCASTER FRAMES //
 
-  const viewProfile = useViewProfile();
-
-  const handleViewProfile = () => {
-    viewProfile();
-  };
-
-  // COINBASE MINI APP //
-
-  const { setFrameReady, isFrameReady, context } = useMiniKit(); // coinbase mini app
-
-  const sendNotification = useNotification();
-
-  const handleSendNotification = async () => {
-    try {
-      await sendNotification({
-        title: "You're in! 🎉",
-        body: "You may now start foretelling!",
-      });
-    } catch (error) {
-      console.error("Failed to send notification:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (!isFrameReady) {
-      setFrameReady();
-      handleSendNotification();
-    }
-  }, [setFrameReady, isFrameReady]);
+  const farcasterProfile = useViewProfile();
 
   return (
     <Navbar
@@ -197,9 +85,44 @@ export default function Navigation(props: NavbarProps) {
           </Link>
         </NavbarBrand>
 
-        <NavbarItem className="ml-2 !flex gap-3">
+        <NavbarItem className="mx-2 !flex gap-3">
           <ThemeSwitch />
-          {connectButton}
+          {session ? (
+            <div className="flex items-center gap-2">
+              <Button radius="full" size="sm" variant="flat" disabled>
+                {(() => {
+                  const provider = (session.user as any)?.provider;
+                  if (provider === "twitter")
+                    return <Icon icon="hugeicons:new-twitter" width={16} />;
+                  if (provider === "farcaster")
+                    return <Icon icon="mdi:castle" width={16} />;
+                  if (provider === "coinbase")
+                    return <Icon icon="mdi:coin" width={16} />;
+                  return null;
+                })()}
+                {session.user?.name || session.user?.id}
+              </Button>
+              <Button
+                color="danger"
+                radius="full"
+                size="sm"
+                variant="flat"
+                onPress={() => signOut({ callbackUrl: "/" })}
+              >
+                Sign out
+              </Button>
+            </div>
+          ) : (
+            <Button
+              radius="full"
+              size="sm"
+              variant="flat"
+              onPress={() => signIn("twitter", { callbackUrl: "/" })}
+            >
+              Connect
+              <Icon className="mr-1" icon="hugeicons:new-twitter" width={18} />
+            </Button>
+          )}
         </NavbarItem>
       </NavbarContent>
 

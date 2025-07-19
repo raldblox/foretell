@@ -26,7 +26,7 @@ const authOptions = {
       version: "2.0",
     }),
     CredentialsProvider({
-      name: "Sign in with Farcaster",
+      name: "Farcaster",
       credentials: {
         message: { label: "Message", type: "text", placeholder: "0x0" },
         signature: { label: "Signature", type: "text", placeholder: "0x0" },
@@ -51,6 +51,7 @@ const authOptions = {
           id: fid.toString(),
           name: credentials?.name,
           image: credentials?.pfp,
+          provider: "farcaster",
         };
       },
     }),
@@ -60,7 +61,14 @@ const authOptions = {
       session.user.id = token.sub;
       if (token.name) session.user.name = token.name;
       if (token.picture) session.user.image = token.picture;
+      if (token.provider) session.user.provider = token.provider;
       return session;
+    },
+    async jwt({ token, account }: { token: any; account: any }) {
+      if (account) {
+        token.provider = account.provider;
+      }
+      return token;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
