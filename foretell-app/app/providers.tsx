@@ -45,7 +45,19 @@ export const ContextProvider = ({
         const data = await res.json();
 
         if (data.surveys && data.surveys.length > 0) {
-          setSurveys((prev) => shuffle([...dummySurveys, ...data.surveys]));
+          // Filter surveys to only include discoverable and non-expired ones
+          const now = new Date();
+          const filteredSurveys = data.surveys.filter((survey: Survey) => {
+            // Check if survey is discoverable (true or undefined)
+            const isDiscoverable = survey.discoverable !== false;
+            
+            // Check if survey is not expired
+            const isNotExpired = !survey.expiry || new Date(survey.expiry) > now;
+            
+            return isDiscoverable && isNotExpired;
+          });
+
+          setSurveys((prev) => shuffle([...dummySurveys, ...filteredSurveys]));
         } else {
           setSurveys(shuffle(dummySurveys));
         }

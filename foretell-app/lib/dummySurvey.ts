@@ -9,6 +9,7 @@ export const dummySurveys: Survey[] = [
     createdAt: new Date().toISOString(),
     expiry: "2025-06-12T23:59:59Z",
     maxResponses: 100,
+    discoverable: true,
     responses: [
       {
         uid: "user1",
@@ -90,6 +91,7 @@ export const dummySurveys: Survey[] = [
     createdAt: new Date().toISOString(),
     expiry: "2025-06-30T23:59:59Z",
     maxResponses: 150,
+    discoverable: true,
     responses: [
       {
         uid: "user1",
@@ -171,6 +173,7 @@ export const dummySurveys: Survey[] = [
     createdAt: new Date().toISOString(),
     expiry: "2025-05-15T23:59:59Z",
     maxResponses: 200,
+    discoverable: true,
     responses: [
       {
         uid: "user1",
@@ -252,6 +255,7 @@ export const dummySurveys: Survey[] = [
     createdAt: new Date().toISOString(),
     expiry: "2025-08-31T23:59:59Z",
     maxResponses: 120,
+    discoverable: true,
     responses: [
       {
         uid: "user1",
@@ -333,6 +337,7 @@ export const dummySurveys: Survey[] = [
     createdAt: new Date().toISOString(),
     expiry: "2025-09-30T23:59:59Z",
     maxResponses: 180,
+    discoverable: true,
     responses: [
       {
         uid: "user1",

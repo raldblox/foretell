@@ -14,6 +14,7 @@ const SurveySchema = z.object({
   maxResponses: z.number().int().positive().optional(),
   responses: z.array(z.any()).optional(),
   allowAnonymity: z.boolean().optional(),
+  discoverable: z.boolean().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -49,7 +50,20 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   const collection = await getCollection("surveys");
-  const surveys = await collection.find({}).toArray();
+  const now = new Date();
+  
+  // Only return surveys that are discoverable and not expired
+  const surveys = await collection.find({
+    $and: [
+      { discoverable: { $ne: false } }, // discoverable is true or undefined
+      {
+        $or: [
+          { expiry: { $exists: false } }, // no expiry
+          { expiry: { $gt: now.toISOString() } } // not expired
+        ]
+      }
+    ]
+  }).toArray();
 
   return NextResponse.json({ surveys });
 }

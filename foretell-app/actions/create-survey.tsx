@@ -31,6 +31,7 @@ const SurveySchema = z.object({
   maxResponses: z.number().optional(),
   responses: z.array(z.any()).optional(),
   allowAnonymity: z.boolean().optional(),
+  discoverable: z.boolean().optional(),
 });
 
 export default function CreateSurveyModal({
@@ -48,6 +49,7 @@ export default function CreateSurveyModal({
     expiry: "",
     maxResponses: "",
     allowAnonymity: false,
+    discoverable: true,
   });
   const { setSurveys, setIdx } = useContext(AppContext)!;
 
@@ -78,6 +80,10 @@ export default function CreateSurveyModal({
     setForm((prev) => ({ ...prev, allowAnonymity: value }));
   };
 
+  const handleToggleDiscoverable = (value: boolean) => {
+    setForm((prev) => ({ ...prev, discoverable: value }));
+  };
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -97,6 +103,7 @@ export default function CreateSurveyModal({
       maxResponses: form.maxResponses ? Number(form.maxResponses) : undefined,
       responses: [],
       allowAnonymity: form.allowAnonymity,
+      discoverable: form.discoverable,
     });
 
     if (!parsed.success) {
@@ -137,6 +144,7 @@ export default function CreateSurveyModal({
         expiry: "",
         maxResponses: "",
         allowAnonymity: false,
+        discoverable: true,
       });
       if (onSuccess) onSuccess();
       onClose();
@@ -210,13 +218,23 @@ export default function CreateSurveyModal({
                 onChange={handleChange}
               />
               <Switch
+              color="primary"
+              size="sm"
                 isSelected={form.allowAnonymity}
                 onValueChange={handleToggleAnonymity}
               >
                 Allow Anonymous Responses
               </Switch>
+              <Switch
+              color="primary"
+              size="sm"
+                isSelected={form.discoverable}
+                onValueChange={handleToggleDiscoverable}
+              >
+                Discoverable (show in browse)
+              </Switch>
               {error && <div className="text-danger text-sm">{error}</div>}
-              <Button color="primary" isLoading={loading} type="submit">
+              <Button size="lg" color="primary" className="mt-4" isLoading={loading} type="submit">
                 Create Survey
               </Button>
             </form>

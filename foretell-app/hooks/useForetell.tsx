@@ -28,6 +28,7 @@ export interface Survey {
   responses?: RawEntry[];
   rewardPool?: Reward;
   allowAnonymity?: boolean;
+  discoverable?: boolean;
 }
 export interface SurveyProps {
   question: string;
