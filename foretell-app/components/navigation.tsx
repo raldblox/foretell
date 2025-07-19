@@ -99,49 +99,63 @@ export default function Navigation(props: NavbarProps) {
       </div>
     );
   } else if (isMiniApp) {
-    connectButton = (
-      <div className="flex items-center gap-2">
-        <Button
-          radius="full"
-          size="sm"
-          variant="solid"
-          className="bg-[#6746f9] text-white flex items-center gap-2"
-          onPress={async () => {
-            try {
-              const nonce = await getCsrfToken();
-              if (!nonce) throw new Error("Unable to generate nonce");
-              const result = await sdk.actions.signIn({ nonce, acceptAuthAddress: true });
-              // result.signature, result.message
-              // You can now send these to your backend for verification
+    connectButton = miniAppFid ? (
+      <Button
+        radius="full"
+        size="sm"
+        variant="solid"
+        className="bg-[#6746f9] text-white flex items-center gap-2"
+        onPress={async () => {
+          try {
+            await sdk.actions.viewProfile({ fid: Number(miniAppFid) });
+          } catch (error: any) {
+            addToast({
+              title: "Profile view failed",
+              description: error?.message || "Unknown error",
+              color: "danger",
+            });
+          }
+        }}
+      >
+        <Icon icon="mdi:castle" width={18} className="mr-1" />
+       {miniAppFid}
+      </Button>
+    ) : (
+      <Button
+        radius="full"
+        size="sm"
+        variant="solid"
+        className="bg-[#6746f9] text-white flex items-center gap-2"
+        onPress={async () => {
+          try {
+            const nonce = await getCsrfToken();
+            if (!nonce) throw new Error("Unable to generate nonce");
+            const result = await sdk.actions.signIn({ nonce, acceptAuthAddress: true });
+            addToast({
+              title: "Farcaster sign-in initiated",
+              description: "Check your Farcaster app for the sign-in prompt.",
+              color: "success",
+            });
+          } catch (error: any) {
+            if (error.name === 'RejectedByUser') {
               addToast({
-                title: "Farcaster sign-in initiated",
-                description: "Check your Farcaster app for the sign-in prompt.",
-                color: "success",
+                title: "Sign-in rejected",
+                description: "You rejected the sign-in request.",
+                color: "warning",
               });
-            } catch (error: any) {
-              if (error.name === 'RejectedByUser') {
-                addToast({
-                  title: "Sign-in rejected",
-                  description: "You rejected the sign-in request.",
-                  color: "warning",
-                });
-              } else {
-                addToast({
-                  title: "Farcaster sign-in failed",
-                  description: error?.message || "Unknown error",
-                  color: "danger",
-                });
-              }
+            } else {
+              addToast({
+                title: "Farcaster sign-in failed",
+                description: error?.message || "Unknown error",
+                color: "danger",
+              });
             }
-          }}
-        >
-          <Icon icon="mdi:castle" width={18} className="mr-1" />
-          Connect Farcaster
-        </Button>
-        {miniAppFid && (
-          <span className="ml-2 text-xs text-success bg-default-100 px-2 py-1 rounded-full">FID: {miniAppFid}</span>
-        )}
-      </div>
+          }
+        }}
+      >
+        <Icon icon="mdi:castle" width={18} className="mr-1" />
+        Connect Farcaster
+      </Button>
     );
   } else if (isCoinbase) {
     connectButton = (
