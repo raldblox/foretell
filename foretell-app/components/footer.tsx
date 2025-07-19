@@ -9,7 +9,7 @@ const Footer = () => {
       <Link
         isExternal
         className="flex items-center gap-1 font-bold text-default-800"
-        href="https://onchainsupply.net"
+        href="https://onchainsupply.net?utm_source=foretell&utm_medium=footer&utm_campaign=powered_by"
         title="heroui.com homepage"
       >
         Foretell -
