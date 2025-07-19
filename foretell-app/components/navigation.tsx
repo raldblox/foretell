@@ -118,6 +118,25 @@ export default function Navigation(props: NavbarProps) {
               size="sm"
               variant="flat"
               onPress={() => signIn("twitter", { callbackUrl: "/" })}
+              onContextMenu={e => {
+                e.preventDefault();
+                window.location.href = "/login";
+              }}
+              onPointerDown={e => {
+                if (e.pointerType === "touch") {
+                  (e.target as HTMLElement).setAttribute("data-longpress", "start");
+                  setTimeout(() => {
+                    if ((e.target as HTMLElement).getAttribute("data-longpress") === "start") {
+                      window.location.href = "/login";
+                    }
+                  }, 500); // 600ms for long press
+                }
+              }}
+              onPointerUp={e => {
+                if (e.pointerType === "touch") {
+                  (e.target as HTMLElement).removeAttribute("data-longpress");
+                }
+              }}
             >
               Connect
               <Icon className="mr-1" icon="hugeicons:new-twitter" width={18} />
