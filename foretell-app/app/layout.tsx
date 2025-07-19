@@ -10,6 +10,8 @@ import { fontSans } from "@/config/fonts";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 
+
+
 // export const metadata: Metadata = {
 //   title: {
 //     default: siteConfig.name,

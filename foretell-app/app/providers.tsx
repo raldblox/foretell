@@ -15,6 +15,16 @@ import { loadTextClassifier } from "@/text-classify";
 import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
 import { base } from "viem/chains";
 
+import "@farcaster/auth-kit/styles.css";
+import { AuthKitProvider } from "@farcaster/auth-kit";
+import { SignInButton } from "@farcaster/auth-kit";
+
+const farcasterConfig = {
+  rpcUrl: "https://mainnet.optimism.io",
+  domain: "example.com",
+  siweUri: "https://example.com/login",
+};
+
 export const AppContext = React.createContext<any | undefined>(undefined);
 
 export const ContextProvider = ({
@@ -117,12 +127,14 @@ export function Providers({ children, themeProps }: ProvidersProps) {
       apiKey={process.env.NEXT_PUBLIC_CDP_CLIENT_API_KEY}
       chain={base}
     >
-      <HeroUIProvider navigate={router.push}>
-        <ToastProvider />
-        <ContextProvider>
-          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
-        </ContextProvider>
-      </HeroUIProvider>
+      <AuthKitProvider config={farcasterConfig}>
+        <HeroUIProvider navigate={router.push}>
+          <ToastProvider />
+          <ContextProvider>
+            <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+          </ContextProvider>
+        </HeroUIProvider>
+      </AuthKitProvider>
     </MiniKitProvider>
   );
 }

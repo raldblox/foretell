@@ -198,7 +198,7 @@ export default function Home() {
               </svg>
             </div>
           </div>
-          <div className="max-w-7xl rounded-tl-2xl rounded-tr-2xl  bg-default-50/70 backdrop-blur-md mx-auto space-y-8 p-3">
+          <div className="max-w-7xl rounded-tl-2xl rounded-tr-2xl  bg-default-50/70 backdrop-blur-md mx-auto p-3">
             <Suspense>
               <GetInsight {...currentSurvey} />
             </Suspense>

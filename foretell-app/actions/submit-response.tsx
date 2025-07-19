@@ -24,7 +24,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
           input: cn("py-3", classNames?.input),
         }}
         minRows={1}
-        placeholder="Got reviews, thoughts, comments? Drop them here."
+        placeholder="Reviews, thoughts, or comments — drop them here!"
         radius="sm"
         variant="bordered"
         {...props}
@@ -207,10 +207,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
   return (
     <>
-      <form className="flex w-full flex-col items-start rounded-md bg-default-50 transition-colors">
+      <form className="flex w-full flex-col  items-start rounded-md bg-default-50 transition-colors">
         <PromptInput
           classNames={{
-            inputWrapper: "!bg-transparent shadow-none",
+            inputWrapper: "!bg-transparent min-h-[275px] shadow-none",
             innerWrapper: "relative",
             input: "py-3 text-medium",
           }}
@@ -237,7 +237,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
               </Button>
             </div>
           }
-          minRows={3}
           radius="lg"
           value={response}
           variant="flat"
@@ -307,6 +306,15 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
               : isFull
                 ? "This survey has reached the maximum number of responses."
                 : null}
+        </Alert>
+      )}
+
+      {currentSurvey?.allowAnonymity && (
+        <Alert
+          color="default"
+          icon={<Icon icon="hugeicons:anonymous" width="24" height="24" />}
+        >
+          Anonymous response is allowed
         </Alert>
       )}
     </>

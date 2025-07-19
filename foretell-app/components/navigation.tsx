@@ -2,7 +2,7 @@
 
 import type { NavbarProps } from "@heroui/react";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -19,6 +19,12 @@ import { Icon } from "@iconify/react";
 import { Logo } from "./icons";
 import { ThemeSwitch } from "./theme-switch";
 import GradientText from "./GradientText/GradientText";
+import { useProfile } from "@farcaster/auth-kit";
+import {
+  useMiniKit,
+  useNotification,
+  useViewProfile,
+} from "@coinbase/onchainkit/minikit";
 
 const menuItems = [
   "About",
@@ -32,13 +38,50 @@ const menuItems = [
 ];
 
 export default function Navigation(props: NavbarProps) {
+  // TWITtER AUTH //
   const { data: session } = useSession();
-  const userId = session?.user?.id;
+
+  // FARCASTER FRAMES //
+
+  const {
+    isAuthenticated,
+    profile: { username, fid },
+  } = useProfile(); // farcaster
+
+  const viewProfile = useViewProfile();
+
+  const handleViewProfile = () => {
+    viewProfile();
+  };
+
+  // COINBASE MINI APP //
+
+  const { setFrameReady, isFrameReady, context } = useMiniKit(); // coinbase mini app
+
+  const sendNotification = useNotification();
+
+  const handleSendNotification = async () => {
+    try {
+      await sendNotification({
+        title: "You're in! 🎉",
+        body: "You may now start foretelling!",
+      });
+    } catch (error) {
+      console.error("Failed to send notification:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+      handleSendNotification();
+    }
+  }, [setFrameReady, isFrameReady]);
 
   return (
     <Navbar
-      // position="sticky"
-      // shouldHideOnScroll
+      position="sticky"
+      shouldHideOnScroll
       {...props}
       classNames={{
         base: "p-3 backdrop-filter-none bg-transparent",
@@ -72,6 +115,17 @@ export default function Navigation(props: NavbarProps) {
 
         <NavbarItem className="ml-2 !flex gap-3">
           <ThemeSwitch />
+
+          {isFrameReady && (
+            <Button
+              radius="full"
+              size="sm"
+              variant="flat"
+              onPress={handleViewProfile}
+            >
+              Profile
+            </Button>
+          )}
           {!session ? (
             <Button
               radius="full"
