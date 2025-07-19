@@ -129,6 +129,104 @@ export default function GetInsight(survey: Survey) {
       </section>
 
       <>
+        {/* Reward Distribution Chart */}
+        <section className="md:p-6 p-3 rounded-lg border border-default-200">
+          <h2 className="text-xl font-medium mb-4">Distribution</h2>
+          <ResponsiveContainer
+            className="bg-default-50 rounded-md"
+            height={300}
+            width="100%"
+          >
+            <AreaChart
+              data={chartData}
+              margin={{ top: 30, right: 30, left: 10, bottom: 20 }}
+            >
+              <defs>
+                {POLARITY_VALUES.map((p) => (
+                  <linearGradient
+                    key={p}
+                    id={`grad${p}`}
+                    x1="0"
+                    x2="0"
+                    y1="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor={POLARITY_COLOR[p]}
+                      stopOpacity={1}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={POLARITY_COLOR[p]}
+                      stopOpacity={0.5}
+                    />
+                  </linearGradient>
+                ))}
+              </defs>
+              <CartesianGrid strokeDasharray="1 5" />
+              <XAxis
+                dataKey="score"
+                domain={[0, 1]}
+                fontSize={10}
+                tickCount={11}
+                type="number"
+
+                //   label={{
+                //     value: "Score (0–1)",
+                //     position: "insideBottom",
+                //     offset: -10,
+                //   }}
+              />
+              <YAxis
+                domain={[
+                  0,
+                  Math.ceil(Math.max(...processed.map((u) => u.pctShare))),
+                ]}
+                fontSize={10}
+                label={{
+                  value: "% Share",
+                  angle: -90,
+                  position: "outsideLeft",
+                }}
+              />
+              {POLARITY_VALUES.map((p) => (
+                <ReferenceLine
+                  key={p}
+                  stroke={POLARITY_COLOR[p]}
+                  strokeDasharray="5 2"
+                  x={stats[p].avg}
+                  // label={{ value: `${POLARITY_LABEL[p]}`, position: "top" }}
+                />
+              ))}
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#111",
+                  borderRadius: "8px",
+                }}
+                formatter={(v: number, name: string) => [
+                  `${v}%`,
+                  name.replace(/PS/, " % Share"),
+                ]}
+                labelFormatter={(l) => `Score: ${l}`}
+              />
+              <Legend verticalAlign="bottom" />
+              {POLARITY_VALUES.map((p) => (
+                <Area
+                  key={p}
+                  connectNulls
+                  dataKey={p === -1 ? "negPS" : p === 0 ? "neuPS" : "posPS"}
+                  fill={`url(#grad${p})`}
+                  name={`${POLARITY_LABEL[p]}`}
+                  stroke={POLARITY_COLOR[p]}
+                  strokeWidth={3}
+                  type="basis"
+                />
+              ))}
+            </AreaChart>
+          </ResponsiveContainer>
+        </section>
+
         {/* Summary Cards Below Chart */}
         <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {POLARITY_VALUES.map((p, index) => (
@@ -228,104 +326,6 @@ export default function GetInsight(survey: Survey) {
             </div>
           ))}
         </dl>
-
-        {/* Reward Distribution Chart */}
-        <section className="md:p-6 p-3 rounded-lg border border-default-200">
-          <h2 className="text-xl font-medium mb-4">Distribution</h2>
-          <ResponsiveContainer
-            className="bg-default-50 rounded-md"
-            height={300}
-            width="100%"
-          >
-            <AreaChart
-              data={chartData}
-              margin={{ top: 30, right: 30, left: 10, bottom: 20 }}
-            >
-              <defs>
-                {POLARITY_VALUES.map((p) => (
-                  <linearGradient
-                    key={p}
-                    id={`grad${p}`}
-                    x1="0"
-                    x2="0"
-                    y1="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="5%"
-                      stopColor={POLARITY_COLOR[p]}
-                      stopOpacity={1}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor={POLARITY_COLOR[p]}
-                      stopOpacity={0.5}
-                    />
-                  </linearGradient>
-                ))}
-              </defs>
-              <CartesianGrid strokeDasharray="1 5" />
-              <XAxis
-                dataKey="score"
-                domain={[0, 1]}
-                fontSize={10}
-                tickCount={11}
-                type="number"
-
-                //   label={{
-                //     value: "Score (0–1)",
-                //     position: "insideBottom",
-                //     offset: -10,
-                //   }}
-              />
-              <YAxis
-                domain={[
-                  0,
-                  Math.ceil(Math.max(...processed.map((u) => u.pctShare))),
-                ]}
-                fontSize={10}
-                label={{
-                  value: "% Share",
-                  angle: -90,
-                  position: "outsideLeft",
-                }}
-              />
-              {POLARITY_VALUES.map((p) => (
-                <ReferenceLine
-                  key={p}
-                  stroke={POLARITY_COLOR[p]}
-                  strokeDasharray="5 2"
-                  x={stats[p].avg}
-                  // label={{ value: `${POLARITY_LABEL[p]}`, position: "top" }}
-                />
-              ))}
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#111",
-                  borderRadius: "8px",
-                }}
-                formatter={(v: number, name: string) => [
-                  `${v}%`,
-                  name.replace(/PS/, " % Share"),
-                ]}
-                labelFormatter={(l) => `Score: ${l}`}
-              />
-              <Legend verticalAlign="bottom" />
-              {POLARITY_VALUES.map((p) => (
-                <Area
-                  key={p}
-                  connectNulls
-                  dataKey={p === -1 ? "negPS" : p === 0 ? "neuPS" : "posPS"}
-                  fill={`url(#grad${p})`}
-                  name={`${POLARITY_LABEL[p]}`}
-                  stroke={POLARITY_COLOR[p]}
-                  strokeWidth={3}
-                  type="basis"
-                />
-              ))}
-            </AreaChart>
-          </ResponsiveContainer>
-        </section>
 
         {/* Connect X Button */}
         <section className="md:p-6 p-3 rounded-lg border border-default-200">
