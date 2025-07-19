@@ -26,6 +26,7 @@ import {
   useNotification,
   useViewProfile,
 } from "@coinbase/onchainkit/minikit";
+import { sdk } from '@farcaster/miniapp-sdk';
 
 const menuItems = [
   "About",
@@ -42,13 +43,119 @@ export default function Navigation(props: NavbarProps) {
   // TWITtER AUTH //
   const { data: session } = useSession();
   const { isFrameReady: isCoinbase } = useMiniKit();
+  const [isMiniApp, setIsMiniApp] = useState(false);
+  useEffect(() => {
+    (async () => {
+      if (typeof window !== "undefined") {
+        try {
+          const result = await sdk.isInMiniApp();
+          setIsMiniApp(result);
+        } catch {}
+      }
+    })();
+  }, []);
 
   // Render logic
   let connectButton = null;
 
   // FARCASTER FRAMES //
 
-  const farcasterProfile = useViewProfile();
+  const getNonce = useCallback(async () => {
+    const nonce = await getCsrfToken();
+    if (!nonce) throw new Error("Unable to generate nonce");
+    return nonce;
+  }, []);
+
+  if (session) {
+    // Show connected provider and user info, plus sign out
+    const provider = (session.user as any)?.provider;
+    const nameOrId = session.user?.name || session.user?.id;
+    connectButton = (
+      <div className="flex items-center gap-2">
+        <Button radius="full" size="sm" variant="flat" disabled>
+          {(() => {
+            if (provider === "twitter") return <Icon icon="hugeicons:new-twitter" width={16} className="mr-1" />;
+            if (provider === "farcaster") return <Icon icon="mdi:castle" width={16} className="mr-1" />;
+            if (provider === "coinbase") return <Icon icon="mdi:coin" width={16} className="mr-1" />;
+            return null;
+          })()}
+          {nameOrId}
+        </Button>
+        <Button
+          color="danger"
+          radius="full"
+          size="sm"
+          variant="flat"
+          onPress={() => signOut({ callbackUrl: "/" })}
+        >
+          Sign out
+        </Button>
+      </div>
+    );
+  } else if (isMiniApp) {
+    connectButton = (
+      <Button
+        radius="full"
+        size="sm"
+        variant="solid"
+        className="bg-[#6746f9] text-white flex items-center gap-2"
+        onPress={async () => {
+          const nonce = await getCsrfToken();
+          if (!nonce) throw new Error("Unable to generate nonce");
+          await sdk.actions.signIn({ nonce, acceptAuthAddress: true });
+        }}
+      >
+        <Icon icon="mdi:castle" width={18} className="mr-1" />
+        Connect Farcaster
+      </Button>
+    );
+  } else if (isCoinbase) {
+    connectButton = (
+      <Button
+        radius="full"
+        size="sm"
+        variant="flat"
+        className="flex items-center gap-2"
+        onPress={() => {}}
+        disabled
+      >
+        <Icon icon="mdi:coin" width={18} className="mr-1" />
+        Connect Coinbase (coming soon)
+      </Button>
+    );
+  }  else {
+    connectButton = (
+      <Button
+        radius="full"
+        size="sm"
+        variant="flat"
+        className="flex items-center gap-2"
+        onPress={() => signIn("twitter", { callbackUrl: "/" })}
+        onContextMenu={e => {
+          e.preventDefault();
+          window.location.href = "/login";
+        }}
+        onPointerDown={e => {
+          if (e.pointerType === "touch") {
+            (e.target as HTMLElement).setAttribute("data-longpress", "start");
+            setTimeout(() => {
+              if ((e.target as HTMLElement).getAttribute("data-longpress") === "start") {
+                window.location.href = "/login";
+              }
+            }, 500);
+          }
+        }}
+        onPointerUp={e => {
+          if (e.pointerType === "touch") {
+            (e.target as HTMLElement).removeAttribute("data-longpress");
+          }
+        }}
+      >        
+        Connect
+        <Icon icon="hugeicons:new-twitter" width={18} className="mr-1" />
+      </Button>
+    );
+  }
 
   return (
     <Navbar
@@ -87,61 +194,7 @@ export default function Navigation(props: NavbarProps) {
 
         <NavbarItem className="mx-2 !flex gap-3">
           <ThemeSwitch />
-          {session ? (
-            <div className="flex items-center gap-2">
-              <Button radius="full" size="sm" variant="flat" disabled>
-                {(() => {
-                  const provider = (session.user as any)?.provider;
-                  if (provider === "twitter")
-                    return <Icon icon="hugeicons:new-twitter" width={16} />;
-                  if (provider === "farcaster")
-                    return <Icon icon="mdi:castle" width={16} />;
-                  if (provider === "coinbase")
-                    return <Icon icon="mdi:coin" width={16} />;
-                  return null;
-                })()}
-                {session.user?.name || session.user?.id}
-              </Button>
-              <Button
-                color="danger"
-                radius="full"
-                size="sm"
-                variant="flat"
-                onPress={() => signOut({ callbackUrl: "/" })}
-              >
-                Sign out
-              </Button>
-            </div>
-          ) : (
-            <Button
-              radius="full"
-              size="sm"
-              variant="flat"
-              onPress={() => signIn("twitter", { callbackUrl: "/" })}
-              onContextMenu={e => {
-                e.preventDefault();
-                window.location.href = "/login";
-              }}
-              onPointerDown={e => {
-                if (e.pointerType === "touch") {
-                  (e.target as HTMLElement).setAttribute("data-longpress", "start");
-                  setTimeout(() => {
-                    if ((e.target as HTMLElement).getAttribute("data-longpress") === "start") {
-                      window.location.href = "/login";
-                    }
-                  }, 500); // 600ms for long press
-                }
-              }}
-              onPointerUp={e => {
-                if (e.pointerType === "touch") {
-                  (e.target as HTMLElement).removeAttribute("data-longpress");
-                }
-              }}
-            >
-              Connect
-              <Icon className="mr-1" icon="hugeicons:new-twitter" width={18} />
-            </Button>
-          )}
+          {connectButton}
         </NavbarItem>
       </NavbarContent>
 
