@@ -48,22 +48,24 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: true, survey });
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
+  const surveyId = url.searchParams.get("surveyId");
+  const limit = parseInt(url.searchParams.get("limit") || "10", 10);
+  const offset = parseInt(url.searchParams.get("offset") || "0", 10);
+
   const collection = await getCollection("surveys");
-  const now = new Date();
-  
-  // Only return surveys that are discoverable and not expired
-  const surveys = await collection.find({
-    $and: [
-      { discoverable: { $ne: false } }, // discoverable is true or undefined
-      {
-        $or: [
-          { expiry: { $exists: false } }, // no expiry
-          { expiry: { $gt: now.toISOString() } } // not expired
-        ]
-      }
-    ]
-  }).toArray();
+
+  if (surveyId) {
+    const survey = await collection.findOne({ surveyId });
+    return NextResponse.json({ survey });
+  }
+
+  const surveys = await collection
+    .find({})
+    .skip(offset)
+    .limit(limit)
+    .toArray();
 
   return NextResponse.json({ surveys });
 }

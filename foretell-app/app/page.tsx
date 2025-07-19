@@ -29,37 +29,53 @@ export default function Home() {
   const { surveys, setSurveys, idx, setIdx, bertLoaded } =
     useContext(AppContext)!;
 
+  const limit = 10;
+  const offsetRef = useRef(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const fetchSurveys = useCallback(async (surveyId?: string, reset = false) => {
+    setLoading(true);
+    let url = "/api/survey";
+    if (surveyId) {
+      url += `?surveyId=${surveyId}`;
+    } else {
+      url += `?limit=${limit}&offset=${reset ? 0 : offsetRef.current}`;
+    }
+    const res = await fetch(url);
+    const data = await res.json();
+    if (surveyId && data.survey) {
+      setSurveys((prev: Survey[]) => [data.survey, ...prev.filter(s => s.surveyId !== data.survey.surveyId)]);
+      setIdx(0);
+    } else if (data.surveys) {
+      setSurveys((prev: Survey[]) => reset ? data.surveys : [...prev, ...data.surveys]);
+      setHasMore(data.surveys.length === limit);
+      offsetRef.current = reset ? limit : offsetRef.current + limit;
+    }
+    setLoading(false);
+  }, [setSurveys, setIdx]);
+
+  // On mount or when surveyId changes:
   useEffect(() => {
     const invite = searchParams?.get("surveyId");
-    console.log("URL params:", { invite, pathname, showHero: showHero });
-
     if (invite) {
-      surveyIdFromUrl.current = invite;
+      fetchSurveys(invite, true);
       setShowHero(false);
-      console.log("Setting showHero to false due to surveyId");
     } else {
-      surveyIdFromUrl.current = null;
+      fetchSurveys(undefined, true);
       setShowHero(true);
-      console.log("Setting showHero to true - no surveyId");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, pathname]);
 
+  // Auto-fetch more when near the end (last 3)
   useEffect(() => {
-    if (!surveyIdFromUrl.current || !surveys.length) return;
-    const idxInList = surveys.findIndex(
-      (s: Survey) => s.surveyId === surveyIdFromUrl.current
-    );
-
-    if (idxInList > 0) {
-      setSurveys((prev: Survey[]) => {
-        const found = prev[idxInList];
-        const rest = prev.filter((_: Survey, i: number) => i !== idxInList);
-
-        return [found, ...rest];
-      });
-      setIdx(0);
+    if (!hasMore || loading) return;
+    if (surveys.length - idx <= 3) {
+      fetchSurveys();
     }
-  }, [surveys.length, setSurveys, setIdx]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idx, surveys.length, hasMore, loading]);
 
   useEffect(() => {
     if (!isFrameReady) {
