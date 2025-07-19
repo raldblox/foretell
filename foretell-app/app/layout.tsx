@@ -10,8 +10,6 @@ import { fontSans } from "@/config/fonts";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 
-
-
 // export const metadata: Metadata = {
 //   title: {
 //     default: siteConfig.name,
@@ -26,19 +24,33 @@ import Footer from "@/components/footer";
 export const generateMetadata = (): Metadata => {
   return {
     title: "Foretell",
-    description: "Tell us what is fore",
+    description: "It' i's foretelling time!",
     other: {
       "fc:frame": JSON.stringify({
-        version: process.env.NEXT_PUBLIC_VERSION,
-        imageUrl: process.env.NEXT_PUBLIC_IMAGE_URL,
+        version: "1",
+        imageUrl: "",
         button: {
-          title: `Launch ${process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME}`,
+          title: "Launch Foretell",
           action: {
             type: "launch_frame",
-            name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
-            url: URL,
-            splashImageUrl: process.env.NEXT_PUBLIC_SPLASH_IMAGE_URL,
-            splashBackgroundColor: `#${process.env.NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR}`,
+            name: "Foretell",
+            url: "https://foretell.one",
+            splashImageUrl: "https://foretell.one/app.png",
+            splashBackgroundColor: "#000000",
+          },
+        },
+      }),
+      "fc:miniapp": JSON.stringify({
+        version: "1",
+        imageUrl: "",
+        button: {
+          title: "Launch Foretell",
+          action: {
+            type: "launch_miniapp",
+            name: "Foretell",
+            url: "https://foretell.one",
+            splashImageUrl: "https://foretell.one/app.png",
+            splashBackgroundColor: "#000000",
           },
         },
       }),

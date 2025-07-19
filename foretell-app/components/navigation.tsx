@@ -67,14 +67,6 @@ export default function Navigation(props: NavbarProps) {
   // Render logic
   let connectButton = null;
 
-  // FARCASTER FRAMES //
-
-  const getNonce = useCallback(async () => {
-    const nonce = await getCsrfToken();
-    if (!nonce) throw new Error("Unable to generate nonce");
-    return nonce;
-  }, []);
-
   if (session) {
     // Show connected provider and user info, plus sign out
     const provider = (session.user as any)?.provider;
@@ -181,7 +173,7 @@ export default function Navigation(props: NavbarProps) {
         onPress={() => {}}
         disabled
       >
-        <Icon icon="mdi:coin" width={18} className="mr-1" />
+        <Icon icon="mdi:coin" width={18} className="" />
         Connect Coinbase (coming soon)
       </Button>
     );
@@ -217,7 +209,7 @@ export default function Navigation(props: NavbarProps) {
         }}
       >
         Connect
-        <Icon icon="hugeicons:new-twitter" width={18} className="mr-1" />
+        <Icon icon="hugeicons:new-twitter" width={18} className="" />
       </Button>
     );
   }
@@ -257,7 +249,7 @@ export default function Navigation(props: NavbarProps) {
           </Link>
         </NavbarBrand>
 
-        <NavbarItem className="mx-2 !flex gap-3">
+        <NavbarItem className="!flex gap-3">
           <ThemeSwitch />
           {connectButton}
         </NavbarItem>

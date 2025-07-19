@@ -34,26 +34,34 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchSurveys = useCallback(async (surveyId?: string, reset = false) => {
-    setLoading(true);
-    let url = "/api/survey";
-    if (surveyId) {
-      url += `?surveyId=${surveyId}`;
-    } else {
-      url += `?limit=${limit}&offset=${reset ? 0 : offsetRef.current}`;
-    }
-    const res = await fetch(url);
-    const data = await res.json();
-    if (surveyId && data.survey) {
-      setSurveys((prev: Survey[]) => [data.survey, ...prev.filter(s => s.surveyId !== data.survey.surveyId)]);
-      setIdx(0);
-    } else if (data.surveys) {
-      setSurveys((prev: Survey[]) => reset ? data.surveys : [...prev, ...data.surveys]);
-      setHasMore(data.surveys.length === limit);
-      offsetRef.current = reset ? limit : offsetRef.current + limit;
-    }
-    setLoading(false);
-  }, [setSurveys, setIdx]);
+  const fetchSurveys = useCallback(
+    async (surveyId?: string, reset = false) => {
+      setLoading(true);
+      let url = "/api/survey";
+      if (surveyId) {
+        url += `?surveyId=${surveyId}`;
+      } else {
+        url += `?limit=${limit}&offset=${reset ? 0 : offsetRef.current}`;
+      }
+      const res = await fetch(url);
+      const data = await res.json();
+      if (surveyId && data.survey) {
+        setSurveys((prev: Survey[]) => [
+          data.survey,
+          ...prev.filter((s) => s.surveyId !== data.survey.surveyId),
+        ]);
+        setIdx(0);
+      } else if (data.surveys) {
+        setSurveys((prev: Survey[]) =>
+          reset ? data.surveys : [...prev, ...data.surveys]
+        );
+        setHasMore(data.surveys.length === limit);
+        offsetRef.current = reset ? limit : offsetRef.current + limit;
+      }
+      setLoading(false);
+    },
+    [setSurveys, setIdx]
+  );
 
   // On mount or when surveyId changes:
   useEffect(() => {
@@ -139,14 +147,6 @@ export default function Home() {
             id="hero"
             className="container py-12 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6"
           >
-            {/* <GradientText
-            animationSpeed={3}
-            className="border-1 border-default-100 px-[18px] py-2 text-small font-normal leading-5 rounded-full"
-            colors={["#f31260", "#f5a524", "#17c964", "#f5a524", "#f31260"]}
-            showBorder={false}
-          >
-            ALL IN ONE $FORETELL
-          </GradientText> */}
             <Chip
               variant="dot"
               color={bertLoaded ? "success" : "warning"}

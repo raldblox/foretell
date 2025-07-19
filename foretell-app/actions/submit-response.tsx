@@ -11,30 +11,6 @@ import { AppContext } from "@/app/providers";
 import { loadTextClassifier } from "@/model/text-classify";
 import { Survey } from "@/hooks/useForetell";
 
-const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ classNames = {}, ...props }, ref) => {
-    return (
-      <Textarea
-        ref={ref}
-        aria-label="Prompt"
-        className="min-h-[40px] p-3"
-        classNames={{
-          ...classNames,
-          label: cn("hidden", classNames?.label),
-          input: cn("py-3", classNames?.input),
-        }}
-        minRows={1}
-        placeholder="Reviews, thoughts, or comments — drop them here!"
-        radius="sm"
-        variant="bordered"
-        {...props}
-      />
-    );
-  }
-);
-
-PromptInput.displayName = "PromptInput";
-
 interface ResponseProps {
   idx?: number;
 }
@@ -208,15 +184,19 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
   return (
     <>
       <form className="flex w-full flex-col  items-start rounded-md bg-default-50 transition-colors">
-        <PromptInput
+        <Textarea
+          aria-label="Prompt"
           classNames={{
             inputWrapper: "!bg-transparent min-h-[275px] shadow-none",
             innerWrapper: "relative",
-            input: "py-3 text-medium",
+            input: " text-medium",
           }}
+          minRows={1}
+          placeholder="Reviews, thoughts, or comments — drop them here!"
+          radius="sm"
           disabled={hasResponded || isExpired || isFull}
           endContent={
-            <div className="flex items-end gap-2">
+            <div className="flex items-end ml-6">
               <Button
                 isIconOnly
                 color={!response ? "default" : "primary"}
@@ -237,9 +217,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
               </Button>
             </div>
           }
-          radius="lg"
           value={response}
-          variant="flat"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -248,7 +226,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
           }}
           onValueChange={setResponse}
         />
-        <div className="flex w-full flex-wrap items-center justify-between gap-2 px-3 pb-3">
+        <div className="flex w-full flex-wrap border-t border-default-100 items-center justify-between gap-2 p-3">
           <div className="flex flex-wrap gap-3">
             <Button
               isDisabled={true}

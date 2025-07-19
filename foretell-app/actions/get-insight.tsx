@@ -71,7 +71,7 @@ export default function GetInsight(survey: Survey) {
       {/* Top Summary */}
       <section className="grid grid-cols-1 md:grid-cols-4 gap-3 min-h-[300px]">
         {/* Response Container */}
-        <div className="col-span-1 md:col-span-3 flex flex-col gap-3 rounded-lg border border-default-200 p-3">
+        <div className="col-span-1 md:col-span-3 flex flex-col gap-3 rounded-lg border border-default-100 p-3">
           <div className="bg-default-50 flex flex-col p-3 rounded-lg gap-3">
             <p className="text-xl md:text-2xl font-semibold leading-tight md:py-0">
               {title && (
@@ -91,11 +91,11 @@ export default function GetInsight(survey: Survey) {
         </div>
 
         {/* QR/Link Container */}
-        <div className="col-span-1 flex flex-col rounded-lg border border-default-200 min-h-[200px]">
+        <div className="col-span-1 flex flex-col rounded-lg border border-default-100 min-h-[200px]">
           <div className="flex  gap-3 flex-col p-3 w-full items-center h-full">
             <Snippet
               hideSymbol
-              className="pl-4 w-full rounded-lg"
+              className="pl-4 w-full rounded-lg bg-default-50"
               codeString={codeString}
               radius="sm"
               size="sm"
@@ -104,40 +104,44 @@ export default function GetInsight(survey: Survey) {
             </Snippet>
 
             <div className="flex py-6 md:aspect-square bg-default-50 rounded-lg flex-col items-center justify-center w-full">
+              <span className="text-xs text-default-500 mt-1">
+                Scan to open survey
+              </span>
+
               {qrCodeUrl && codeString && (
                 <Image
                   src={qrCodeUrl}
                   alt="Survey QR Code"
-                  className="w-30 bg-default-50 p-2 rounded-md border border-default-200"
+                  className="w-30 bg-default-50 p-2 rounded-md border border-default-100"
                 />
               )}
-
-              <span className="text-xs text-default-500 mt-1">
-                Scan to open survey
-              </span>
+              <div className="flex items-center flex-col text-xs justify-center">
+                <span className="font-semibold">Survey ID:</span>
+                <span>{surveyId}</span>
+              </div>
             </div>
-            <Divider />
+
             <div className="flex flex-wrap max-w-2xl items-start justify-start gap-2">
               <Chip
-                className="border-1 text-default-500"
+                className="text-default-500 bg-default-50"
                 size="sm"
-                variant="bordered"
+                variant="flat"
               >
                 <span className="font-semibold">Resolution:</span>{" "}
                 {maxResponses} responses
               </Chip>
               <Chip
-                className="border-1 text-default-500"
+                className="text-default-500 bg-default-50"
                 size="sm"
-                variant="bordered"
+                variant="flat"
               >
                 <span className="font-semibold">Created By:</span> {createdBy}
               </Chip>
               {expiry && (
                 <Chip
-                  className="border-1 text-default-500"
+                  className="text-default-500 bg-default-50"
                   size="sm"
-                  variant="bordered"
+                  variant="flat"
                 >
                   <span className="font-semibold">Expiry:</span>{" "}
                   {new Date(expiry).toLocaleString()}
@@ -150,7 +154,7 @@ export default function GetInsight(survey: Survey) {
 
       <>
         {/* Reward Distribution Chart */}
-        <section className="md:p-6 p-3 rounded-lg border border-default-200 space-y-6">
+        <section className="md:p-6 p-3 rounded-lg border border-default-100 space-y-3">
           <h2 className="text-xl font-medium mb-4">Distribution</h2>
           <ResponsiveContainer
             className="bg-default-50 rounded-md"
@@ -250,7 +254,7 @@ export default function GetInsight(survey: Survey) {
             {POLARITY_VALUES.map((p, index) => (
               <div
                 key={p}
-                className="md:p-6 p-3 flex flex-wrap justify-between rounded-lg border border-default-200"
+                className="md:p-6 p-3 flex flex-wrap justify-between rounded-lg border border-default-100"
               >
                 <div>
                   <dt className="text-sm font-medium text-default-500 flex items-center">
@@ -349,7 +353,7 @@ export default function GetInsight(survey: Survey) {
         </section>
 
         {/* Connect X Button */}
-        <section className="md:p-6 p-3 rounded-lg border border-default-200">
+        <section className="md:p-6 p-3 rounded-lg border border-default-100">
           <div className="flex justify-between items-center">
             <h2 className="text-xl text-left font-medium">Responses</h2>
             {!session && (

@@ -17,12 +17,10 @@ import { base } from "viem/chains";
 
 import "@farcaster/auth-kit/styles.css";
 import { AuthKitProvider } from "@farcaster/auth-kit";
-import { SignInButton } from "@farcaster/auth-kit";
 
 const farcasterConfig = {
   rpcUrl: "https://mainnet.optimism.io",
   domain: "foretell.one",
-  siweUri: "https://foretell.one/login",
 };
 
 export const AppContext = React.createContext<any | undefined>(undefined);
@@ -56,20 +54,15 @@ export const ContextProvider = ({
         const data = await res.json();
 
         if (data.surveys && data.surveys.length > 0) {
-          // Filter surveys to only include discoverable and non-expired ones
           const now = new Date();
           const filteredSurveys = data.surveys.filter((survey: Survey) => {
-            // Check if survey is discoverable (true or undefined)
             const isDiscoverable = survey.discoverable !== false;
-
-            // Check if survey is not expired
             const isNotExpired =
               !survey.expiry || new Date(survey.expiry) > now;
-
             return isDiscoverable && isNotExpired;
           });
 
-          setSurveys((prev) => shuffle([...dummySurveys, ...filteredSurveys]));
+          setSurveys(() => shuffle([...dummySurveys, ...filteredSurveys]));
         } else {
           setSurveys(shuffle(dummySurveys));
         }
@@ -104,7 +97,6 @@ export const ContextProvider = ({
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
-// --- End Custom App Context ---
 
 export interface ProvidersProps {
   children: React.ReactNode;
