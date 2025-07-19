@@ -1,0 +1,24 @@
+{
+  "frame": {
+    "name": "Foretell",
+    "version": "1",
+    "iconUrl": "https://foretell.app/app.png",
+    "homeUrl": "https://foretell.app",
+    "imageUrl": "https://foretell.app/image.png",
+    "buttonTitle": "Launch Foretell",
+    "splashImageUrl": "https://foretell.app/splash.png",
+    "splashBackgroundColor": "#000000",
+    "webhookUrl": "https://foretell.app/api/webhook",
+    "subtitle": "It's foretelling time!",
+    "description": "Online surveys meets prediction markets",
+    "primaryCategory": "social",
+    "tags": ["social", "prediction", "survey"],
+    "heroImageUrl": "https://foretell.app/app.png",
+    "ogTitle": "Foretell"
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjQ1OTA4OSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweGFCODVFYzIxQzlmRDQ4M2I5QUM3ODg0QTg0MjBEYjkyQ2IzNUZmMWIifQ",
+    "payload": "eyJkb21haW4iOiJmb3JldGVsbC5hcHAifQ",
+    "signature": "MHg0ODU2ODkwNTA2ZjEyNzgyYzU4NTlkM2Q5NTdjNTRjZmRkNjg4NmM4N2E1ZGE1MTlkMDA5OGU3MjA1ZTc2MmYyMWUxYTdiNTQ0NzY3Y2EzNGVkZDUxNWVlMTkxZDlkZmM5ZjA1MDk0ZGQxOGE1ZGIxMDQxZTAzZDYwYzc2YzY4ZDFj"
+  }
+}
