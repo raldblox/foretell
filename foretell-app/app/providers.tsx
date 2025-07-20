@@ -53,6 +53,8 @@ export const ContextProvider = ({
             setMiniAppFid(
               context?.user?.fid ? context.user.fid.toString() : null
             );
+            // load the ui
+            await sdk.actions.ready();
           }
         } catch {}
       }
