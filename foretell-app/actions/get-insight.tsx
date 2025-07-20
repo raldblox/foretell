@@ -88,8 +88,8 @@ export default function GetInsight(survey: Survey) {
                 ease: "easeInOut",
                 height: {
                   duration: 0.4,
-                  ease: "easeInOut"
-                }
+                  ease: "easeInOut",
+                },
               }}
               className="overflow-hidden"
             >
@@ -108,8 +108,8 @@ export default function GetInsight(survey: Survey) {
                   ease: "easeInOut",
                   height: {
                     duration: 0.4,
-                    ease: "easeInOut"
-                  }
+                    ease: "easeInOut",
+                  },
                 }}
                 className="overflow-hidden"
               >
@@ -287,7 +287,7 @@ export default function GetInsight(survey: Survey) {
             {POLARITY_VALUES.map((p, index) => (
               <div
                 key={p}
-                className="md:p-6 p-3 flex flex-wrap justify-between rounded-lg border border-default-100"
+                className="md:p-6 p-3 flex flex-wrap justify-between rounded-lg bg-default-50 "
               >
                 <div>
                   <dt className="text-sm font-medium text-default-500 flex items-center">
@@ -312,7 +312,7 @@ export default function GetInsight(survey: Survey) {
                     {groups[p].length}
                   </dd>
                 </div>
-                <div className=" w-3/5 shrink-0 block">
+                <div className="bg-black/10 rounded-md w-3/5 shrink-0 block">
                   <ResponsiveContainer debounce={200} height={100} width="100%">
                     <AreaChart data={miniData[p]}>
                       <defs>

@@ -342,7 +342,7 @@ export default function Home() {
                   ? (touchEnd.x - touchStart.x) * 0.1
                   : 0,
             }}
-            className="max-w-7xl rounded-tl-2xl rounded-tr-2xl  bg-default-50/70 backdrop-blur-md mx-auto p-3"
+            className="max-w-7xl rounded-tl-2xl rounded-tr-2xl bg-default-50/50 backdrop-blur-md mx-auto p-3"
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <Suspense>
@@ -353,7 +353,7 @@ export default function Home() {
         <div className="">
           <div
             ref={prevRef}
-            className={`tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[50vh] md:pt-[50vh] md:p-6 p-3 flex justify-start z-10 w-[25vw] absolute top-0 left-0 h-full ${hoveredSide === "prev" ? "cursor-none" : "cursor-pointer"}`}
+            className={`tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[50vh] md:pt-[50vh] md:p-6 p-3 flex justify-start z-10 w-[30vw] absolute top-0 left-0 h-full ${hoveredSide === "prev" ? "cursor-none" : "cursor-pointer"}`}
             id="prev"
             role="button"
             style={{ background: "transparent" }}
@@ -425,7 +425,7 @@ export default function Home() {
 
           <div
             ref={nextRef}
-            className={`tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[50vh] md:pt-[50vh] md:p-6 p-3 flex justify-end z-10 w-[25vw] absolute top-0 right-0 h-full ${hoveredSide === "next" ? "cursor-none" : "cursor-pointer"}`}
+            className={`tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[50vh] md:pt-[50vh] md:p-6 p-3 flex justify-end z-10 w-[30vw] absolute top-0 right-0 h-full ${hoveredSide === "next" ? "cursor-none" : "cursor-pointer"}`}
             id="next"
             role="button"
             style={{ background: "transparent" }}
