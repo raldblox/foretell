@@ -10,6 +10,7 @@ import React, {
   Suspense,
 } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 
 import { AppContext } from "./providers";
@@ -23,6 +24,7 @@ import sdk from "@farcaster/miniapp-sdk";
 export default function Home() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const router = useRouter();
   const [showHero, setShowHero] = useState(true);
   const { surveys, setSurveys, idx, setIdx, bertLoaded, isMiniApp } =
     useContext(AppContext)!;
@@ -49,7 +51,9 @@ export default function Home() {
   if (isSwiping && touchStart && touchEnd) {
     const distanceX = touchStart.x - touchEnd.x;
     const distanceY = touchStart.y - touchEnd.y;
-    swipeQualified = Math.abs(distanceX) > 2 * Math.abs(distanceY) && Math.abs(distanceX) > minSwipeDistance;
+    swipeQualified =
+      Math.abs(distanceX) > 2 * Math.abs(distanceY) &&
+      Math.abs(distanceX) > minSwipeDistance;
   }
 
   const fetchSurveys = useCallback(
@@ -86,6 +90,11 @@ export default function Home() {
   // On mount or when surveyId changes:
   useEffect(() => {
     const invite = searchParams?.get("surveyId");
+    // If no surveyId, set default
+    if (!invite) {
+      router.replace(`${pathname}?surveyId=FliCp8VQtiG2StNTFVKP4`);
+      return;
+    }
     if (invite) {
       fetchSurveys(invite, true);
       setShowHero(false);
