@@ -249,8 +249,8 @@ export default function Home() {
           </section>
         )}
 
-        <div className="z-20 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl ">
-          <div className="grid grid-cols-2 opacity-50 border border-default-100 rounded-2xl mb-3 overflow-hidden">
+        <div className="z-20 px-3 max-w-6xl ">
+          <div className="grid grid-cols-2 opacity-50 bg-default-50 rounded-2xl mb-3 overflow-hidden">
             <div
               className="w-full flex items-center justify-start p-3 transition-all cursor-pointer hover:bg-gradient-to-l from-transparent to-red-900"
               role="button"
