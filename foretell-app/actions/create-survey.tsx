@@ -20,6 +20,7 @@ import { parseDate } from "@internationalized/date";
 
 import { AppContext } from "@/app/providers";
 import { Survey } from "@/hooks/useForetell";
+import { Logo } from "@/components/icons";
 
 const SurveySchema = z.object({
   surveyId: z.string().optional(),
@@ -165,11 +166,13 @@ export default function CreateSurveyModal({
   return (
     <>
       <Button
-        className="h-10 w-[163px] bg-default-foreground px-[16px] py-[10px] text-small font-medium leading-5 text-background"
+        className="h-10 bg-default-foreground px-[16px] py-[10px] text-small font-medium leading-5 text-background"
         radius="full"
+        size="lg"
         onPress={onOpen}
+        // startContent={<Logo size={26} />}
       >
-        Create Your Survey
+        Create survey on Foretell
       </Button>
 
       <Modal

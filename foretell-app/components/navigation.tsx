@@ -17,11 +17,9 @@ import {
 } from "@heroui/react";
 import { signIn, signOut, useSession, getCsrfToken } from "next-auth/react";
 import { Icon } from "@iconify/react";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { sdk } from "@farcaster/miniapp-sdk";
 
 import { Logo } from "./icons";
-import { ThemeSwitch } from "./theme-switch";
 import GradientText from "./GradientText/GradientText";
 
 import { AppContext } from "@/app/providers";
@@ -40,8 +38,7 @@ const menuItems = [
 export default function Navigation(props: NavbarProps) {
   // TWITtER AUTH //
   const { data: session } = useSession();
-  const { isFrameReady: isCoinbase } = useMiniKit();
-  const { isMiniApp, miniAppFid } = useContext(AppContext);
+  const { isMiniApp, miniAppFid, isWallet } = useContext(AppContext);
 
   // Render logic
   let connectButton = null;
@@ -52,25 +49,23 @@ export default function Navigation(props: NavbarProps) {
     const nameOrId = session.user?.name || session.user?.id;
 
     connectButton = (
-      <div className="flex items-center gap-2">
-        <Button disabled radius="full" size="sm" variant="flat">
+      <div className="flex items-center gap-1 p-1 border-1 border-default-100 rounded-full">
+        <Button
+          isIconOnly
+          disabled
+          radius="full"
+          size="sm"
+          color="default"
+          variant="flat"
+        >
           {(() => {
             if (provider === "twitter")
-              return (
-                <Icon
-                  className="mr-1"
-                  icon="hugeicons:new-twitter"
-                  width={16}
-                />
-              );
+              return <Icon icon="hugeicons:new-twitter" width={16} />;
             if (provider === "farcaster")
-              return <Icon className="mr-1" icon="mdi:castle" width={16} />;
-            if (provider === "coinbase")
-              return <Icon className="mr-1" icon="mdi:coin" width={16} />;
-
+              return <Icon icon="mdi:castle" width={16} />;
+            if (provider === "siwe") return <Icon icon="mdi:coin" width={16} />;
             return null;
           })()}
-          {nameOrId}
         </Button>
         <Button
           color="danger"
@@ -86,7 +81,7 @@ export default function Navigation(props: NavbarProps) {
   } else if (isMiniApp) {
     connectButton = miniAppFid ? (
       <Button
-        className="bg-[#6746f9] text-white flex items-center gap-2"
+        className="bg-[#6746f9] text-white flex items-center gap-2 m-1"
         radius="full"
         size="sm"
         variant="solid"
@@ -146,7 +141,7 @@ export default function Navigation(props: NavbarProps) {
         Connect Farcaster
       </Button>
     );
-  } else if (isCoinbase) {
+  } else if (isWallet) {
     connectButton = (
       <Button
         disabled
@@ -157,13 +152,13 @@ export default function Navigation(props: NavbarProps) {
         onPress={() => {}}
       >
         <Icon className="" icon="mdi:coin" width={18} />
-        Connect Coinbase (coming soon)
+        Connect Wallet
       </Button>
     );
   } else {
     connectButton = (
       <Button
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 m-1"
         radius="full"
         size="sm"
         variant="flat"
@@ -207,11 +202,11 @@ export default function Navigation(props: NavbarProps) {
         wrapper: "px-0 w-full justify-center bg-transparent",
         item: "hidden md:flex",
       }}
-      height="50px"
-      maxWidth="sm"
+      height="46px"
+      maxWidth="full"
     >
       <NavbarContent
-        className="gap-4 w-full rounded-full bg-background/5 px-2 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
+        className="gap-4 w-full rounded-full bg-background/50 p-1 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
         justify="center"
       >
         {/* Toggle */}
@@ -232,10 +227,7 @@ export default function Navigation(props: NavbarProps) {
           </Link>
         </NavbarBrand>
 
-        <NavbarItem className="!flex gap-3">
-          <ThemeSwitch />
-          {connectButton}
-        </NavbarItem>
+        <NavbarItem className="!flex gap-3">{connectButton}</NavbarItem>
       </NavbarContent>
 
       {/* Menu */}

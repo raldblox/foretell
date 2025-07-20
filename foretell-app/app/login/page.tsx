@@ -4,14 +4,12 @@ import {
   SignInButton as FarcasterSignInButton,
   StatusAPIResponse,
 } from "@farcaster/auth-kit";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { useCallback, useState } from "react";
 import { Button, addToast } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
 export default function LoginPage() {
   const { data: session } = useSession();
-  const { isFrameReady: isCoinbase } = useMiniKit();
   const [error, setError] = useState(false);
 
   const getNonce = useCallback(async () => {
@@ -41,85 +39,48 @@ export default function LoginPage() {
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="bg-default-50 p-8 rounded-lg shadow-lg flex flex-col items-center gap-6 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-2">Sign in to Foretell</h2>
-        {/* Coinbase (if present, only show this) */}
-        {isCoinbase ? (
+
+        <>
           <div className="w-full flex flex-col items-center gap-2">
             <Button
               className="w-full"
+              disabled={
+                !!session && (session as any).user?.provider === "twitter"
+              }
               radius="full"
               size="lg"
               variant="flat"
-              // onPress={...}
-              disabled
+              onPress={() => signIn("twitter")}
             >
-              {/* Add your Coinbase connect logic here */}
-              Sign in with Coinbase (coming soon)
+              <Icon className="mr-2" icon="hugeicons:new-twitter" width={24} />
+              {session && (session as any).user?.provider === "twitter"
+                ? `Connected as ${(session as any).user?.name || (session as any).user?.id}`
+                : "Sign in with Twitter"}
             </Button>
-            {session && (session.user as any)?.provider === "coinbase" && (
-              <div className="text-success">
-                Connected as {session.user?.name || session.user?.id}
-              </div>
-            )}
-            {session && (
-              <Button
-                className="mt-4"
-                color="danger"
-                radius="full"
-                size="sm"
-                variant="flat"
-                onPress={() => signOut()}
-              >
-                Sign out
-              </Button>
-            )}
           </div>
-        ) : (
-          <>
-            <div className="w-full flex flex-col items-center gap-2">
-              <Button
-                className="w-full"
-                disabled={
-                  !!session && (session as any).user?.provider === "twitter"
-                }
-                radius="full"
-                size="lg"
-                variant="flat"
-                onPress={() => signIn("twitter")}
-              >
-                <Icon
-                  className="mr-2"
-                  icon="hugeicons:new-twitter"
-                  width={24}
-                />
-                {session && (session as any).user?.provider === "twitter"
-                  ? `Connected as ${(session as any).user?.name || (session as any).user?.id}`
-                  : "Sign in with Twitter"}
-              </Button>
-            </div>
 
-            <div className="w-full flex flex-col items-center gap-2">
-              <FarcasterSignInButton
-                nonce={getNonce}
-                onError={() => setError(true)}
-                onSignOut={() => signOut()}
-                onSuccess={handleFarcasterSuccess}
-              />
-            </div>
-            {/* Sign out */}
-            {session && (
-              <Button
-                className="mt-4"
-                color="danger"
-                radius="full"
-                size="sm"
-                variant="flat"
-                onPress={() => signOut()}
-              >
-                Sign out
-              </Button>
-            )}
-          </>
-        )}
+          <div className="w-full flex flex-col items-center gap-2">
+            <FarcasterSignInButton
+              nonce={getNonce}
+              onError={() => setError(true)}
+              onSignOut={() => signOut()}
+              onSuccess={handleFarcasterSuccess}
+            />
+          </div>
+          {/* Sign out */}
+          {session && (
+            <Button
+              className="mt-4"
+              color="danger"
+              radius="full"
+              size="sm"
+              variant="flat"
+              onPress={() => signOut()}
+            >
+              Sign out
+            </Button>
+          )}
+        </>
       </div>
     </div>
   );

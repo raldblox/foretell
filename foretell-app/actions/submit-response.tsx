@@ -26,7 +26,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
   const currentSurvey = surveys[idx];
   const hasResponded = currentSurvey?.responses?.some(
-    (r: any) => r.uid === userId,
+    (r: any) => r.uid === userId
   );
   const isExpired =
     currentSurvey?.expiry && new Date() > new Date(currentSurvey.expiry);
@@ -81,10 +81,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     // Use both positive and negative scores to derive a continuous score
     const categories = result.classifications?.[0]?.categories || [];
     const positive = categories.find(
-      (c: any) => c.categoryName?.toLowerCase() === "positive",
+      (c: any) => c.categoryName?.toLowerCase() === "positive"
     );
     const negative = categories.find(
-      (c: any) => c.categoryName?.toLowerCase() === "negative",
+      (c: any) => c.categoryName?.toLowerCase() === "negative"
     );
     let score = 0.5;
 
@@ -187,7 +187,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
           classNames={{
             inputWrapper: "!bg-transparent min-h-[275px] shadow-none",
             innerWrapper: "relative",
-            input: " text-medium",
+            input: "p-3 md:p-6 text-medium",
           }}
           disabled={hasResponded || isExpired || isFull}
           endContent={
@@ -204,7 +204,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                 <Icon
                   className={cn(
                     "[&>path]:stroke-[2px]",
-                    !response ? "text-default-600" : "text-primary-foreground",
+                    !response ? "text-default-600" : "text-primary-foreground"
                   )}
                   icon="solar:arrow-up-linear"
                   width={20}
@@ -213,7 +213,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
             </div>
           }
           minRows={1}
-          placeholder="Reviews, thoughts, or comments — drop them here!"
+          placeholder="Your thoughts, reviews or comments — drop them all here!"
           radius="sm"
           value={response}
           onKeyDown={(e) => {

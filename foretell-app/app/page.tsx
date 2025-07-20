@@ -11,7 +11,6 @@ import React, {
 } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 import { AppContext } from "./providers";
 
@@ -21,10 +20,8 @@ import GetInsight from "@/actions/get-insight";
 import { dummySurveys } from "@/lib/dummySurvey";
 
 export default function Home() {
-  const { setFrameReady, isFrameReady } = useMiniKit();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const surveyIdFromUrl = useRef<string | null>(null);
   const [showHero, setShowHero] = useState(true);
   const { surveys, setSurveys, idx, setIdx, bertLoaded } =
     useContext(AppContext)!;
@@ -80,7 +77,6 @@ export default function Home() {
   // On mount or when surveyId changes:
   useEffect(() => {
     const invite = searchParams?.get("surveyId");
-
     if (invite) {
       fetchSurveys(invite, true);
       setShowHero(false);
@@ -97,12 +93,6 @@ export default function Home() {
       fetchSurveys();
     }
   }, [idx, surveys.length, hasMore, loading]);
-
-  useEffect(() => {
-    if (!isFrameReady) {
-      setFrameReady();
-    }
-  }, [setFrameReady, isFrameReady]);
 
   const currentSurvey = surveys[idx] || dummySurveys[0];
 
