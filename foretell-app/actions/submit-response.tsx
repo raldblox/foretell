@@ -16,36 +16,32 @@ interface ResponseProps {
 // Utility to compute sentiment analysis (polarity, intensity, score)
 export function getSentimentAnalysis(
   classifier: any,
-  text: string,
+  text: string
 ): Promise<{ polarity: -1 | 0 | 1; intensity: number; score: number }> {
   return new Promise(async (resolve) => {
     if (!classifier || !text) {
       resolve({ polarity: 0, intensity: 0, score: 0.5 });
-
       return;
     }
     const result = await classifier.classify(text);
     const categories = result.classifications?.[0]?.categories || [];
     const positive = categories.find(
-      (c: any) => c.categoryName?.toLowerCase() === "positive",
+      (c: any) => c.categoryName?.toLowerCase() === "positive"
     );
     const negative = categories.find(
-      (c: any) => c.categoryName?.toLowerCase() === "negative",
+      (c: any) => c.categoryName?.toLowerCase() === "negative"
     );
     let score = 0.5;
-
     if (positive) {
       score = positive.score;
     } else if (negative) {
       score = 1 - negative.score;
     }
     let polarity: -1 | 0 | 1 = 0;
-
     if (score > 0.7) polarity = 1;
     else if (score < 0.3) polarity = -1;
     else polarity = 0;
     let intensity = 0;
-
     if (polarity === -1) {
       intensity = 1 - Math.min(Math.max(score / 0.3, 0), 1);
     } else if (polarity === 0) {
@@ -76,7 +72,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
   const currentSurvey = surveys[idx];
   const hasResponded = currentSurvey?.responses?.some(
-    (r: any) => r.uid === userId,
+    (r: any) => r.uid === userId
   );
   const isExpired =
     currentSurvey?.expiry && new Date() > new Date(currentSurvey.expiry);
@@ -101,7 +97,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     if (!classifier || !liveAnalysis) {
       setLivePolarity(0);
       setLiveIntensity(0);
-
       return;
     }
     if (analysisTimeout.current) {
@@ -114,16 +109,14 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       try {
         const { polarity, intensity } = await getSentimentAnalysis(
           classifier,
-          response,
+          response
         );
-
         setLivePolarity(polarity);
         setLiveIntensity(intensity);
       } finally {
         analysisInProgress.current = false;
       }
     }, 300);
-
     return () => {
       if (analysisTimeout.current) {
         clearTimeout(analysisTimeout.current);
@@ -162,7 +155,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
     const { polarity, intensity, score } = await getSentimentAnalysis(
       classifier,
-      response,
+      response
     );
     // Create RawEntry
     const RawEntry = {
@@ -172,7 +165,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       intensity,
       answer: response,
     };
-
     console.log(RawEntry);
     // Get the current surveyId
     const surveyId = surveys[idx]?.surveyId;
@@ -257,7 +249,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                 <Icon
                   className={cn(
                     "[&>path]:stroke-[2px]",
-                    !response ? "text-default-600" : "text-primary-foreground",
+                    !response ? "text-default-600" : "text-primary-foreground"
                   )}
                   icon="solar:arrow-up-linear"
                   width={20}
@@ -266,7 +258,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
             </div>
           }
           minRows={1}
-          placeholder="Your thoughts, reviews or comments — drop them all here!"
+          placeholder="Respond here..."
           radius="sm"
           value={response}
           onKeyDown={(e) => {
@@ -280,9 +272,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
         <div className="flex w-full flex-wrap border-t border-default-100 items-center justify-between gap-2 p-3">
           <div className="flex flex-wrap gap-3">
             <Button
-              className="p-1 px-3"
               isDisabled={false}
               size="md"
+              variant="flat"
+              className="p-1 px-3"
               startContent={
                 <Icon
                   className={liveAnalysis ? "text-success" : "text-default-500"}
@@ -294,7 +287,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                   width={18}
                 />
               }
-              variant="flat"
               onPress={() => setLiveAnalysis((v) => !v)}
             >
               Live Analyzer
