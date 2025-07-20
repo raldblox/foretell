@@ -39,7 +39,7 @@ export default function CreateSurveyModal({
 }: {
   onSuccess?: () => void;
 }) {
-  const { data: session } = useSession();
+  const { setSurveys, setIdx, userId } = useContext(AppContext)!;
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,12 +51,11 @@ export default function CreateSurveyModal({
     allowAnonymity: false,
     discoverable: true,
   });
-  const { setSurveys, setIdx } = useContext(AppContext)!;
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -87,7 +86,7 @@ export default function CreateSurveyModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!session?.user?.id) {
+    if (!userId) {
       setError("You must be logged in to create a survey.");
       setLoading(false);
 
@@ -97,7 +96,7 @@ export default function CreateSurveyModal({
       surveyId: nanoid(),
       title: form.title,
       description: form.description,
-      createdBy: session.user.id,
+      createdBy: userId,
       createdAt: new Date().toISOString(),
       expiry: form.expiry ? new Date(form.expiry).toISOString() : undefined,
       maxResponses: form.maxResponses ? Number(form.maxResponses) : undefined,
