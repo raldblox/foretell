@@ -78,9 +78,9 @@ export default function RootLayout({
       >
         <NextAuthProvider>
           <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-            <div className="relative flex flex-col overflow-hidden">
+            <div className="relative flex flex-col min-h-dvh">
               <Navigation />
-              <main className="w-full flex flex-col flex-grow">
+              <main className="w-full flex flex-col flex-grow h-full">
                 <Suspense>{children}</Suspense>
               </main>
               <Footer />
