@@ -16,8 +16,6 @@ import {
   Image,
 } from "@heroui/react";
 import { signIn, signOut, useSession, getCsrfToken } from "next-auth/react";
-import { Icon } from "@iconify/react";
-import { sdk } from "@farcaster/miniapp-sdk";
 
 import { Logo } from "./icons";
 import GradientText from "./GradientText/GradientText";
@@ -71,7 +69,7 @@ export default function Navigation(props: NavbarProps) {
             <Logo size={30} />
             <GradientText
               animationSpeed={3}
-              className="bg-transparent px-3"
+              className="bg-transparent px-3 hidden md:flex"
               colors={["#f31260", "#f5a524", "#17c964", "#f5a524", "#f31260"]}
               showBorder={false}
             >
@@ -82,9 +80,9 @@ export default function Navigation(props: NavbarProps) {
 
         <NavbarItem className="!flex items-center gap-1 mr-1">
           <CreateSurveyModal customMessage="Create survey" size="sm" />
-          {/* <span className="hidden md:flex">
+          <span className="">
             <ConnectButton size="sm" />
-          </span> */}
+          </span>
         </NavbarItem>
       </NavbarContent>
 
