@@ -211,7 +211,7 @@ export default function Navigation(props: NavbarProps) {
       maxWidth="sm"
     >
       <NavbarContent
-        className="gap-4 w-full rounded-full border-small border-default-200/20 bg-background/60 px-2 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
+        className="gap-4 w-full rounded-full bg-background/5 px-2 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
         justify="center"
       >
         {/* Toggle */}

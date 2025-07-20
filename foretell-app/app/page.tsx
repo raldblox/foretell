@@ -36,10 +36,10 @@ export default function Home() {
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
-    null,
+    null
   );
   const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(
-    null,
+    null
   );
   const [isSwiping, setIsSwiping] = useState(false);
 
@@ -67,14 +67,14 @@ export default function Home() {
         setIdx(0);
       } else if (data.surveys) {
         setSurveys((prev: Survey[]) =>
-          reset ? data.surveys : [...prev, ...data.surveys],
+          reset ? data.surveys : [...prev, ...data.surveys]
         );
         setHasMore(data.surveys.length === limit);
         offsetRef.current = reset ? limit : offsetRef.current + limit;
       }
       setLoading(false);
     },
-    [setSurveys, setIdx],
+    [setSurveys, setIdx]
   );
 
   // On mount or when surveyId changes:
@@ -252,7 +252,7 @@ export default function Home() {
         <div className="z-20 w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl ">
           <div className="grid grid-cols-2 opacity-50 border border-default-100 rounded-2xl mb-3 overflow-hidden">
             <div
-              className="w-full flex items-center justify-start p-3 transition-all cursor-pointer hover:bg-gradient-to-l from-transparent to-red-950"
+              className="w-full flex items-center justify-start p-3 transition-all cursor-pointer hover:bg-gradient-to-l from-transparent to-red-900"
               role="button"
               tabIndex={0}
               onClick={prev}
@@ -271,7 +271,7 @@ export default function Home() {
               <span>PREV</span>
             </div>
             <div
-              className="w-full flex items-center justify-end p-3 transition-all cursor-pointer hover:bg-gradient-to-r from-transparent to-green-950"
+              className="w-full flex items-center justify-end p-3 transition-all cursor-pointer hover:bg-gradient-to-r from-transparent to-green-900"
               role="button"
               tabIndex={0}
               onClick={next}
@@ -299,8 +299,38 @@ export default function Home() {
               exit={{ opacity: 0 }}
               initial={{ opacity: 0 }}
             >
-              <div className="bg-black/20 backdrop-blur-sm rounded-full px-4 py-2 text-white text-sm font-medium">
-                {touchStart.x - touchEnd.x > 0 ? "← Next" : "Prev →"}
+              <div className="bg-foreground/20 backdrop-blur-sm rounded-full px-4 p-2 text-foreground text-sm font-medium">
+                {touchStart.x - touchEnd.x > 0 ? (
+                  <div className="flex items-center pr-4">
+                    <svg
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="m8.165 11.63l6.63-6.43C15.21 4.799 16 5.042 16 5.57v12.86c0 .528-.79.771-1.205.37l-6.63-6.43a.5.5 0 0 1 0-.74"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <span>NEXT</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center pl-4">
+                    <span>PREV</span>
+                    <svg
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M15.835 11.63L9.205 5.2C8.79 4.799 8 5.042 8 5.57v12.86c0 .528.79.771 1.205.37l6.63-6.43a.5.5 0 0 0 0-.74"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
@@ -345,7 +375,7 @@ export default function Home() {
                 position: "absolute",
                 inset: 0,
                 pointerEvents: "none",
-                background: "linear-gradient(to left, transparent, #be123c33)",
+                background: "linear-gradient(to left, transparent, #be123c50)",
                 zIndex: 0,
               }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
@@ -417,7 +447,7 @@ export default function Home() {
                 position: "absolute",
                 inset: 0,
                 pointerEvents: "none",
-                background: "linear-gradient(to right, transparent, #22c55e33)",
+                background: "linear-gradient(to right, transparent, #22c55e50)",
                 zIndex: 0,
               }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
