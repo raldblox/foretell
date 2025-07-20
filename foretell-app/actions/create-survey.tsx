@@ -187,6 +187,7 @@ export default function CreateSurveyModal({
       </Button>
 
       <Modal
+        hideCloseButton
         isDismissable
         className="m-6"
         isOpen={isOpen}
