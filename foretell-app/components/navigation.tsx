@@ -66,9 +66,9 @@ export default function Navigation(props: NavbarProps) {
         {/* <NavbarMenuToggle className="ml-2 text-default-400 md:hidden" /> */}
 
         {/* Logo */}
-        <NavbarBrand className="mr-2 w-full flex items-center">
+        <NavbarBrand className="mx-1 w-full flex items-center">
           <Link className="text-foreground" href="/">
-            <Logo />
+            <Logo size={30} />
             <GradientText
               animationSpeed={3}
               className="bg-transparent px-3"
@@ -80,11 +80,11 @@ export default function Navigation(props: NavbarProps) {
           </Link>
         </NavbarBrand>
 
-        <NavbarItem className="!flex items-center gap-1">
+        <NavbarItem className="!flex items-center gap-1 mr-1">
           <CreateSurveyModal customMessage="Create survey" size="sm" />
-          <span className="hidden md:flex">
+          {/* <span className="hidden md:flex">
             <ConnectButton size="sm" />
-          </span>
+          </span> */}
         </NavbarItem>
       </NavbarContent>
 

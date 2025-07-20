@@ -208,20 +208,22 @@ export default function Home() {
         onTouchMove={onTouchMove}
         onTouchStart={onTouchStart}
       >
+        <div className="flex text-xs items-center border-1 gap-2 rounded-full mt-3 mb-6 p-1 border-default-100">
+          <span className="pl-3 font-semibold">AI Sentiment Analyzer</span>
+          <Chip
+            className={`text-xs border-1 p-1 ${bertLoaded ? "text-success" : "text-warning"}`}
+            color={bertLoaded ? "success" : "warning"}
+            radius="full"
+            variant="dot"
+          >
+            {bertLoaded ? "Running on CPU" : "Loading"}
+          </Chip>
+        </div>
         {showHero && (
           <section
-            className="container py-12 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6"
+            className="container py-6 mb-8 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6"
             id="hero"
           >
-            <Chip
-              className="text-xs border-1"
-              color={bertLoaded ? "success" : "warning"}
-              radius="full"
-              variant="dot"
-            >
-              Sentiment Analyzer
-            </Chip>
-
             <div className="flex max-w-2xl flex-col text-center">
               <h1 className="bg-hero-section-title text-4xl md:text-5xl bg-clip-text font-medium text-balance text-transparent dark:from-[#FFFFFF] dark:to-[#ffffffcd]">
                 Surveys, Markets & Rewards in One Foretell

@@ -16,6 +16,8 @@ import {
   DatePicker,
   Switch,
   Spacer,
+  ModalFooter,
+  Link,
 } from "@heroui/react";
 import { parseDate } from "@internationalized/date";
 
@@ -197,7 +199,7 @@ export default function CreateSurveyModal({
             <span>{userId && <ConnectButton size="sm" />}</span>
           </ModalHeader>
           <ModalBody>
-            <form className="flex flex-col gap-3 pb-6" onSubmit={handleSubmit}>
+            <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
               <Textarea
                 isRequired
                 label="Insert topic or ask question"
@@ -261,6 +263,16 @@ export default function CreateSurveyModal({
               )}
             </form>
           </ModalBody>
+          <ModalFooter className="flex justify-center items-center pb-6">
+            <Link
+              isExternal
+              className="text-default-400 text-xs"
+              href="https://onchainsupply.net?utm_source=foretell&utm_medium=modal&utm_campaign=powered_by"
+              title="heroui.com homepage"
+            >
+              Powered by OnChainSupply
+            </Link>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

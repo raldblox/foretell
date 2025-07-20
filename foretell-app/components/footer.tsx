@@ -14,7 +14,7 @@ const Footer = () => {
           href="https://onchainsupply.net?utm_source=foretell&utm_medium=footer&utm_campaign=powered_by"
           title="heroui.com homepage"
         >
-          Foretell - Powered by OnChainSupply
+          &copy; Foretell 2025
         </Link>
       </div>
       <div>
