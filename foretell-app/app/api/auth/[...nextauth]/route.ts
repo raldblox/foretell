@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { createAppClient, viemConnector } from "@farcaster/auth-client";
-import type { NextApiRequest, NextApiResponse } from "next";
 
 declare module "next-auth" {
   interface User {
@@ -46,7 +45,9 @@ const authOptions = {
           nonce: csrfToken,
         });
         const { success, fid } = verifyResponse;
+
         if (!success) return null;
+
         return {
           id: fid.toString(),
           name: credentials?.name,
@@ -62,12 +63,14 @@ const authOptions = {
       if (token.name) session.user.name = token.name;
       if (token.picture) session.user.image = token.picture;
       if (token.provider) session.user.provider = token.provider;
+
       return session;
     },
     async jwt({ token, account }: { token: any; account: any }) {
       if (account) {
         token.provider = account.provider;
       }
+
       return token;
     },
   },

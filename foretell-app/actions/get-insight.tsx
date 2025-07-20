@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   AreaChart,
   Area,
@@ -16,8 +16,9 @@ import {
 } from "recharts";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/theme";
-import { Chip, Snippet, Button, Image, Divider } from "@heroui/react";
+import { Chip, Snippet, Button, Image } from "@heroui/react";
 import QRCode from "qrcode";
+import { signIn } from "next-auth/react";
 
 import SubmitResponse from "./submit-response";
 
@@ -31,10 +32,9 @@ import {
 } from "@/hooks/useForetell";
 import DecryptedText from "@/components/DecryptedText/DecryptedText";
 import { RewardTable } from "@/components/reward-table";
-import { signIn, useSession } from "next-auth/react";
+import { AppContext } from "@/app/providers";
 
 export default function GetInsight(survey: Survey) {
-  const { data: session } = useSession();
   const {
     title,
     rewardPool,
@@ -45,23 +45,27 @@ export default function GetInsight(survey: Survey) {
     expiry,
     description,
   } = survey;
-  const { groups, stats, processed, chartData, miniData } = useForetell(
-    responses || [],
-    rewardPool
-  );
+
+  const { userId } = useContext(AppContext);
   const [codeString, setCodeString] = useState("");
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+
+  const { groups, stats, processed, chartData, miniData } = useForetell(
+    responses || [],
+    rewardPool,
+  );
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const url = `${window.location.origin}${window.location.pathname}?surveyId=${surveyId}`;
+
       setCodeString(url);
       QRCode.toDataURL(
         url,
         { width: 200, margin: 2 },
         (error: Error | null | undefined, url: string) => {
           if (!error && url) setQrCodeUrl(url);
-        }
+        },
       );
     }
   }, [surveyId]);
@@ -110,9 +114,9 @@ export default function GetInsight(survey: Survey) {
 
               {qrCodeUrl && codeString && (
                 <Image
-                  src={qrCodeUrl}
                   alt="Survey QR Code"
                   className="w-30 bg-default-50 p-2 rounded-md border border-default-100"
+                  src={qrCodeUrl}
                 />
               )}
               <div className="flex items-center flex-col text-xs justify-center">
@@ -301,7 +305,7 @@ export default function GetInsight(survey: Survey) {
                         domain={[
                           0,
                           Math.ceil(
-                            Math.max(...miniData[p].map((d) => d.value))
+                            Math.max(...miniData[p].map((d) => d.value)),
                           ),
                         ]}
                       />
@@ -356,13 +360,13 @@ export default function GetInsight(survey: Survey) {
         <section className="md:p-6 p-3 rounded-lg border border-default-100">
           <div className="flex justify-between items-center">
             <h2 className="text-xl text-left font-medium">Responses</h2>
-            {!session && (
+            {!userId && (
               <Button
                 className="w-fit"
                 color="default"
-                variant="flat"
                 radius="full"
                 size="sm"
+                variant="flat"
                 onPress={() => signIn("twitter")}
               >
                 Connect <Icon icon="hugeicons:new-twitter" width={16} /> to view
@@ -371,7 +375,7 @@ export default function GetInsight(survey: Survey) {
             )}
           </div>
 
-          {session && (
+          {userId && (
             <div className="mt-4">
               <RewardTable data={processed} isLoading={false} />
             </div>

@@ -58,14 +58,11 @@ export async function GET(req: NextRequest) {
 
   if (surveyId) {
     const survey = await collection.findOne({ surveyId });
+
     return NextResponse.json({ survey });
   }
 
-  const surveys = await collection
-    .find({})
-    .skip(offset)
-    .limit(limit)
-    .toArray();
+  const surveys = await collection.find({}).skip(offset).limit(limit).toArray();
 
   return NextResponse.json({ surveys });
 }

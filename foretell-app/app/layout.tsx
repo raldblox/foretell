@@ -5,7 +5,6 @@ import { Suspense } from "react";
 
 import { Providers, NextAuthProvider } from "./providers";
 
-import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
@@ -74,7 +73,7 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-dvh text-foreground bg-background font-sans antialiased",
-          fontSans.variable
+          fontSans.variable,
         )}
       >
         <NextAuthProvider>

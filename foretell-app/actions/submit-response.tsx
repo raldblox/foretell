@@ -1,14 +1,11 @@
 "use client";
 
-import type { TextAreaProps } from "@heroui/react";
-
 import React, { useContext } from "react";
 import { addToast, Alert, Button, Textarea } from "@heroui/react";
 import { cn } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
 import { AppContext } from "@/app/providers";
-import { loadTextClassifier } from "@/model/text-classify";
 import { Survey } from "@/hooks/useForetell";
 
 interface ResponseProps {
@@ -29,7 +26,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
   const currentSurvey = surveys[idx];
   const hasResponded = currentSurvey?.responses?.some(
-    (r: any) => r.uid === userId
+    (r: any) => r.uid === userId,
   );
   const isExpired =
     currentSurvey?.expiry && new Date() > new Date(currentSurvey.expiry);
@@ -74,6 +71,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
     if (!classifier) {
       console.error("Text classifier failed to load");
+
       return;
     }
 
@@ -83,10 +81,10 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     // Use both positive and negative scores to derive a continuous score
     const categories = result.classifications?.[0]?.categories || [];
     const positive = categories.find(
-      (c: any) => c.categoryName?.toLowerCase() === "positive"
+      (c: any) => c.categoryName?.toLowerCase() === "positive",
     );
     const negative = categories.find(
-      (c: any) => c.categoryName?.toLowerCase() === "negative"
+      (c: any) => c.categoryName?.toLowerCase() === "negative",
     );
     let score = 0.5;
 
@@ -191,9 +189,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
             innerWrapper: "relative",
             input: " text-medium",
           }}
-          minRows={1}
-          placeholder="Reviews, thoughts, or comments — drop them here!"
-          radius="sm"
           disabled={hasResponded || isExpired || isFull}
           endContent={
             <div className="flex items-end ml-6">
@@ -209,7 +204,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                 <Icon
                   className={cn(
                     "[&>path]:stroke-[2px]",
-                    !response ? "text-default-600" : "text-primary-foreground"
+                    !response ? "text-default-600" : "text-primary-foreground",
                   )}
                   icon="solar:arrow-up-linear"
                   width={20}
@@ -217,6 +212,9 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
               </Button>
             </div>
           }
+          minRows={1}
+          placeholder="Reviews, thoughts, or comments — drop them here!"
+          radius="sm"
           value={response}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -290,7 +288,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       {currentSurvey?.allowAnonymity && (
         <Alert
           color="default"
-          icon={<Icon icon="hugeicons:anonymous" width="24" height="24" />}
+          icon={<Icon height="24" icon="hugeicons:anonymous" width="24" />}
         >
           Anonymous response is allowed
         </Alert>

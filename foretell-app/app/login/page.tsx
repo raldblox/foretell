@@ -2,14 +2,12 @@
 import { useSession, signIn, signOut, getCsrfToken } from "next-auth/react";
 import {
   SignInButton as FarcasterSignInButton,
-  SignInButton,
   StatusAPIResponse,
 } from "@farcaster/auth-kit";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, addToast } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { redirect } from "next/navigation";
 
 export default function LoginPage() {
   const { data: session } = useSession();
@@ -18,7 +16,9 @@ export default function LoginPage() {
 
   const getNonce = useCallback(async () => {
     const nonce = await getCsrfToken();
+
     if (!nonce) throw new Error("Unable to generate nonce");
+
     return nonce;
   }, []);
 
@@ -45,9 +45,9 @@ export default function LoginPage() {
         {isCoinbase ? (
           <div className="w-full flex flex-col items-center gap-2">
             <Button
+              className="w-full"
               radius="full"
               size="lg"
-              className="w-full"
               variant="flat"
               // onPress={...}
               disabled
@@ -62,11 +62,11 @@ export default function LoginPage() {
             )}
             {session && (
               <Button
+                className="mt-4"
                 color="danger"
                 radius="full"
                 size="sm"
                 variant="flat"
-                className="mt-4"
                 onPress={() => signOut()}
               >
                 Sign out
@@ -77,14 +77,14 @@ export default function LoginPage() {
           <>
             <div className="w-full flex flex-col items-center gap-2">
               <Button
-                radius="full"
-                size="lg"
                 className="w-full"
-                variant="flat"
-                onPress={() => signIn("twitter")}
                 disabled={
                   !!session && (session as any).user?.provider === "twitter"
                 }
+                radius="full"
+                size="lg"
+                variant="flat"
+                onPress={() => signIn("twitter")}
               >
                 <Icon
                   className="mr-2"
@@ -100,19 +100,19 @@ export default function LoginPage() {
             <div className="w-full flex flex-col items-center gap-2">
               <FarcasterSignInButton
                 nonce={getNonce}
-                onSuccess={handleFarcasterSuccess}
                 onError={() => setError(true)}
                 onSignOut={() => signOut()}
+                onSuccess={handleFarcasterSuccess}
               />
             </div>
             {/* Sign out */}
             {session && (
               <Button
+                className="mt-4"
                 color="danger"
                 radius="full"
                 size="sm"
                 variant="flat"
-                className="mt-4"
                 onPress={() => signOut()}
               >
                 Sign out

@@ -218,23 +218,29 @@ export default function CreateSurveyModal({
                 onChange={handleChange}
               />
               <Switch
-              color="primary"
-              size="sm"
+                color="primary"
                 isSelected={form.allowAnonymity}
+                size="sm"
                 onValueChange={handleToggleAnonymity}
               >
                 Allow Anonymous Responses
               </Switch>
               <Switch
-              color="primary"
-              size="sm"
+                color="primary"
                 isSelected={form.discoverable}
+                size="sm"
                 onValueChange={handleToggleDiscoverable}
               >
                 Discoverable (show in browse)
               </Switch>
               {error && <div className="text-danger text-sm">{error}</div>}
-              <Button size="lg" color="primary" className="mt-4" isLoading={loading} type="submit">
+              <Button
+                className="mt-4"
+                color="primary"
+                isLoading={loading}
+                size="lg"
+                type="submit"
+              >
                 Create Survey
               </Button>
             </form>

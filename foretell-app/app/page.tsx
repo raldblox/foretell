@@ -11,6 +11,7 @@ import React, {
 } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 import { AppContext } from "./providers";
 
@@ -18,7 +19,6 @@ import { Survey } from "@/hooks/useForetell";
 import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
 import { dummySurveys } from "@/lib/dummySurvey";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 export default function Home() {
   const { setFrameReady, isFrameReady } = useMiniKit();
@@ -38,6 +38,7 @@ export default function Home() {
     async (surveyId?: string, reset = false) => {
       setLoading(true);
       let url = "/api/survey";
+
       if (surveyId) {
         url += `?surveyId=${surveyId}`;
       } else {
@@ -45,6 +46,7 @@ export default function Home() {
       }
       const res = await fetch(url);
       const data = await res.json();
+
       if (surveyId && data.survey) {
         setSurveys((prev: Survey[]) => [
           data.survey,
@@ -53,19 +55,20 @@ export default function Home() {
         setIdx(0);
       } else if (data.surveys) {
         setSurveys((prev: Survey[]) =>
-          reset ? data.surveys : [...prev, ...data.surveys]
+          reset ? data.surveys : [...prev, ...data.surveys],
         );
         setHasMore(data.surveys.length === limit);
         offsetRef.current = reset ? limit : offsetRef.current + limit;
       }
       setLoading(false);
     },
-    [setSurveys, setIdx]
+    [setSurveys, setIdx],
   );
 
   // On mount or when surveyId changes:
   useEffect(() => {
     const invite = searchParams?.get("surveyId");
+
     if (invite) {
       fetchSurveys(invite, true);
       setShowHero(false);
@@ -73,7 +76,6 @@ export default function Home() {
       fetchSurveys(undefined, true);
       setShowHero(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, pathname]);
 
   // Auto-fetch more when near the end (last 3)
@@ -82,7 +84,6 @@ export default function Home() {
     if (surveys.length - idx <= 3) {
       fetchSurveys();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx, surveys.length, hasMore, loading]);
 
   useEffect(() => {
@@ -144,14 +145,14 @@ export default function Home() {
       <main className="flex flex-col items-center rounded-2xl md:rounded-3xl md:px-0">
         {showHero && (
           <section
-            id="hero"
             className="container py-12 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6"
+            id="hero"
           >
             <Chip
-              variant="dot"
+              className="text-xs border-1"
               color={bertLoaded ? "success" : "warning"}
               radius="full"
-              className="text-xs border-1"
+              variant="dot"
             >
               Sentiment Analyzer
             </Chip>
@@ -226,6 +227,7 @@ export default function Home() {
             className={`tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[50vh] md:pt-[50vh] md:p-6 p-3 flex justify-start z-10 w-[25vw] absolute top-0 left-0 h-full ${hoveredSide === "prev" ? "cursor-none" : "cursor-pointer"}`}
             id="prev"
             role="button"
+            style={{ background: "transparent" }}
             tabIndex={0}
             onClick={prev}
             onKeyDown={(e) => {
@@ -236,9 +238,10 @@ export default function Home() {
             onMouseMove={
               hoveredSide === "prev" ? handlePrevMouseMove : undefined
             }
-            style={{ background: "transparent" }}
           >
             <motion.div
+              animate={{ opacity: hoveredSide === "prev" ? 1 : 0 }}
+              initial={{ opacity: 0 }}
               style={{
                 position: "absolute",
                 inset: 0,
@@ -246,8 +249,6 @@ export default function Home() {
                 background: "linear-gradient(to left, transparent, #be123c33)",
                 zIndex: 0,
               }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: hoveredSide === "prev" ? 1 : 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
             />
             <AnimatePresence>
@@ -298,6 +299,7 @@ export default function Home() {
             className={`tracking-widest text-sm hover:px-8 border-default-100 transition-all pt-[50vh] md:pt-[50vh] md:p-6 p-3 flex justify-end z-10 w-[25vw] absolute top-0 right-0 h-full ${hoveredSide === "next" ? "cursor-none" : "cursor-pointer"}`}
             id="next"
             role="button"
+            style={{ background: "transparent" }}
             tabIndex={0}
             onClick={next}
             onKeyDown={(e) => {
@@ -308,9 +310,10 @@ export default function Home() {
             onMouseMove={
               hoveredSide === "next" ? handleNextMouseMove : undefined
             }
-            style={{ background: "transparent" }}
           >
             <motion.div
+              animate={{ opacity: hoveredSide === "next" ? 1 : 0 }}
+              initial={{ opacity: 0 }}
               style={{
                 position: "absolute",
                 inset: 0,
@@ -318,8 +321,6 @@ export default function Home() {
                 background: "linear-gradient(to right, transparent, #22c55e33)",
                 zIndex: 0,
               }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: hoveredSide === "next" ? 1 : 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
             />
             <AnimatePresence>

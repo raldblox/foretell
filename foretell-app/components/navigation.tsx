@@ -2,7 +2,7 @@
 
 import type { NavbarProps } from "@heroui/react";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useContext } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -17,17 +17,14 @@ import {
 } from "@heroui/react";
 import { signIn, signOut, useSession, getCsrfToken } from "next-auth/react";
 import { Icon } from "@iconify/react";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
+import { sdk } from "@farcaster/miniapp-sdk";
 
 import { Logo } from "./icons";
 import { ThemeSwitch } from "./theme-switch";
 import GradientText from "./GradientText/GradientText";
-import { useProfile, SignInButton } from "@farcaster/auth-kit";
-import {
-  useMiniKit,
-  useNotification,
-  useViewProfile,
-} from "@coinbase/onchainkit/minikit";
-import { sdk } from "@farcaster/miniapp-sdk";
+
+import { AppContext } from "@/app/providers";
 
 const menuItems = [
   "About",
@@ -44,25 +41,7 @@ export default function Navigation(props: NavbarProps) {
   // TWITtER AUTH //
   const { data: session } = useSession();
   const { isFrameReady: isCoinbase } = useMiniKit();
-  const [isMiniApp, setIsMiniApp] = useState(false);
-  const [miniAppFid, setMiniAppFid] = useState<string | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      if (typeof window !== "undefined") {
-        try {
-          const result = await sdk.isInMiniApp();
-          setIsMiniApp(result);
-          if (result) {
-            const context = await sdk.context;
-            setMiniAppFid(
-              context?.user?.fid ? context.user.fid.toString() : null
-            );
-          }
-        } catch {}
-      }
-    })();
-  }, []);
+  const { isMiniApp, miniAppFid } = useContext(AppContext);
 
   // Render logic
   let connectButton = null;
@@ -71,22 +50,24 @@ export default function Navigation(props: NavbarProps) {
     // Show connected provider and user info, plus sign out
     const provider = (session.user as any)?.provider;
     const nameOrId = session.user?.name || session.user?.id;
+
     connectButton = (
       <div className="flex items-center gap-2">
-        <Button radius="full" size="sm" variant="flat" disabled>
+        <Button disabled radius="full" size="sm" variant="flat">
           {(() => {
             if (provider === "twitter")
               return (
                 <Icon
+                  className="mr-1"
                   icon="hugeicons:new-twitter"
                   width={16}
-                  className="mr-1"
                 />
               );
             if (provider === "farcaster")
-              return <Icon icon="mdi:castle" width={16} className="mr-1" />;
+              return <Icon className="mr-1" icon="mdi:castle" width={16} />;
             if (provider === "coinbase")
-              return <Icon icon="mdi:coin" width={16} className="mr-1" />;
+              return <Icon className="mr-1" icon="mdi:coin" width={16} />;
+
             return null;
           })()}
           {nameOrId}
@@ -105,10 +86,10 @@ export default function Navigation(props: NavbarProps) {
   } else if (isMiniApp) {
     connectButton = miniAppFid ? (
       <Button
+        className="bg-[#6746f9] text-white flex items-center gap-2"
         radius="full"
         size="sm"
         variant="solid"
-        className="bg-[#6746f9] text-white flex items-center gap-2"
         onPress={async () => {
           try {
             await sdk.actions.viewProfile({ fid: Number(miniAppFid) });
@@ -121,23 +102,25 @@ export default function Navigation(props: NavbarProps) {
           }
         }}
       >
-        <Image src="/farcaster.svg" width={18} height={18} alt="Farcaster" />
+        <Image alt="Farcaster" height={18} src="/farcaster.svg" width={18} />
         {miniAppFid}
       </Button>
     ) : (
       <Button
+        className="bg-[#6746f9] text-white flex items-center gap-2"
         radius="full"
         size="sm"
         variant="solid"
-        className="bg-[#6746f9] text-white flex items-center gap-2"
         onPress={async () => {
           try {
             const nonce = await getCsrfToken();
+
             if (!nonce) throw new Error("Unable to generate nonce");
             const result = await sdk.actions.signIn({
               nonce,
               acceptAuthAddress: true,
             });
+
             addToast({
               title: "Farcaster sign-in initiated",
               description: "Check your Farcaster app for the sign-in prompt.",
@@ -166,25 +149,24 @@ export default function Navigation(props: NavbarProps) {
   } else if (isCoinbase) {
     connectButton = (
       <Button
+        disabled
+        className="flex items-center gap-2"
         radius="full"
         size="sm"
         variant="flat"
-        className="flex items-center gap-2"
         onPress={() => {}}
-        disabled
       >
-        <Icon icon="mdi:coin" width={18} className="" />
+        <Icon className="" icon="mdi:coin" width={18} />
         Connect Coinbase (coming soon)
       </Button>
     );
   } else {
     connectButton = (
       <Button
+        className="flex items-center gap-2"
         radius="full"
         size="sm"
         variant="flat"
-        className="flex items-center gap-2"
-        onPress={() => signIn("twitter", { callbackUrl: "/" })}
         onContextMenu={(e) => {
           e.preventDefault();
           window.location.href = "/login";
@@ -207,17 +189,18 @@ export default function Navigation(props: NavbarProps) {
             (e.target as HTMLElement).removeAttribute("data-longpress");
           }
         }}
+        onPress={() => signIn("twitter", { callbackUrl: "/" })}
       >
         Connect
-        <Icon icon="hugeicons:new-twitter" width={18} className="" />
+        <Icon className="" icon="hugeicons:new-twitter" width={18} />
       </Button>
     );
   }
 
   return (
     <Navbar
-      position="sticky"
       shouldHideOnScroll
+      position="sticky"
       {...props}
       classNames={{
         base: "p-3 backdrop-filter-none bg-transparent",
@@ -236,11 +219,11 @@ export default function Navigation(props: NavbarProps) {
 
         {/* Logo */}
         <NavbarBrand className="mr-2 w-full flex items-center">
-          <Link href="/" className="text-foreground">
+          <Link className="text-foreground" href="/">
             <Logo />
             <GradientText
-              className="bg-transparent px-3"
               animationSpeed={3}
+              className="bg-transparent px-3"
               colors={["#f31260", "#f5a524", "#17c964", "#f5a524", "#f31260"]}
               showBorder={false}
             >
