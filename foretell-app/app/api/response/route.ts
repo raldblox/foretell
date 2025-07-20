@@ -57,9 +57,11 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
+  // Add server-side timestamp
+  const responseWithTimestamp = { ...response, createdAt: new Date().toISOString() };
   const result = await collection.updateOne(
     { surveyId },
-    { $push: { responses: response } },
+    { $push: { responses: responseWithTimestamp } },
   );
 
   if (result.modifiedCount === 1) {

@@ -17,7 +17,14 @@ import {
 } from "recharts";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/theme";
-import { Chip, Snippet, Button, Image, Link } from "@heroui/react";
+import {
+  Chip,
+  Snippet,
+  Button,
+  Image,
+  Link,
+  ScrollShadow,
+} from "@heroui/react";
 import QRCode from "qrcode";
 import { signIn } from "next-auth/react";
 
@@ -35,6 +42,7 @@ import DecryptedText from "@/components/DecryptedText/DecryptedText";
 import { RewardTable } from "@/components/reward-table";
 import { AppContext } from "@/app/providers";
 import CreateSurveyModal from "./create-survey";
+import MessageCard from "@/components/message-card";
 
 export default function GetInsight(survey: Survey) {
   const {
@@ -184,6 +192,50 @@ export default function GetInsight(survey: Survey) {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Scrollable responses list */}
+      <section className="p-3 md:pt-6 rounded-lg border border-default-100">
+        <h2 className="text-xl md:px-3 text-left font-medium">Responses</h2>
+        <ScrollShadow className="mt-4 max-h-[300px] overflow-y-auto rounded-lg border border-default-100 p-3 flex flex-col gap-2">
+          {Array.isArray(survey.responses) && survey.responses.length > 0 ? (
+            [...survey.responses]
+              .slice()
+              .sort((a, b) => {
+                if (a.createdAt && b.createdAt) {
+                  return (
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                  );
+                } else if (a.createdAt) {
+                  return -1;
+                } else if (b.createdAt) {
+                  return 1;
+                } else {
+                  return b.uid > a.uid ? 1 : -1;
+                }
+              })
+              .map((resp, i) => (
+                <MessageCard
+                  key={`${resp.uid}-${i}`}
+                  message={resp.answer || "No answer"}
+                  polarity={resp.polarity}
+                  {...(resp.createdAt && { messageClassName: "flex flex-col" })}
+                >
+                  {resp.createdAt && (
+                    <span className="text-xs text-default-400 block mb-1">
+                      {new Date(resp.createdAt).toLocaleString()}
+                    </span>
+                  )}
+                  {resp.answer || "No answer"}
+                </MessageCard>
+              ))
+          ) : (
+            <div className="text-center text-default-400 py-6">
+              No responses yet.
+            </div>
+          )}
+        </ScrollShadow>
       </section>
 
       {/* Reward Distribution Chart */}
@@ -385,7 +437,7 @@ export default function GetInsight(survey: Survey) {
 
       {/* Connect X Button */}
       <section className="md:p-6 p-3 rounded-lg border border-default-100">
-        <h2 className="text-xl text-left font-medium">Responses</h2>
+        <h2 className="text-xl text-left font-medium">Sentiment</h2>
         {/* {!userId && (
             <Button
               className="w-fit"

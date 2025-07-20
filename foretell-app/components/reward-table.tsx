@@ -37,7 +37,7 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
     >
       <TableHeader>
         <TableColumn key="uid">UID</TableColumn>
-        <TableColumn key="answer">Response</TableColumn>
+        {/* <TableColumn key="answer">Response</TableColumn> */}
         <TableColumn key="polarity">Polarity</TableColumn>
         <TableColumn key="score">Score</TableColumn>
         <TableColumn key="pctShare">Closeness</TableColumn>

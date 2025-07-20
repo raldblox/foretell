@@ -9,6 +9,7 @@ export interface RawEntry {
   score: number;
   intensity?: number;
   answer?: string;
+  createdAt?: string; // ISO string, server-side timestamp
 }
 
 export interface Reward {
