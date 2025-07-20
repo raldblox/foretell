@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import { addToast, Alert, Button, Textarea } from "@heroui/react";
 import { cn } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { useRef } from "react";
 
 import { AppContext } from "@/app/providers";
 import { Survey } from "@/hooks/useForetell";
@@ -23,6 +24,11 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
   } = useContext(AppContext)!;
   const idx = propIdx !== undefined ? propIdx : contextIdx;
   const [response, setResponse] = React.useState<string>("");
+  const [liveAnalysis, setLiveAnalysis] = React.useState(false);
+  const [livePolarity, setLivePolarity] = React.useState<null | -1 | 0 | 1>(0);
+  const [liveIntensity, setLiveIntensity] = React.useState<number>(0);
+  const analysisTimeout = useRef<NodeJS.Timeout | null>(null);
+  const analysisInProgress = useRef(false);
 
   const currentSurvey = surveys[idx];
   const hasResponded = currentSurvey?.responses?.some(
@@ -45,6 +51,60 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       localStorage.setItem(`anonUid_${currentSurvey.surveyId}`, anonUid);
     }
   }
+
+  // Live sentiment analysis as user types
+  React.useEffect(() => {
+    if (!classifier || !liveAnalysis) {
+      setLivePolarity(0);
+      setLiveIntensity(0);
+      return;
+    }
+    if (analysisTimeout.current) {
+      clearTimeout(analysisTimeout.current);
+    }
+    analysisTimeout.current = setTimeout(async () => {
+      if (!classifier || !liveAnalysis || !response) return;
+      if (analysisInProgress.current) return;
+      analysisInProgress.current = true;
+      try {
+        const result = await classifier.classify(response);
+        const categories = result.classifications?.[0]?.categories || [];
+        const positive = categories.find(
+          (c: any) => c.categoryName?.toLowerCase() === "positive"
+        );
+        const negative = categories.find(
+          (c: any) => c.categoryName?.toLowerCase() === "negative"
+        );
+        let score = 0.5;
+        if (positive) {
+          score = positive.score;
+        } else if (negative) {
+          score = 1 - negative.score;
+        }
+        let polarity: -1 | 0 | 1 = 0;
+        if (score > 0.7) polarity = 1;
+        else if (score < 0.3) polarity = -1;
+        else polarity = 0;
+        let intensity = 0;
+        if (polarity === -1) {
+          intensity = 1 - Math.min(Math.max(score / 0.3, 0), 1);
+        } else if (polarity === 0) {
+          intensity = 1 - Math.min(Math.abs(score - 0.5) / 0.2, 1);
+        } else if (polarity === 1) {
+          intensity = Math.min(Math.max((score - 0.7) / 0.3, 0), 1);
+        }
+        setLivePolarity(polarity);
+        setLiveIntensity(intensity);
+      } finally {
+        analysisInProgress.current = false;
+      }
+    }, 300);
+    return () => {
+      if (analysisTimeout.current) {
+        clearTimeout(analysisTimeout.current);
+      }
+    };
+  }, [response, classifier, liveAnalysis]);
 
   const submitResponse = async () => {
     if (!response.trim()) return;
@@ -227,18 +287,37 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
         <div className="flex w-full flex-wrap border-t border-default-100 items-center justify-between gap-2 p-3">
           <div className="flex flex-wrap gap-3">
             <Button
-              isDisabled={true}
-              size="sm"
+              isDisabled={false}
+              size="md"
+              variant="flat"
+              className="p-1 px-3"
               startContent={
                 <Icon
-                  className="text-default-500"
-                  icon="hugeicons:stake"
+                  className={liveAnalysis ? "text-success" : "text-default-500"}
+                  icon={liveAnalysis ? "svg-spinners:gooey-balls-1" : "octicon:dot-fill-16"}
                   width={18}
                 />
               }
-              variant="flat"
+              onPress={() => setLiveAnalysis((v) => !v)}
             >
-              Add stake
+              Live Analyzer
+              {liveAnalysis && (
+                <div className="flex text-xs items-center px-2 py-1 gap-3 rounded-lg bg-default-50 border border-default-200">
+                  <span
+                    className={
+                      livePolarity === 1
+                        ? "text-success"
+                        : livePolarity === 0
+                          ? "text-warning"
+                          : livePolarity === -1
+                            ? "text-danger"
+                            : ""
+                    }
+                  >
+                    {liveIntensity !== null ? liveIntensity.toFixed(3) : "-"}
+                  </span>
+                </div>
+              )}
             </Button>
             {/* <Button
             size="sm"
@@ -267,6 +346,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
             Templates
           </Button> */}
           </div>
+
           <p className="py-1 text-tiny text-default-400">
             {response.length}/2000
           </p>
