@@ -1,8 +1,9 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { ThemeSwitch } from "./theme-switch";
 import { Link } from "@heroui/react";
+
+import { ThemeSwitch } from "./theme-switch";
 
 const Footer = () => {
   return (

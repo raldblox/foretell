@@ -3,6 +3,7 @@ import { Button, addToast, Image } from "@heroui/react";
 import { signIn, signOut, useSession, getCsrfToken } from "next-auth/react";
 import { Icon } from "@iconify/react";
 import { sdk } from "@farcaster/miniapp-sdk";
+
 import { AppContext } from "@/app/providers";
 
 export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
@@ -11,16 +12,17 @@ export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
 
   if (session) {
     const provider = (session.user as any)?.provider;
+
     // const nameOrId = session.user?.name || session.user?.id;
     return (
       <div className="flex w-fit mx-auto items-center gap-0.5 p-1 border-1 border-default-100 rounded-full">
         <Button
           isIconOnly
+          className="hover:bg-danger"
+          color="default"
           radius="full"
           size={size}
-          color="default"
           variant="solid"
-          className="hover:bg-danger"
           onPress={() => signOut({ callbackUrl: "/" })}
         >
           {(() => {
@@ -29,6 +31,7 @@ export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
             if (provider === "farcaster")
               return <Icon icon="mdi:castle" width={16} />;
             if (provider === "siwe") return <Icon icon="mdi:coin" width={16} />;
+
             return null;
           })()}
         </Button>
@@ -74,6 +77,7 @@ export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
         onPress={async () => {
           try {
             const nonce = await getCsrfToken();
+
             if (!nonce) throw new Error("Unable to generate nonce");
             await sdk.actions.signIn({
               nonce,

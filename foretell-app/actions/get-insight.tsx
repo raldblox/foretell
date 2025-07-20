@@ -17,18 +17,11 @@ import {
 } from "recharts";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/theme";
-import {
-  Chip,
-  Snippet,
-  Button,
-  Image,
-  Link,
-  ScrollShadow,
-} from "@heroui/react";
+import { Chip, Snippet, Image, Link, ScrollShadow } from "@heroui/react";
 import QRCode from "qrcode";
-import { signIn } from "next-auth/react";
 
 import SubmitResponse from "./submit-response";
+import CreateSurveyModal from "./create-survey";
 
 import {
   CHANGE_TYPE,
@@ -38,10 +31,8 @@ import {
   useForetell,
   Survey,
 } from "@/hooks/useForetell";
-import DecryptedText from "@/components/DecryptedText/DecryptedText";
 import { RewardTable } from "@/components/reward-table";
 import { AppContext } from "@/app/providers";
-import CreateSurveyModal from "./create-survey";
 import MessageCard from "@/components/message-card";
 
 export default function GetInsight(survey: Survey) {
@@ -62,7 +53,7 @@ export default function GetInsight(survey: Survey) {
 
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
-    rewardPool
+    rewardPool,
   );
 
   useEffect(() => {
@@ -75,7 +66,7 @@ export default function GetInsight(survey: Survey) {
         { width: 200, margin: 2 },
         (error: Error | null | undefined, url: string) => {
           if (!error && url) setQrCodeUrl(url);
-        }
+        },
       );
     }
   }, [surveyId]);
@@ -89,9 +80,10 @@ export default function GetInsight(survey: Survey) {
           <div className="bg-default-50 flex flex-col p-3 rounded-lg gap-3">
             <motion.div
               key={title} // Trigger animation when title changes
-              initial={{ opacity: 0, height: "auto" }}
               animate={{ opacity: 1, height: "auto" }}
+              className="overflow-hidden"
               exit={{ opacity: 0, height: "auto" }}
+              initial={{ opacity: 0, height: "auto" }}
               transition={{
                 duration: 0.3,
                 ease: "easeInOut",
@@ -100,7 +92,6 @@ export default function GetInsight(survey: Survey) {
                   ease: "easeInOut",
                 },
               }}
-              className="overflow-hidden"
             >
               <p className="text-xl md:text-2xl font-semibold leading-tight md:py-0">
                 {title}
@@ -109,9 +100,10 @@ export default function GetInsight(survey: Survey) {
             {description && (
               <motion.div
                 key={description}
-                initial={{ opacity: 0, height: "auto" }}
                 animate={{ opacity: 1, height: "auto" }}
+                className="overflow-hidden"
                 exit={{ opacity: 0, height: "auto" }}
+                initial={{ opacity: 0, height: "auto" }}
                 transition={{
                   duration: 0.3,
                   ease: "easeInOut",
@@ -120,7 +112,6 @@ export default function GetInsight(survey: Survey) {
                     ease: "easeInOut",
                   },
                 }}
-                className="overflow-hidden"
               >
                 <p className="text-sm text-default-500">{description}</p>
               </motion.div>

@@ -19,7 +19,6 @@ import { Survey } from "@/hooks/useForetell";
 import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
 import { dummySurveys } from "@/lib/dummySurvey";
-import sdk from "@farcaster/miniapp-sdk";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -36,10 +35,10 @@ export default function Home() {
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const [isSwiping, setIsSwiping] = useState(false);
 
@@ -48,9 +47,11 @@ export default function Home() {
 
   // Track swipe qualification for popup
   let swipeQualified = false;
+
   if (isSwiping && touchStart && touchEnd) {
     const distanceX = touchStart.x - touchEnd.x;
     const distanceY = touchStart.y - touchEnd.y;
+
     swipeQualified =
       Math.abs(distanceX) > 2 * Math.abs(distanceY) &&
       Math.abs(distanceX) > minSwipeDistance;
@@ -77,22 +78,24 @@ export default function Home() {
         setIdx(0);
       } else if (data.surveys) {
         setSurveys((prev: Survey[]) =>
-          reset ? data.surveys : [...prev, ...data.surveys]
+          reset ? data.surveys : [...prev, ...data.surveys],
         );
         setHasMore(data.surveys.length === limit);
         offsetRef.current = reset ? limit : offsetRef.current + limit;
       }
       setLoading(false);
     },
-    [setSurveys, setIdx]
+    [setSurveys, setIdx],
   );
 
   // On mount or when surveyId changes:
   useEffect(() => {
     const invite = searchParams?.get("surveyId");
+
     // If no surveyId, set default
     if (!invite) {
       router.replace(`${pathname}?surveyId=FliCp8VQtiG2StNTFVKP4`);
+
       return;
     }
     if (invite) {

@@ -2,7 +2,7 @@
 
 import type { NavbarProps } from "@heroui/react";
 
-import React, { useContext } from "react";
+import React from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -11,16 +11,13 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   Link,
-  Button,
-  addToast,
-  Image,
 } from "@heroui/react";
 
 import { Logo } from "./icons";
 import GradientText from "./GradientText/GradientText";
+import ConnectButton from "./connect";
 
 import CreateSurveyModal from "@/actions/create-survey";
-import ConnectButton from "./connect";
 
 const menuItems = [
   "About",

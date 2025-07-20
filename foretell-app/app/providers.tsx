@@ -51,7 +51,7 @@ export const ContextProvider = ({
             const context = await sdk.context;
 
             setMiniAppFid(
-              context?.user?.fid ? context.user.fid.toString() : null
+              context?.user?.fid ? context.user.fid.toString() : null,
             );
             // load the ui
             await sdk.actions.ready();

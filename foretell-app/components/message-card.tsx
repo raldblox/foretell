@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { Avatar, Badge, Button, Link, Tooltip } from "@heroui/react";
-import { useClipboard } from "@heroui/use-clipboard";
+import { Badge } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/react";
 
@@ -17,7 +16,7 @@ export type MessageCardProps = React.HTMLAttributes<HTMLDivElement> & {
 const MessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
   (
     { avatar, message, polarity, className, messageClassName, ...props },
-    ref
+    ref,
   ) => {
     const messageRef = React.useRef<HTMLDivElement>(null);
 
@@ -34,10 +33,10 @@ const MessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
             shape="circle"
           >
             <Icon
+              className="p-2 border rounded-full"
               height="36"
               icon="hugeicons:anonymous"
               width="36"
-              className="p-2 border rounded-full"
             />
           </Badge>
         </div>
@@ -45,7 +44,7 @@ const MessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
           <div
             className={cn(
               "relative w-full rounded-medium bg-content2 px-4 py-3 text-default-600",
-              messageClassName
+              messageClassName,
             )}
           >
             <div ref={messageRef} className={"pr-6 text-small"}>
@@ -55,7 +54,7 @@ const MessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default MessageCard;

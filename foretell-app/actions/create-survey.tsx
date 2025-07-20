@@ -3,7 +3,6 @@
 import React, { useState, useContext } from "react";
 import { nanoid } from "nanoid";
 import { z } from "zod";
-import { useSession } from "next-auth/react";
 import {
   Modal,
   ModalBody,
@@ -23,7 +22,6 @@ import { parseDate } from "@internationalized/date";
 
 import { AppContext } from "@/app/providers";
 import { Survey } from "@/hooks/useForetell";
-import { Logo } from "@/components/icons";
 import ConnectButton from "@/components/connect";
 
 const SurveySchema = z.object({
