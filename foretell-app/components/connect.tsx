@@ -6,7 +6,13 @@ import { sdk } from "@farcaster/miniapp-sdk";
 
 import { AppContext } from "@/app/providers";
 
-export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
+export default function ConnectButton({
+  size,
+  fullWidth,
+}: {
+  size: "sm" | "md" | "lg";
+  fullWidth?: boolean;
+}) {
   const { data: session } = useSession();
   const { isMiniApp, miniAppFid, isWallet } = useContext(AppContext);
 
@@ -128,7 +134,8 @@ export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
         className="flex text-small font-medium leading-5 items-center gap-2 "
         radius="full"
         size={size}
-        variant="flat"
+        variant="solid"
+        fullWidth={fullWidth}
         onPress={() => signIn("twitter", { callbackUrl: "/" })}
       >
         Connect

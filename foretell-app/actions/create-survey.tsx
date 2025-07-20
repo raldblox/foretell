@@ -248,18 +248,22 @@ export default function CreateSurveyModal({
               </Switch>
               <Spacer y={3} />
               {error && <div className="text-danger text-sm">{error}</div>}
-              {userId ? (
-                <div className="flex items-center gap-1 w-full">
+
+              <div className="flex items-center gap-1 w-full">
+                <Button
+                  radius="full"
+                  color="default"
+                  isLoading={loading}
+                  size="lg"
+                  type="submit"
+                  onPress={onClose}
+                  variant="flat"
+                >
+                  Cancel
+                </Button>
+                {userId ? (
                   <Button
-                    color="default"
-                    isLoading={loading}
-                    size="lg"
-                    type="submit"
-                    onPress={onClose}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
+                    radius="full"
                     fullWidth
                     color="primary"
                     isLoading={loading}
@@ -268,10 +272,10 @@ export default function CreateSurveyModal({
                   >
                     Create Survey
                   </Button>
-                </div>
-              ) : (
-                <ConnectButton size="lg" />
-              )}
+                ) : (
+                  <ConnectButton size="lg" fullWidth />
+                )}
+              </div>
             </form>
           </ModalBody>
           <ModalFooter className="flex justify-center items-center pb-6">
