@@ -179,7 +179,6 @@ export default function CreateSurveyModal({
         size={size}
         onPress={onOpen}
         fullWidth={fullWidth}
-        // startContent={<Logo size={26} />}
       >
         {customMessage ? customMessage : "Create survey on Foretell"}
       </Button>
