@@ -18,13 +18,40 @@ import { Survey } from "@/hooks/useForetell";
 import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
 import { dummySurveys } from "@/lib/dummySurvey";
+import sdk from "@farcaster/miniapp-sdk";
 
 export default function Home() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [showHero, setShowHero] = useState(true);
-  const { surveys, setSurveys, idx, setIdx, bertLoaded } =
-    useContext(AppContext)!;
+  const {
+    surveys,
+    setSurveys,
+    idx,
+    setIdx,
+    bertLoaded,
+    setIsMiniApp,
+    setMiniAppFid,
+  } = useContext(AppContext)!;
+
+  React.useEffect(() => {
+    (async () => {
+      if (typeof window !== "undefined") {
+        try {
+          const result = await sdk.isInMiniApp();
+
+          setIsMiniApp(result);
+          if (result) {
+            const context = await sdk.context;
+
+            setMiniAppFid(
+              context?.user?.fid ? context.user.fid.toString() : null
+            );
+          }
+        } catch {}
+      }
+    })();
+  }, []);
 
   const limit = 10;
   const offsetRef = useRef(0);

@@ -41,25 +41,6 @@ export const ContextProvider = ({
   const userId = session ? session?.user?.id : miniAppFid;
 
   React.useEffect(() => {
-    (async () => {
-      if (typeof window !== "undefined") {
-        try {
-          const result = await sdk.isInMiniApp();
-
-          setIsMiniApp(result);
-          if (result) {
-            const context = await sdk.context;
-
-            setMiniAppFid(
-              context?.user?.fid ? context.user.fid.toString() : null
-            );
-          }
-        } catch {}
-      }
-    })();
-  }, []);
-
-  React.useEffect(() => {
     async function loadBert() {
       const classifier = await loadTextClassifier();
 
@@ -82,6 +63,8 @@ export const ContextProvider = ({
     classifier,
     isMiniApp,
     miniAppFid,
+    setIsMiniApp,
+    setMiniAppFid,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
