@@ -53,7 +53,7 @@ export const ContextProvider = ({
             const context = await sdk.context;
 
             setMiniAppFid(
-              context?.user?.fid ? context.user.fid.toString() : null,
+              context?.user?.fid ? context.user.fid.toString() : null
             );
           }
         } catch {}
@@ -73,33 +73,33 @@ export const ContextProvider = ({
     return arr;
   }
 
-  React.useEffect(() => {
-    async function fetchSurveys() {
-      const res = await fetch("/api/survey");
+  // React.useEffect(() => {
+  //   async function fetchSurveys() {
+  //     const res = await fetch("/api/survey");
 
-      if (res.ok) {
-        const data = await res.json();
+  //     if (res.ok) {
+  //       const data = await res.json();
 
-        if (data.surveys && data.surveys.length > 0) {
-          const now = new Date();
-          const filteredSurveys = data.surveys.filter((survey: Survey) => {
-            const isDiscoverable = survey.discoverable !== false;
-            const isNotExpired =
-              !survey.expiry || new Date(survey.expiry) > now;
+  //       if (data.surveys && data.surveys.length > 0) {
+  //         const now = new Date();
+  //         const filteredSurveys = data.surveys.filter((survey: Survey) => {
+  //           const isDiscoverable = survey.discoverable !== false;
+  //           const isNotExpired =
+  //             !survey.expiry || new Date(survey.expiry) > now;
 
-            return isDiscoverable && isNotExpired;
-          });
+  //           return isDiscoverable && isNotExpired;
+  //         });
 
-          setSurveys(() => shuffle([...dummySurveys, ...filteredSurveys]));
-        } else {
-          setSurveys(shuffle(dummySurveys));
-        }
-      } else {
-        setSurveys(shuffle(dummySurveys));
-      }
-    }
-    fetchSurveys();
-  }, []);
+  //         setSurveys(() => shuffle([...dummySurveys, ...filteredSurveys]));
+  //       } else {
+  //         setSurveys(shuffle(dummySurveys));
+  //       }
+  //     } else {
+  //       setSurveys(shuffle(dummySurveys));
+  //     }
+  //   }
+  //   fetchSurveys();
+  // }, []);
 
   React.useEffect(() => {
     async function loadBert() {
