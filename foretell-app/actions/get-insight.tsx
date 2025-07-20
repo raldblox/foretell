@@ -96,7 +96,7 @@ export default function GetInsight(survey: Survey) {
 
         {/* QR/Link Container */}
         <div className="col-span-1 flex flex-col rounded-lg border border-default-100 min-h-[200px]">
-          <div className="flex  gap-3 flex-col p-3 w-full items-center h-full">
+          <div className="flex  gap-3 flex-col p-3  w-full items-center h-full">
             <Snippet
               hideSymbol
               className="pl-4 w-full rounded-lg bg-default-50"
@@ -107,7 +107,7 @@ export default function GetInsight(survey: Survey) {
               Survey Link
             </Snippet>
 
-            <div className="flex py-6 md:aspect-square bg-default-50 rounded-lg flex-col items-center justify-center w-full">
+            <div className="flex py-6 space-y-3 md:aspect-square bg-default-50 rounded-lg flex-col items-center justify-center w-full">
               <span className="text-xs text-default-500 mt-1">
                 Scan to open survey
               </span>

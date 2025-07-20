@@ -34,6 +34,18 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
+  // Swipe gesture state
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  // Minimum swipe distance (in pixels)
+  const minSwipeDistance = 50;
+
   const fetchSurveys = useCallback(
     async (surveyId?: string, reset = false) => {
       setLoading(true);
@@ -98,6 +110,63 @@ export default function Home() {
     setIdx((i: number) => (i + surveys.length - 1) % surveys.length);
   const next = () => setIdx((i: number) => (i + 1) % surveys.length);
 
+  // Swipe gesture handlers
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+    setIsSwiping(true);
+    setHoveredSide(null); // Clear any existing hover effects when starting new touch
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+
+    // Sync side navigation hover effects with swipe direction
+    if (touchStart) {
+      const distanceX = touchStart.x - e.targetTouches[0].clientX;
+
+      if (Math.abs(distanceX) > 20) {
+        // Threshold to trigger hover effect
+        if (distanceX > 0) {
+          // Swiping left - show next hover effect
+          setHoveredSide("next");
+        } else {
+          // Swiping right - show prev hover effect
+          setHoveredSide("prev");
+        }
+      }
+    }
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distanceX = touchStart.x - touchEnd.x;
+    const distanceY = touchStart.y - touchEnd.y;
+    const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
+
+    if (isHorizontalSwipe && Math.abs(distanceX) > minSwipeDistance) {
+      if (distanceX > 0) {
+        // Swipe left - go to next
+        next();
+      } else {
+        // Swipe right - go to prev
+        prev();
+      }
+    }
+
+    setTouchStart(null);
+    setTouchEnd(null);
+    setIsSwiping(false);
+    setHoveredSide(null); // Clear hover effect when swipe ends
+  };
+
   // Side navigation state and handlers
   const [hoveredSide, setHoveredSide] = useState<null | "prev" | "next">(null);
   // For prev
@@ -142,7 +211,13 @@ export default function Home() {
 
   return (
     <>
-      <main className="flex flex-col items-center rounded-2xl md:rounded-3xl md:px-0">
+      <main
+        className="flex flex-col items-center rounded-2xl md:rounded-3xl md:px-0"
+        style={{ touchAction: "pan-y" }} // Allow vertical scrolling but handle horizontal swipes
+        onTouchEnd={onTouchEnd}
+        onTouchMove={onTouchMove}
+        onTouchStart={onTouchStart}
+      >
         {showHero && (
           <section
             className="container py-12 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6"
@@ -215,11 +290,35 @@ export default function Home() {
               </svg>
             </div>
           </div>
-          <div className="max-w-7xl rounded-tl-2xl rounded-tr-2xl  bg-default-50/70 backdrop-blur-md mx-auto p-3">
+
+          {/* Swipe indicator for mobile */}
+          {isSwiping && touchStart && touchEnd && (
+            <motion.div
+              animate={{ opacity: 1 }}
+              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none"
+              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+            >
+              <div className="bg-black/20 backdrop-blur-sm rounded-full px-4 py-2 text-white text-sm font-medium">
+                {touchStart.x - touchEnd.x > 0 ? "← Next" : "Prev →"}
+              </div>
+            </motion.div>
+          )}
+
+          <motion.div
+            animate={{
+              x:
+                isSwiping && touchStart && touchEnd
+                  ? (touchEnd.x - touchStart.x) * 0.1
+                  : 0,
+            }}
+            className="max-w-7xl rounded-tl-2xl rounded-tr-2xl  bg-default-50/70 backdrop-blur-md mx-auto p-3"
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          >
             <Suspense>
               <GetInsight {...currentSurvey} />
             </Suspense>
-          </div>
+          </motion.div>
         </div>
         <div className="">
           <div
@@ -256,7 +355,7 @@ export default function Home() {
                 <motion.span
                   key="prev-cursor"
                   animate={{ scale: 1, opacity: 1 }}
-                  className="flex items-center"
+                  className="hidden md:flex items-center"
                   exit={{ scale: 0.7, opacity: 0 }}
                   initial={{ scale: 0.7, opacity: 0 }}
                   style={{
@@ -328,7 +427,7 @@ export default function Home() {
                 <motion.span
                   key="next-cursor"
                   animate={{ scale: 1, opacity: 1 }}
-                  className="flex items-center"
+                  className="hidden md:flex items-center"
                   exit={{ scale: 0.7, opacity: 0 }}
                   initial={{ scale: 0.7, opacity: 0 }}
                   style={{
