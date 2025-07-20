@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
   AreaChart,
   Area,
@@ -77,17 +78,43 @@ export default function GetInsight(survey: Survey) {
         {/* Response Container */}
         <div className="col-span-1 md:col-span-3 flex flex-col gap-3 rounded-lg border border-default-100 p-3">
           <div className="bg-default-50 flex flex-col p-3 rounded-lg gap-3">
-            <p className="text-xl md:text-2xl font-semibold leading-tight md:py-0">
-              {title && (
-                <DecryptedText
-                  useOriginalCharsOnly
-                  animateOn="view"
-                  text={title}
-                />
-              )}
-            </p>
+            <motion.div
+              key={title} // Trigger animation when title changes
+              initial={{ opacity: 0, height: "auto" }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: "auto" }}
+              transition={{
+                duration: 0.3,
+                ease: "easeInOut",
+                height: {
+                  duration: 0.4,
+                  ease: "easeInOut"
+                }
+              }}
+              className="overflow-hidden"
+            >
+              <p className="text-xl md:text-2xl font-semibold leading-tight md:py-0">
+                {title}
+              </p>
+            </motion.div>
             {description && (
-              <p className="text-sm text-default-500">{description}</p>
+              <motion.div
+                key={description}
+                initial={{ opacity: 0, height: "auto" }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: "auto" }}
+                transition={{
+                  duration: 0.3,
+                  ease: "easeInOut",
+                  height: {
+                    duration: 0.4,
+                    ease: "easeInOut"
+                  }
+                }}
+                className="overflow-hidden"
+              >
+                <p className="text-sm text-default-500">{description}</p>
+              </motion.div>
             )}
           </div>
 

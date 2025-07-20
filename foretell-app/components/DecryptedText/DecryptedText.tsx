@@ -20,7 +20,7 @@ interface DecryptedTextProps extends HTMLMotionProps<"span"> {
 export default function DecryptedText({
   text,
   speed = 50,
-  maxIterations = 10,
+  maxIterations = 5,
   sequential = false,
   revealDirection = "start",
   useOriginalCharsOnly = false,
@@ -28,7 +28,7 @@ export default function DecryptedText({
   className = "",
   parentClassName = "",
   encryptedClassName = "",
-  animateOn = "hover",
+  animateOn = "view",
   ...props
 }: DecryptedTextProps) {
   const [displayText, setDisplayText] = useState<string>(text);
