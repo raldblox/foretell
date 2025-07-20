@@ -23,7 +23,7 @@ import Footer from "@/components/footer";
 export const generateMetadata = (): Metadata => {
   return {
     title: "Foretell",
-    description: "It' i's foretelling time!",
+    description: "It's foretelling time!",
     other: {
       "fc:frame": JSON.stringify({
         version: "1",
@@ -73,7 +73,7 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-dvh text-foreground bg-background font-sans antialiased",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
         <NextAuthProvider>
