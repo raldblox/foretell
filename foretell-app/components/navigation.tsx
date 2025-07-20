@@ -67,14 +67,16 @@ export default function Navigation(props: NavbarProps) {
         <NavbarBrand className="mx-1 w-full flex items-center">
           <Link className="text-foreground" href="/">
             <Logo size={30} />
-            <GradientText
-              animationSpeed={3}
-              className="bg-transparent px-3 hidden md:flex"
-              colors={["#f31260", "#f5a524", "#17c964", "#f5a524", "#f31260"]}
-              showBorder={false}
-            >
-              FORETELL
-            </GradientText>
+            <span className="hidden md:flex">
+              <GradientText
+                animationSpeed={3}
+                className="bg-transparent px-3 hidden md:flex"
+                colors={["#f31260", "#f5a524", "#17c964", "#f5a524", "#f31260"]}
+                showBorder={false}
+              >
+                FORETELL
+              </GradientText>
+            </span>
           </Link>
         </NavbarBrand>
 
