@@ -38,8 +38,8 @@ export function getSentimentAnalysis(
       score = 1 - negative.score;
     }
     let polarity: -1 | 0 | 1 = 0;
-    if (score > 0.7) polarity = 1;
-    else if (score < 0.3) polarity = -1;
+    if (score > 0.8) polarity = 1;
+    else if (score < 0.2) polarity = -1;
     else polarity = 0;
     let intensity = 0;
     if (polarity === -1) {
@@ -84,11 +84,19 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
   // Handle anonymous UID
   let anonUid = null;
 
+  // DEV MODE: always generate a new anon UID to allow repeated submissions
+  const isDev =
+    typeof process !== "undefined" && process.env.NEXT_PUBLIC_ENV === "dev";
+
   if (typeof window !== "undefined" && currentSurvey?.allowAnonymity) {
-    anonUid = localStorage.getItem(`anonUid_${currentSurvey.surveyId}`);
-    if (!anonUid) {
+    if (isDev) {
       anonUid = `anon#${Math.random().toString(36).slice(2, 10)}`;
-      localStorage.setItem(`anonUid_${currentSurvey.surveyId}`, anonUid);
+    } else {
+      anonUid = localStorage.getItem(`anonUid_${currentSurvey.surveyId}`);
+      if (!anonUid) {
+        anonUid = `anon#${Math.random().toString(36).slice(2, 10)}`;
+        localStorage.setItem(`anonUid_${currentSurvey.surveyId}`, anonUid);
+      }
     }
   }
 
@@ -131,7 +139,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
       return;
     }
-    if (hasResponded) {
+    if (hasResponded && !(isDev && currentSurvey?.allowAnonymity)) {
       alert("You have already submitted a response to this survey.");
 
       return;
@@ -186,7 +194,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
         addToast({
           title: "Your response has been recorded.",
-          description: "Thanks for your feedback!",
           color: "success",
         });
 
