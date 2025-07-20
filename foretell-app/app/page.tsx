@@ -42,7 +42,15 @@ export default function Home() {
   const [isSwiping, setIsSwiping] = useState(false);
 
   // Minimum swipe distance (in pixels)
-  const minSwipeDistance = 50;
+  const minSwipeDistance = 80;
+
+  // Track swipe qualification for popup
+  let swipeQualified = false;
+  if (isSwiping && touchStart && touchEnd) {
+    const distanceX = touchStart.x - touchEnd.x;
+    const distanceY = touchStart.y - touchEnd.y;
+    swipeQualified = Math.abs(distanceX) > 2 * Math.abs(distanceY) && Math.abs(distanceX) > minSwipeDistance;
+  }
 
   const fetchSurveys = useCallback(
     async (surveyId?: string, reset = false) => {
@@ -143,7 +151,7 @@ export default function Home() {
 
     const distanceX = touchStart.x - touchEnd.x;
     const distanceY = touchStart.y - touchEnd.y;
-    const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
+    const isHorizontalSwipe = Math.abs(distanceX) > 2 * Math.abs(distanceY);
 
     if (isHorizontalSwipe && Math.abs(distanceX) > minSwipeDistance) {
       if (distanceX > 0) {
@@ -288,14 +296,14 @@ export default function Home() {
           </div>
 
           {/* Swipe indicator for mobile */}
-          {isSwiping && touchStart && touchEnd && (
+          {swipeQualified && touchStart && touchEnd && (
             <motion.div
               animate={{ opacity: 1 }}
               className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none"
               exit={{ opacity: 0 }}
               initial={{ opacity: 0 }}
             >
-              <div className="bg-foreground/20 backdrop-blur-sm rounded-full px-4 p-2 text-foreground text-sm font-medium">
+              <div className="bg-foreground backdrop-blur-sm rounded-full px-4 p-2 text-background text-sm font-medium">
                 {touchStart.x - touchEnd.x > 0 ? (
                   <div className="flex items-center pr-4">
                     <svg
