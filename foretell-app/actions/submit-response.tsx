@@ -213,6 +213,8 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
         // }
       }
       setResponse("");
+      setLivePolarity(0);
+      setLiveIntensity(0);
     } else {
       const data = await res.json();
 
@@ -297,7 +299,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
                       livePolarity === 1
                         ? "text-success"
                         : livePolarity === 0
-                          ? "text-warning"
+                          ? "text-foreground"
                           : livePolarity === -1
                             ? "text-danger"
                             : ""
