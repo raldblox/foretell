@@ -250,14 +250,26 @@ export default function CreateSurveyModal({
               <Spacer y={3} />
               {error && <div className="text-danger text-sm">{error}</div>}
               {userId ? (
-                <Button
-                  color="primary"
-                  isLoading={loading}
-                  size="lg"
-                  type="submit"
-                >
-                  Create Survey
-                </Button>
+                <div className="flex items-center gap-1 w-full">
+                  <Button
+                    color="default"
+                    isLoading={loading}
+                    size="lg"
+                    type="submit"
+                    onPress={onClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    fullWidth
+                    color="primary"
+                    isLoading={loading}
+                    size="lg"
+                    type="submit"
+                  >
+                    Create Survey
+                  </Button>
+                </div>
               ) : (
                 <ConnectButton size="lg" />
               )}

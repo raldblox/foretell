@@ -19,7 +19,7 @@ export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
           radius="full"
           size={size}
           color="default"
-          variant="flat"
+          variant="solid"
           className="hover:bg-danger"
           onPress={() => signOut({ callbackUrl: "/" })}
         >
@@ -37,7 +37,7 @@ export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
           color="default"
           radius="full"
           size={size}
-          variant="flat"
+          variant="solid"
         >
           {session?.user?.name}
         </Button>
@@ -121,7 +121,7 @@ export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
   } else {
     return (
       <Button
-        className="flex text-sm items-center gap-2 "
+        className="flex text-small font-medium leading-5 items-center gap-2 "
         radius="full"
         size={size}
         variant="flat"
