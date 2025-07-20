@@ -15,12 +15,14 @@ import {
   useDisclosure,
   DatePicker,
   Switch,
+  Spacer,
 } from "@heroui/react";
 import { parseDate } from "@internationalized/date";
 
 import { AppContext } from "@/app/providers";
 import { Survey } from "@/hooks/useForetell";
 import { Logo } from "@/components/icons";
+import ConnectButton from "@/components/connect";
 
 const SurveySchema = z.object({
   surveyId: z.string().optional(),
@@ -37,8 +39,14 @@ const SurveySchema = z.object({
 
 export default function CreateSurveyModal({
   onSuccess,
+  fullWidth,
+  size,
+  customMessage,
 }: {
   onSuccess?: () => void;
+  fullWidth?: boolean;
+  size?: "sm" | "md" | "lg";
+  customMessage?: string;
 }) {
   const { setSurveys, setIdx, userId } = useContext(AppContext)!;
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -49,7 +57,7 @@ export default function CreateSurveyModal({
     description: "",
     expiry: "",
     maxResponses: "",
-    allowAnonymity: false,
+    allowAnonymity: true,
     discoverable: true,
   });
 
@@ -166,13 +174,14 @@ export default function CreateSurveyModal({
   return (
     <>
       <Button
-        className="h-10 bg-default-foreground px-[16px] py-[10px] text-small font-medium leading-5 text-background"
+        className="bg-default-foreground text-small font-medium leading-5 text-background"
         radius="full"
-        size="lg"
+        size={size}
         onPress={onOpen}
+        fullWidth={fullWidth}
         // startContent={<Logo size={26} />}
       >
-        Create survey on Foretell
+        {customMessage ? customMessage : "Create survey on Foretell"}
       </Button>
 
       <Modal
@@ -183,13 +192,15 @@ export default function CreateSurveyModal({
         onOpenChange={onOpenChange}
       >
         <ModalContent>
-          <ModalHeader>Create Your Survey</ModalHeader>
+          <ModalHeader className="flex justify-between items-center w-full mt-3">
+            <h1>New Survey</h1>
+            <span>{userId && <ConnectButton size="sm" />}</span>
+          </ModalHeader>
           <ModalBody>
             <form className="flex flex-col gap-3 pb-6" onSubmit={handleSubmit}>
-              <Input
+              <Textarea
                 isRequired
-                required
-                label="Topic"
+                label="Insert topic or ask question"
                 name="title"
                 value={form.title}
                 onChange={handleChange}
@@ -200,7 +211,6 @@ export default function CreateSurveyModal({
                 value={form.description}
                 onChange={handleChange}
               />
-
               <DatePicker
                 hideTimeZone
                 isRequired
@@ -210,7 +220,6 @@ export default function CreateSurveyModal({
                 value={form.expiry ? parseDate(form.expiry) : null}
                 onChange={handleExpiryChange}
               />
-
               <Input
                 isRequired
                 label="Maximum Responses"
@@ -219,6 +228,7 @@ export default function CreateSurveyModal({
                 value={form.maxResponses}
                 onChange={handleChange}
               />
+              <Spacer y={3} />
               <Switch
                 color="primary"
                 isSelected={form.allowAnonymity}
@@ -235,16 +245,20 @@ export default function CreateSurveyModal({
               >
                 Discoverable (show in browse)
               </Switch>
+              <Spacer y={3} />
               {error && <div className="text-danger text-sm">{error}</div>}
-              <Button
-                className="mt-4"
-                color="primary"
-                isLoading={loading}
-                size="lg"
-                type="submit"
-              >
-                Create Survey
-              </Button>
+              {userId ? (
+                <Button
+                  color="primary"
+                  isLoading={loading}
+                  size="lg"
+                  type="submit"
+                >
+                  Create Survey
+                </Button>
+              ) : (
+                <ConnectButton size="lg" />
+              )}
             </form>
           </ModalBody>
         </ModalContent>
