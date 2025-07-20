@@ -24,7 +24,7 @@ export default function Home() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [showHero, setShowHero] = useState(true);
-  const { surveys, setSurveys, idx, setIdx, bertLoaded } =
+  const { surveys, setSurveys, idx, setIdx, bertLoaded, isMiniApp } =
     useContext(AppContext)!;
 
   const limit = 10;
@@ -84,6 +84,9 @@ export default function Home() {
     } else {
       fetchSurveys(undefined, true);
       setShowHero(true);
+    }
+    if (isMiniApp) {
+      setShowHero(false);
     }
   }, [searchParams, pathname]);
 

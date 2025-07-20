@@ -13,14 +13,15 @@ export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
     const provider = (session.user as any)?.provider;
     // const nameOrId = session.user?.name || session.user?.id;
     return (
-      <div className="flex w-fit mx-auto items-center gap-1 p-1 border-1 border-default-100 rounded-full">
+      <div className="flex w-fit mx-auto items-center gap-0.5 p-1 border-1 border-default-100 rounded-full">
         <Button
           isIconOnly
-          disabled
           radius="full"
           size={size}
           color="default"
           variant="flat"
+          className="hover:bg-danger"
+          onPress={() => signOut({ callbackUrl: "/" })}
         >
           {(() => {
             if (provider === "twitter")
@@ -32,13 +33,13 @@ export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
           })()}
         </Button>
         <Button
-          color="danger"
+          className="text-foreground"
+          color="default"
           radius="full"
           size={size}
           variant="flat"
-          onPress={() => signOut({ callbackUrl: "/" })}
         >
-          Sign out
+          {session?.user?.name}
         </Button>
       </div>
     );
@@ -120,32 +121,10 @@ export default function ConnectButton({ size }: { size: "sm" | "md" | "lg" }) {
   } else {
     return (
       <Button
-        className="flex items-center gap-2 "
+        className="flex text-sm items-center gap-2 "
         radius="full"
         size={size}
         variant="flat"
-        onContextMenu={(e) => {
-          e.preventDefault();
-          window.location.href = "/login";
-        }}
-        onPointerDown={(e) => {
-          if (e.pointerType === "touch") {
-            (e.target as HTMLElement).setAttribute("data-longpress", "start");
-            setTimeout(() => {
-              if (
-                (e.target as HTMLElement).getAttribute("data-longpress") ===
-                "start"
-              ) {
-                window.location.href = "/login";
-              }
-            }, 500);
-          }
-        }}
-        onPointerUp={(e) => {
-          if (e.pointerType === "touch") {
-            (e.target as HTMLElement).removeAttribute("data-longpress");
-          }
-        }}
         onPress={() => signIn("twitter", { callbackUrl: "/" })}
       >
         Connect
