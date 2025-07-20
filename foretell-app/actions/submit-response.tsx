@@ -13,6 +13,39 @@ interface ResponseProps {
   idx?: number;
 }
 
+// Utility to compute sentiment analysis (polarity, intensity, score)
+export function getSentimentAnalysis(classifier: any, text: string): Promise<{ polarity: -1 | 0 | 1, intensity: number, score: number }> {
+  return new Promise(async (resolve) => {
+    if (!classifier || !text) {
+      resolve({ polarity: 0, intensity: 0, score: 0.5 });
+      return;
+    }
+    const result = await classifier.classify(text);
+    const categories = result.classifications?.[0]?.categories || [];
+    const positive = categories.find((c: any) => c.categoryName?.toLowerCase() === "positive");
+    const negative = categories.find((c: any) => c.categoryName?.toLowerCase() === "negative");
+    let score = 0.5;
+    if (positive) {
+      score = positive.score;
+    } else if (negative) {
+      score = 1 - negative.score;
+    }
+    let polarity: -1 | 0 | 1 = 0;
+    if (score > 0.7) polarity = 1;
+    else if (score < 0.3) polarity = -1;
+    else polarity = 0;
+    let intensity = 0;
+    if (polarity === -1) {
+      intensity = 1 - Math.min(Math.max(score / 0.3, 0), 1);
+    } else if (polarity === 0) {
+      intensity = 1 - Math.min(Math.abs(score - 0.5) / 0.2, 1);
+    } else if (polarity === 1) {
+      intensity = Math.min(Math.max((score - 0.7) / 0.3, 0), 1);
+    }
+    resolve({ polarity, intensity, score });
+  });
+}
+
 const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
   const {
     surveys,
@@ -67,32 +100,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       if (analysisInProgress.current) return;
       analysisInProgress.current = true;
       try {
-        const result = await classifier.classify(response);
-        const categories = result.classifications?.[0]?.categories || [];
-        const positive = categories.find(
-          (c: any) => c.categoryName?.toLowerCase() === "positive"
-        );
-        const negative = categories.find(
-          (c: any) => c.categoryName?.toLowerCase() === "negative"
-        );
-        let score = 0.5;
-        if (positive) {
-          score = positive.score;
-        } else if (negative) {
-          score = 1 - negative.score;
-        }
-        let polarity: -1 | 0 | 1 = 0;
-        if (score > 0.7) polarity = 1;
-        else if (score < 0.3) polarity = -1;
-        else polarity = 0;
-        let intensity = 0;
-        if (polarity === -1) {
-          intensity = 1 - Math.min(Math.max(score / 0.3, 0), 1);
-        } else if (polarity === 0) {
-          intensity = 1 - Math.min(Math.abs(score - 0.5) / 0.2, 1);
-        } else if (polarity === 1) {
-          intensity = Math.min(Math.max((score - 0.7) / 0.3, 0), 1);
-        }
+        const { polarity, intensity } = await getSentimentAnalysis(classifier, response);
         setLivePolarity(polarity);
         setLiveIntensity(intensity);
       } finally {
@@ -135,42 +143,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       return;
     }
 
-    const result = await classifier.classify(response);
-
-    console.log("Classification result:", result);
-    // Use both positive and negative scores to derive a continuous score
-    const categories = result.classifications?.[0]?.categories || [];
-    const positive = categories.find(
-      (c: any) => c.categoryName?.toLowerCase() === "positive"
-    );
-    const negative = categories.find(
-      (c: any) => c.categoryName?.toLowerCase() === "negative"
-    );
-    let score = 0.5;
-
-    if (positive) {
-      score = positive.score;
-    } else if (negative) {
-      score = 1 - negative.score;
-    }
-    // Define neutral range
-    let polarity: -1 | 0 | 1 = 0;
-
-    if (score > 0.7) polarity = 1;
-    else if (score < 0.3) polarity = -1;
-    else polarity = 0;
-    let intensity = 0;
-
-    if (polarity === -1) {
-      // Negative: 1 at 0, 0 at 0.3
-      intensity = 1 - Math.min(Math.max(score / 0.3, 0), 1);
-    } else if (polarity === 0) {
-      // Neutral: 1 at 0.5, 0 at 0.3 or 0.7
-      intensity = 1 - Math.min(Math.abs(score - 0.5) / 0.2, 1);
-    } else if (polarity === 1) {
-      // Positive: 0 at 0.7, 1 at 1
-      intensity = Math.min(Math.max((score - 0.7) / 0.3, 0), 1);
-    }
+    const { polarity, intensity, score } = await getSentimentAnalysis(classifier, response);
     // Create RawEntry
     const RawEntry = {
       uid: currentSurvey?.allowAnonymity ? anonUid : userId,
@@ -179,7 +152,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       intensity,
       answer: response,
     };
-
     console.log(RawEntry);
     // Get the current surveyId
     const surveyId = surveys[idx]?.surveyId;

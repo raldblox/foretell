@@ -13,7 +13,7 @@ import "@farcaster/auth-kit/styles.css";
 import { AuthKitProvider } from "@farcaster/auth-kit";
 import sdk from "@farcaster/miniapp-sdk";
 
-import { loadTextClassifier } from "@/text-classify";
+import { loadTextClassifier } from "@/model/text-classify";
 import { dummySurveys } from "@/lib/dummySurvey";
 import { Survey } from "@/hooks/useForetell";
 
