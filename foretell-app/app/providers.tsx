@@ -40,27 +40,26 @@ export const ContextProvider = ({
 
   const userId = session ? session?.user?.id : miniAppFid;
 
+  // checks
   React.useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
         try {
           const result = await sdk.isInMiniApp();
-
           setIsMiniApp(result);
           if (result) {
             const context = await sdk.context;
 
             setMiniAppFid(
-              context?.user?.fid ? context.user.fid.toString() : null,
+              context?.user?.fid ? context.user.fid.toString() : null
             );
-            // load the ui
-            await sdk.actions.ready();
           }
         } catch {}
       }
     })();
   }, []);
 
+  // load model wasm
   React.useEffect(() => {
     async function loadBert() {
       const classifier = await loadTextClassifier();
@@ -73,6 +72,16 @@ export const ContextProvider = ({
 
     loadBert();
   }, []);
+
+  // display miniapp if farcaster
+  React.useEffect(() => {
+    async function displayMiniApp() {
+      await sdk.actions.ready();
+    }
+    if (isMiniApp && surveys.length >= 1) {
+      displayMiniApp();
+    }
+  }, [surveys]);
 
   const value: any = {
     surveys,
