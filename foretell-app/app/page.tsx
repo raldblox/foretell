@@ -1,6 +1,6 @@
 "use client";
 
-import { Chip, Spacer } from "@heroui/react";
+import { Chip, Pagination, Spacer } from "@heroui/react";
 import React, {
   useState,
   useCallback,
@@ -64,25 +64,30 @@ export default function Home() {
       let url = "/api/survey";
 
       if (surveyId) {
-        url += `?surveyId=${surveyId}`;
+        url += `?surveyId=${surveyId}&limit=${limit}&offset=${reset ? 0 : offsetRef.current}`;
       } else {
         url += `?limit=${limit}&offset=${reset ? 0 : offsetRef.current}`;
       }
+
       const res = await fetch(url);
       const data = await res.json();
 
       if (data.surveys) {
-        setSurveys((prev: Survey[]) =>
-          reset ? data.surveys : [...prev, ...data.surveys]
-        );
-        setIdx(0); // Always reset to first survey if resetting or fetching by surveyId
+        setSurveys((prev: Survey[]) => {
+          if (reset) return data.surveys;
+          // Append only new surveys (no duplicates)
+          const newSurveys = data.surveys.filter(
+            (s: any) => !prev.some((p) => p.surveyId === s.surveyId)
+          );
+          return [...prev, ...newSurveys];
+        });
+        if (reset) setIdx(0); // Only reset idx if we're resetting, not appending
         setHasMore(
           data.surveys.length === limit ||
             (!!surveyId && data.surveys.length > 1)
         );
         offsetRef.current = reset ? limit : offsetRef.current + limit;
       }
-
       setLoading(false);
     },
     [setSurveys, setIdx]
@@ -92,11 +97,6 @@ export default function Home() {
   useEffect(() => {
     const invite = searchParams?.get("surveyId");
 
-    // If no surveyId, set default
-    if (!invite) {
-      router.replace(`${pathname}?surveyId=FliCp8VQtiG2StNTFVKP4`);
-      return;
-    }
     if (invite) {
       fetchSurveys(invite, true);
       setShowHero(false);
@@ -116,6 +116,18 @@ export default function Home() {
       fetchSurveys();
     }
   }, [idx, surveys.length, hasMore, loading]);
+
+  // When URL changes, update idx to match the surveyId in the URL
+  useEffect(() => {
+    const invite = searchParams?.get("surveyId");
+    if (invite && surveys.length > 0) {
+      const foundIdx = surveys.findIndex((s: Survey) => s.surveyId === invite);
+      if (foundIdx !== -1 && foundIdx !== idx) {
+        setIdx(foundIdx);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, surveys]);
 
   const currentSurvey = surveys[idx] || dummySurveys[0];
 
@@ -222,10 +234,7 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Only render survey if loaded and surveyId is present
-  const invite = searchParams?.get("surveyId");
-  const isLoadingSurvey =
-    invite && (surveys.length === 0 || surveys[0].surveyId !== invite);
+  const isLoadingSurvey = surveys.length === 0;
 
   return (
     <>
@@ -279,45 +288,16 @@ export default function Home() {
             )}
 
             <div className="z-20 w-full px-3 max-w-6xl">
-              <div className="grid grid-cols-2 opacity-50 bg-default-50 rounded-2xl mb-3 overflow-hidden">
-                <div
-                  className="w-full flex items-center justify-start p-3 transition-all cursor-pointer hover:bg-gradient-to-l from-transparent to-red-900"
-                  role="button"
-                  tabIndex={0}
-                  onClick={prev}
-                >
-                  <svg
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="m8.165 11.63l6.63-6.43C15.21 4.799 16 5.042 16 5.57v12.86c0 .528-.79.771-1.205.37l-6.63-6.43a.5.5 0 0 1 0-.74"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span>PREV</span>
-                </div>
-                <div
-                  className="w-full flex items-center justify-end p-3 transition-all cursor-pointer hover:bg-gradient-to-r from-transparent to-green-900"
-                  role="button"
-                  tabIndex={0}
-                  onClick={next}
-                >
-                  <span>NEXT</span>
-                  <svg
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M15.835 11.63L9.205 5.2C8.79 4.799 8 5.042 8 5.57v12.86c0 .528.79.771 1.205.37l6.63-6.43a.5.5 0 0 0 0-.74"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </div>
+              <div className="mx-auto w-fit p-3">
+                <Pagination
+                  color="secondary"
+                  showControls
+                  page={idx}
+                  variant="light"
+                  total={surveys.length}
+                  onChange={setIdx}
+                  loop={true}
+                />
               </div>
 
               {/* Swipe indicator for mobile */}
