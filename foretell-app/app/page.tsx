@@ -290,7 +290,7 @@ export default function Home() {
             <div className="z-20 w-full px-3 max-w-6xl">
               <div className="mx-auto w-fit pb-6">
                 <Pagination
-                  color="secondary"
+                  color="default"
                   showControls
                   page={idx}
                   variant="light"
