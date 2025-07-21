@@ -102,6 +102,11 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
   // Live sentiment analysis as user types
   React.useEffect(() => {
+    if (!response) {
+      setLivePolarity(0);
+      setLiveIntensity(0);
+      return;
+    }
     if (!classifier || !liveAnalysis) {
       setLivePolarity(0);
       setLiveIntensity(0);
