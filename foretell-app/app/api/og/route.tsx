@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getCollection } from "@/lib/mongodb";
 
-export const size = {
+const size = {
   width: 1024,
   height: 683,
 };

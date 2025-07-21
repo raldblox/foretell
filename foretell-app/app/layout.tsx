@@ -9,21 +9,16 @@ import { fontSans } from "@/config/fonts";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 
-// export const metadata: Metadata = {
-//   title: {
-//     default: siteConfig.name,
-//     template: `%s - ${siteConfig.name}`,
-//   },
-//   description: siteConfig.description,
-//   icons: {
-//     icon: "/favicon.ico",
-//   },
-// };
-
 export const generateMetadata = (): Metadata => {
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+
   return {
     title: "Foretell",
     description: "It's foretelling time!",
+    openGraph: {
+      images: [`${baseUrl}/api/og`],
+    },
+    metadataBase: new URL(baseUrl),
     other: {
       "fc:frame": JSON.stringify({
         version: "1",
