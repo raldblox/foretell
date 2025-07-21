@@ -282,9 +282,9 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
           <div className="flex flex-wrap gap-3">
             <Button
               isDisabled={false}
-              size="md"
+              size="sm"
               variant="flat"
-              className="p-1 px-3"
+              className="p-0.5 px-2"
               startContent={
                 <Icon
                   className={liveAnalysis ? "text-success" : "text-default-500"}
@@ -299,23 +299,27 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
               onPress={() => setLiveAnalysis((v) => !v)}
             >
               Live Analyzer
-              {liveAnalysis && (
-                <div className="flex text-xs items-center px-2 py-1 gap-3 rounded-lg bg-default-50 border border-default-200">
-                  <span
-                    className={
-                      livePolarity === 1
-                        ? "text-success"
-                        : livePolarity === 0
-                          ? "text-foreground"
-                          : livePolarity === -1
-                            ? "text-danger"
-                            : ""
-                    }
-                  >
-                    {liveIntensity !== null ? liveIntensity.toFixed(3) : "-"}
-                  </span>
-                </div>
-              )}
+              <div className="flex text-xs items-center px-2 py-1 gap-3 rounded-lg bg-default-50 border border-default-200">
+                <span
+                  className={
+                    livePolarity === 1
+                      ? "text-success"
+                      : livePolarity === 0
+                        ? "text-foreground"
+                        : livePolarity === -1
+                          ? "text-danger"
+                          : ""
+                  }
+                >
+                  {liveAnalysis ? (
+                    <>
+                      {liveIntensity !== null ? liveIntensity.toFixed(3) : "-"}
+                    </>
+                  ) : (
+                    <>OFF</>
+                  )}
+                </span>
+              </div>
             </Button>
             {/* <Button
             size="sm"
