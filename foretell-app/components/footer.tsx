@@ -7,7 +7,7 @@ import { ThemeSwitch } from "./theme-switch";
 
 const Footer = () => {
   return (
-    <footer className="w-full z-50 flex border-t bg-background/50 border-default-100 items-center justify-between p-6">
+    <footer className="w-full z-50 flex bg-background/50 items-center justify-between p-6">
       <div>
         <Link
           isExternal
