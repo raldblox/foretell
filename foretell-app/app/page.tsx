@@ -33,6 +33,7 @@ export default function Home() {
   const offsetRef = useRef(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
@@ -98,10 +99,10 @@ export default function Home() {
     const invite = searchParams?.get("surveyId");
 
     if (invite) {
-      fetchSurveys(invite, true);
+      fetchSurveys(invite, true).then(() => setIsInitialLoading(false));
       setShowHero(false);
     } else {
-      fetchSurveys(undefined, true);
+      fetchSurveys(undefined, true).then(() => setIsInitialLoading(false));
       setShowHero(true);
     }
     if (isMiniApp) {
@@ -234,7 +235,7 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  const isLoadingSurvey = surveys.length === 0;
+  const isLoadingSurvey = isInitialLoading || surveys.length === 0;
 
   return (
     <>
