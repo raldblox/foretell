@@ -71,19 +71,18 @@ export default function Home() {
       const res = await fetch(url);
       const data = await res.json();
 
-      if (surveyId && data.survey) {
-        setSurveys((prev: Survey[]) => [
-          data.survey,
-          ...prev.filter((s) => s.surveyId !== data.survey.surveyId),
-        ]);
-        setIdx(0);
-      } else if (data.surveys) {
+      if (data.surveys) {
         setSurveys((prev: Survey[]) =>
           reset ? data.surveys : [...prev, ...data.surveys]
         );
-        setHasMore(data.surveys.length === limit);
+        setIdx(0); // Always reset to first survey if resetting or fetching by surveyId
+        setHasMore(
+          data.surveys.length === limit ||
+            (!!surveyId && data.surveys.length > 1)
+        );
         offsetRef.current = reset ? limit : offsetRef.current + limit;
       }
+
       setLoading(false);
     },
     [setSurveys, setIdx]

@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   if (existing) {
     return NextResponse.json(
       { error: "Survey with this ID already exists." },
-      { status: 409 },
+      { status: 409 }
     );
   }
   await collection.insertOne(survey);
@@ -56,13 +56,26 @@ export async function GET(req: NextRequest) {
 
   const collection = await getCollection("surveys");
 
-  if (surveyId) {
-    const survey = await collection.findOne({ surveyId });
+  let surveys = [];
+  let mainSurvey = null;
 
-    return NextResponse.json({ survey });
+  if (surveyId) {
+    mainSurvey = await collection.findOne({ surveyId });
   }
 
-  const surveys = await collection.find({}).skip(offset).limit(limit).toArray();
+  // Build query to exclude the main survey if surveyId is present
+  const query = surveyId ? { surveyId: { $ne: surveyId } } : {};
+  const restSurveys = await collection
+    .find(query)
+    .skip(offset)
+    .limit(limit)
+    .toArray();
+
+  if (mainSurvey) {
+    surveys = [mainSurvey, ...restSurveys];
+  } else {
+    surveys = restSurveys;
+  }
 
   return NextResponse.json({ surveys });
 }
