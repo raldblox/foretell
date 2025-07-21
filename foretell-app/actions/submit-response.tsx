@@ -240,13 +240,13 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
 
   return (
     <>
-      <form className="flex w-full flex-col  items-start rounded-md bg-default-50 transition-colors">
+      <form className="flex w-full flex-col items-start rounded-md bg-default-50 transition-colors">
         <Textarea
           aria-label="Prompt"
           classNames={{
-            inputWrapper: "!bg-transparent min-h-[275px] shadow-none",
-            innerWrapper: "relative",
-            input: "p-3 md:p-6 text-medium",
+            inputWrapper: "!bg-transparent flex items-start shadow-none",
+            innerWrapper: "relative min-h-[275px]",
+            input: "p-3 md:p-6 text-medium ",
           }}
           disabled={hasResponded || isExpired || isFull}
           endContent={

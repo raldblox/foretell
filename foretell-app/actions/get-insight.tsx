@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
   Area as MiniArea,
   YAxis as MiniYAxis,
+  Line,
 } from "recharts";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/theme";
@@ -34,6 +35,8 @@ import {
 import { RewardTable } from "@/components/reward-table";
 import { AppContext } from "@/app/providers";
 import MessageCard from "@/components/message-card";
+import { toUnicode } from "punycode";
+import RewardDistributionChart from "@/components/visuals/reward-distribution-chart";
 
 export default function GetInsight(survey: Survey) {
   const {
@@ -73,33 +76,14 @@ export default function GetInsight(survey: Survey) {
 
   return (
     <div className="max-w-7xl mx-auto space-y-3">
-      {/* Top Summary */}
-      <section className="grid grid-cols-1 md:grid-cols-4 gap-3 min-h-[300px]">
-        {/* Response Container */}
-        <div className="col-span-1 md:col-span-3 flex flex-col gap-3 rounded-lg border border-default-100 p-3">
-          <div className="bg-default-50 flex flex-col p-3 rounded-lg gap-3">
-            <motion.div
-              key={title} // Trigger animation when title changes
-              animate={{ opacity: 1, height: "auto" }}
-              className="overflow-hidden"
-              exit={{ opacity: 0, height: "auto" }}
-              initial={{ opacity: 0, height: "auto" }}
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-                height: {
-                  duration: 0.4,
-                  ease: "easeInOut",
-                },
-              }}
-            >
-              <p className="text-xl md:text-2xl font-semibold leading-tight md:py-0">
-                {title}
-              </p>
-            </motion.div>
-            {description && (
+      <section className="bg-default-50/50 p-3 rounded-xl space-y-3">
+        {/* Top Summary */}
+        <section className="grid grid-cols-1 md:grid-cols-4 gap-3 min-h-[300px]">
+          {/* Response Container */}
+          <div className="col-span-1 md:col-span-3 flex flex-col gap-3 rounded-lg border border-default-100 p-3">
+            <div className="bg-default-50 flex flex-col p-3 rounded-lg gap-1">
               <motion.div
-                key={description}
+                key={title} // Trigger animation when title changes
                 animate={{ opacity: 1, height: "auto" }}
                 className="overflow-hidden"
                 exit={{ opacity: 0, height: "auto" }}
@@ -113,341 +97,263 @@ export default function GetInsight(survey: Survey) {
                   },
                 }}
               >
-                <p className="text-sm text-default-500">{description}</p>
+                <p className="text-xl md:text-2xl font-semibold leading-tight md:py-0">
+                  {title}
+                </p>
               </motion.div>
-            )}
+              {description && (
+                <motion.div
+                  key={description}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="overflow-hidden"
+                  exit={{ opacity: 0, height: "auto" }}
+                  initial={{ opacity: 0, height: "auto" }}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeInOut",
+                    height: {
+                      duration: 0.4,
+                      ease: "easeInOut",
+                    },
+                  }}
+                >
+                  <p className="text-sm text-default-500">{description}</p>
+                </motion.div>
+              )}
+            </div>
+            <SubmitResponse />
           </div>
 
-          <SubmitResponse />
-        </div>
+          {/* QR/Link Container */}
+          <div className="col-span-1 flex flex-col rounded-lg border border-default-100 min-h-[200px]">
+            <div className="flex  gap-3 flex-col p-3  w-full items-center h-full">
+              <div className="flex py-6 space-y-3 md:aspect-square bg-default-50 rounded-lg flex-col items-center justify-center w-full">
+                <span className="text-xs text-default-500 mt-1">
+                  Scan to open survey
+                </span>
 
-        {/* QR/Link Container */}
-        <div className="col-span-1 flex flex-col rounded-lg border border-default-100 min-h-[200px]">
-          <div className="flex  gap-3 flex-col p-3  w-full items-center h-full">
-            <Snippet
-              hideSymbol
-              className="pl-4 w-full rounded-lg bg-default-50"
-              codeString={codeString}
-              radius="sm"
-              size="sm"
-            >
-              Survey Link
-            </Snippet>
-
-            <div className="flex py-6 space-y-3 md:aspect-square bg-default-50 rounded-lg flex-col items-center justify-center w-full">
-              <span className="text-xs text-default-500 mt-1">
-                Scan to open survey
-              </span>
-
-              {qrCodeUrl && codeString && (
-                <Image
-                  alt="Survey QR Code"
-                  className="w-30 bg-default-50 p-2 rounded-md border border-default-100"
-                  src={qrCodeUrl}
-                />
-              )}
-              <div className="flex items-center flex-col text-xs justify-center">
-                {/* <span className="font-semibold">Survey ID:</span> */}
-                <Link showAnchorIcon className="text-xs" href={codeString}>
-                  {surveyId}
-                </Link>
+                {qrCodeUrl && codeString && (
+                  <Image
+                    alt="Survey QR Code"
+                    className="w-30 bg-default-50 p-2 rounded-md border border-default-100"
+                    src={qrCodeUrl}
+                  />
+                )}
+                <div className="flex items-center flex-col text-xs justify-center">
+                  {/* <span className="font-semibold">Survey ID:</span> */}
+                  <Link showAnchorIcon className="text-xs" href={codeString}>
+                    {surveyId}
+                  </Link>
+                </div>
               </div>
-            </div>
+              <Snippet
+                hideSymbol
+                className="pl-4 w-full rounded-lg bg-default-50"
+                codeString={codeString}
+                radius="sm"
+                size="sm"
+              >
+                Survey Link
+              </Snippet>
 
-            <div className="flex flex-wrap max-w-2xl items-start justify-start gap-2">
-              <Chip
-                className="text-default-500 bg-default-50"
-                size="sm"
-                variant="flat"
-              >
-                <span className="font-semibold">Resolution:</span>{" "}
-                {maxResponses} responses
-              </Chip>
-              <Chip
-                className="text-default-500 bg-default-50"
-                size="sm"
-                variant="flat"
-              >
-                <span className="font-semibold">Created By:</span> {createdBy}
-              </Chip>
-              {expiry && (
+              <div className="flex flex-wrap max-w-2xl items-start justify-start gap-2">
                 <Chip
                   className="text-default-500 bg-default-50"
                   size="sm"
                   variant="flat"
                 >
-                  <span className="font-semibold">Expiry:</span>{" "}
-                  {new Date(expiry).toLocaleString()}
+                  <span className="font-semibold">Resolution:</span>{" "}
+                  {maxResponses} responses
                 </Chip>
-              )}
+                <Chip
+                  className="text-default-500 bg-default-50"
+                  size="sm"
+                  variant="flat"
+                >
+                  <span className="font-semibold">Created By:</span> {createdBy}
+                </Chip>
+                {expiry && (
+                  <Chip
+                    className="text-default-500 bg-default-50"
+                    size="sm"
+                    variant="flat"
+                  >
+                    <span className="font-semibold">Expiry:</span>{" "}
+                    {new Date(expiry).toLocaleString()}
+                  </Chip>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* Scrollable responses list */}
+        <section className="p-3 md:pt-4 rounded-lg space-y-3 border border-default-100">
+          <h2 className="text-xl md:px-3 text-left font-medium">Responses</h2>
+          <ScrollShadow className="max-h-[350px] overflow-y-auto rounded-lg border border-default-100 p-3 flex flex-col gap-2">
+            {Array.isArray(survey.responses) && survey.responses.length > 0 ? (
+              [...survey.responses]
+                .slice()
+                .sort((a, b) => {
+                  if (a.createdAt && b.createdAt) {
+                    return (
+                      new Date(b.createdAt).getTime() -
+                      new Date(a.createdAt).getTime()
+                    );
+                  } else if (a.createdAt) {
+                    return -1;
+                  } else if (b.createdAt) {
+                    return 1;
+                  } else {
+                    return b.uid > a.uid ? 1 : -1;
+                  }
+                })
+                .map((resp, i) => (
+                  <MessageCard
+                    key={`${resp.uid}-${i}`}
+                    message={resp.answer || "No answer"}
+                    polarity={resp.polarity}
+                    {...(resp.createdAt && {
+                      messageClassName: "flex flex-col",
+                    })}
+                  >
+                    {resp.createdAt && (
+                      <span className="text-xs text-default-400 block mb-1">
+                        {new Date(resp.createdAt).toLocaleString()}
+                      </span>
+                    )}
+                    {resp.answer || "No answer"}
+                  </MessageCard>
+                ))
+            ) : (
+              <div className="text-center text-default-400 py-6">
+                No responses yet.
+              </div>
+            )}
+          </ScrollShadow>
+          <div className="p-3 rounded-lg border border-default-100">
+            <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {POLARITY_VALUES.map((p, index) => (
+                <div
+                  key={p}
+                  className="md:p-6 p-3 flex flex-wrap justify-between rounded-lg bg-default-50 "
+                >
+                  <div>
+                    <dt className="text-sm font-medium text-default-500 flex items-center">
+                      <Icon
+                        className={cn("mr-2", {
+                          "text-success": p === 1,
+                          "text-warning": p === 0,
+                          "text-danger": p === -1,
+                        })}
+                        icon={
+                          CHANGE_TYPE[p] === "positive"
+                            ? "ix:emote-happy-filled"
+                            : CHANGE_TYPE[p] === "negative"
+                              ? "ix:emote-sad-filled"
+                              : "ix:emote-neutral-filled"
+                        }
+                        width={24}
+                      />
+                      {POLARITY_LABEL[p]}
+                    </dt>
+                    <dd className="mt-2 text-3xl font-semibold text-default-800">
+                      {groups[p].length}
+                    </dd>
+                  </div>
+                  <div className="bg-black/10 rounded-md w-3/5 shrink-0 block">
+                    <ResponsiveContainer
+                      debounce={200}
+                      height={100}
+                      width="100%"
+                    >
+                      <AreaChart data={miniData[p]}>
+                        <defs>
+                          <linearGradient id={`miniGrad${index}`} x1="0" y2="1">
+                            <stop
+                              offset="5%"
+                              stopColor={POLARITY_COLOR[p]}
+                              stopOpacity={0.3}
+                            />
+                            <stop
+                              offset="95%"
+                              stopColor={POLARITY_COLOR[p]}
+                              stopOpacity={0}
+                            />
+                          </linearGradient>
+                        </defs>
+                        <MiniYAxis
+                          hide
+                          domain={[
+                            0,
+                            Math.ceil(
+                              Math.max(...miniData[p].map((d) => d.value))
+                            ),
+                          ]}
+                        />
+                        <MiniArea
+                          dataKey="value"
+                          fill={`url(#miniGrad${index})`}
+                          stroke={POLARITY_COLOR[p]}
+                          type="natural"
+                        />
+                        <Tooltip
+                          content={({ payload }) => {
+                            if (!payload || !payload.length) return null;
+                            // grab the dragged point
+
+                            const { uid, polarity, value, intensity, score } =
+                              payload[0].payload;
+
+                            return (
+                              <div className="bg-default-100/50 backdrop-blur-md text-default-800 p-2 rounded text-xs">
+                                <div>
+                                  <strong>UID:</strong> {uid}
+                                </div>
+                                <div>
+                                  <strong>Polarity:</strong> {polarity}
+                                </div>
+                                <div>
+                                  <strong>Intensity:</strong>{" "}
+                                  {typeof intensity === "number"
+                                    ? intensity.toFixed(4)
+                                    : value?.toFixed(4)}
+                                </div>
+                                <div>
+                                  <strong>Score:</strong>{" "}
+                                  {typeof score === "number"
+                                    ? score.toFixed(3)
+                                    : ""}
+                                </div>
+                              </div>
+                            );
+                          }}
+                          cursor={false}
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
       </section>
 
-      {/* Scrollable responses list */}
-      <section className="p-3 md:pt-6 rounded-lg border border-default-100">
-        <h2 className="text-xl md:px-3 text-left font-medium">Responses</h2>
-        <ScrollShadow className="mt-4 max-h-[300px] overflow-y-auto rounded-lg border border-default-100 p-3 flex flex-col gap-2">
-          {Array.isArray(survey.responses) && survey.responses.length > 0 ? (
-            [...survey.responses]
-              .slice()
-              .sort((a, b) => {
-                if (a.createdAt && b.createdAt) {
-                  return (
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                  );
-                } else if (a.createdAt) {
-                  return -1;
-                } else if (b.createdAt) {
-                  return 1;
-                } else {
-                  return b.uid > a.uid ? 1 : -1;
-                }
-              })
-              .map((resp, i) => (
-                <MessageCard
-                  key={`${resp.uid}-${i}`}
-                  message={resp.answer || "No answer"}
-                  polarity={resp.polarity}
-                  {...(resp.createdAt && { messageClassName: "flex flex-col" })}
-                >
-                  {resp.createdAt && (
-                    <span className="text-xs text-default-400 block mb-1">
-                      {new Date(resp.createdAt).toLocaleString()}
-                    </span>
-                  )}
-                  {resp.answer || "No answer"}
-                </MessageCard>
-              ))
-          ) : (
-            <div className="text-center text-default-400 py-6">
-              No responses yet.
-            </div>
-          )}
-        </ScrollShadow>
+      <section className="bg-default-50/50 p-3 rounded-xl space-y-3">
+        <RewardDistributionChart chartData={chartData} stats={stats} />
+
+        {/* Connect X Button */}
+        <section className="p-3 pt-4 rounded-lg border border-default-100">
+          <h2 className="text-xl md:px-3 text-left font-medium">Rewards</h2>
+          <div className="mt-4">
+            <RewardTable data={processed} isLoading={false} />
+          </div>
+        </section>
       </section>
 
       {/* Reward Distribution Chart */}
-      <section className="md:p-6 p-3 rounded-lg border border-default-100 space-y-3">
-        <h2 className="text-xl font-medium mb-4">Distribution</h2>
-        <ResponsiveContainer
-          className="bg-default-50 rounded-md"
-          height={300}
-          width="100%"
-        >
-          <AreaChart
-            data={chartData}
-            margin={{ top: 30, right: 30, left: 10, bottom: 20 }}
-          >
-            <defs>
-              {POLARITY_VALUES.map((p) => (
-                <linearGradient
-                  key={p}
-                  id={`grad${p}`}
-                  x1="0"
-                  x2="0"
-                  y1="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor={POLARITY_COLOR[p]}
-                    stopOpacity={1}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor={POLARITY_COLOR[p]}
-                    stopOpacity={0.5}
-                  />
-                </linearGradient>
-              ))}
-            </defs>
-            <CartesianGrid strokeDasharray="1 5" />
-            <XAxis
-              dataKey="score"
-              domain={[0, 1]}
-              fontSize={10}
-              tickCount={11}
-              type="number"
 
-              //   label={{
-              //     value: "Score (0–1)",
-              //     position: "insideBottom",
-              //     offset: -10,
-              //   }}
-            />
-            <YAxis
-              domain={[
-                0,
-                Math.ceil(Math.max(...processed.map((u) => u.pctShare))),
-              ]}
-              fontSize={10}
-              label={{
-                value: "% Share",
-                angle: -90,
-                position: "outsideLeft",
-              }}
-            />
-            {POLARITY_VALUES.map((p) => (
-              <ReferenceLine
-                key={p}
-                stroke={POLARITY_COLOR[p]}
-                strokeDasharray="5 2"
-                x={stats[p].avg}
-                // label={{ value: `${POLARITY_LABEL[p]}`, position: "top" }}
-              />
-            ))}
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#111",
-                borderRadius: "8px",
-              }}
-              formatter={(v: number, name: string) => [
-                `${v}%`,
-                name.replace(/PS/, " % Share"),
-              ]}
-              labelFormatter={(l) => `Score: ${l}`}
-            />
-            <Legend verticalAlign="bottom" />
-            {POLARITY_VALUES.map((p) => (
-              <Area
-                key={p}
-                connectNulls
-                dataKey={p === -1 ? "negPS" : p === 0 ? "neuPS" : "posPS"}
-                fill={`url(#grad${p})`}
-                name={`${POLARITY_LABEL[p]}`}
-                stroke={POLARITY_COLOR[p]}
-                strokeWidth={3}
-                type="basis"
-              />
-            ))}
-          </AreaChart>
-        </ResponsiveContainer>
-        {/* Summary Cards Below Chart */}
-        <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          {POLARITY_VALUES.map((p, index) => (
-            <div
-              key={p}
-              className="md:p-6 p-3 flex flex-wrap justify-between rounded-lg bg-default-50 "
-            >
-              <div>
-                <dt className="text-sm font-medium text-default-500 flex items-center">
-                  <Icon
-                    className={cn("mr-2", {
-                      "text-success": p === 1,
-                      "text-warning": p === 0,
-                      "text-danger": p === -1,
-                    })}
-                    icon={
-                      CHANGE_TYPE[p] === "positive"
-                        ? "ix:emote-happy-filled"
-                        : CHANGE_TYPE[p] === "negative"
-                          ? "ix:emote-sad-filled"
-                          : "ix:emote-neutral-filled"
-                    }
-                    width={24}
-                  />
-                  {POLARITY_LABEL[p]}
-                </dt>
-                <dd className="mt-2 text-3xl font-semibold text-default-800">
-                  {groups[p].length}
-                </dd>
-              </div>
-              <div className="bg-black/10 rounded-md w-3/5 shrink-0 block">
-                <ResponsiveContainer debounce={200} height={100} width="100%">
-                  <AreaChart data={miniData[p]}>
-                    <defs>
-                      <linearGradient id={`miniGrad${index}`} x1="0" y2="1">
-                        <stop
-                          offset="5%"
-                          stopColor={POLARITY_COLOR[p]}
-                          stopOpacity={0.3}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor={POLARITY_COLOR[p]}
-                          stopOpacity={0}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <MiniYAxis
-                      hide
-                      domain={[
-                        0,
-                        Math.ceil(Math.max(...miniData[p].map((d) => d.value))),
-                      ]}
-                    />
-                    <MiniArea
-                      dataKey="value"
-                      fill={`url(#miniGrad${index})`}
-                      stroke={POLARITY_COLOR[p]}
-                      type="natural"
-                    />
-                    <Tooltip
-                      content={({ payload }) => {
-                        if (!payload || !payload.length) return null;
-                        // grab the dragged point
-
-                        const { uid, polarity, value, intensity, score } =
-                          payload[0].payload;
-
-                        return (
-                          <div className="bg-default-100/50 backdrop-blur-md text-default-800 p-2 rounded text-xs">
-                            <div>
-                              <strong>UID:</strong> {uid}
-                            </div>
-                            <div>
-                              <strong>Polarity:</strong> {polarity}
-                            </div>
-                            <div>
-                              <strong>Intensity:</strong>{" "}
-                              {typeof intensity === "number"
-                                ? intensity.toFixed(4)
-                                : value?.toFixed(4)}
-                            </div>
-                            <div>
-                              <strong>Score:</strong>{" "}
-                              {typeof score === "number"
-                                ? score.toFixed(3)
-                                : ""}
-                            </div>
-                          </div>
-                        );
-                      }}
-                      cursor={false}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      {/* Connect X Button */}
-      <section className="md:p-6 p-3 rounded-lg border border-default-100">
-        <h2 className="text-xl text-left font-medium">Sentiment</h2>
-        {/* {!userId && (
-            <Button
-              className="w-fit"
-              color="default"
-              radius="full"
-              size="sm"
-              variant="flat"
-              onPress={() => signIn("twitter")}
-            >
-              Connect <Icon icon="hugeicons:new-twitter" width={16} /> to view
-              responses
-            </Button>
-          )}
-        </div> */}
-
-        <div className="mt-4">
-          <RewardTable data={processed} isLoading={false} />
-        </div>
-      </section>
       <section className="ads">
         <div className="w-full flex justify-center items-center rounded-lg p-6">
           <CreateSurveyModal />

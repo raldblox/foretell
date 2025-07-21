@@ -352,7 +352,7 @@ export default function Home() {
                       ? (touchEnd.x - touchStart.x) * 0.1
                       : 0,
                 }}
-                className="max-w-7xl rounded-tl-2xl rounded-tr-2xl bg-default-50/50 backdrop-blur-md mx-auto p-3"
+                className="max-w-7xl backdrop-blur-md mx-auto"
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
                 <Suspense>

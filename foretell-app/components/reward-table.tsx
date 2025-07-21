@@ -32,16 +32,16 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
     <Table
       isHeaderSticky
       aria-label="Rewards Table"
-      classNames={{ base: "max-h-[520px]  overflow-auto", table: "min-w-full" }}
+      classNames={{ base: "max-h-[520px] overflow-auto", table: "min-w-full " }}
       radius="sm"
     >
       <TableHeader>
         <TableColumn key="uid">UID</TableColumn>
         {/* <TableColumn key="answer">Response</TableColumn> */}
         <TableColumn key="polarity">Polarity</TableColumn>
-        <TableColumn key="score">Score</TableColumn>
-        <TableColumn key="pctShare">Closeness</TableColumn>
-        <TableColumn key="rewardUSD">Share</TableColumn>
+        <TableColumn key="score">Score, x</TableColumn>
+        <TableColumn key="pctShare">Closeness, {`|x - x\u0303|`}</TableColumn>
+        <TableColumn key="rewardUSD">Rewards</TableColumn>
       </TableHeader>
 
       <TableBody
@@ -57,7 +57,7 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
             {(columnKey) => (
               <TableCell>
                 {columnKey === "pctShare" ? (
-                  `${item.pctShare.toFixed(1)}%`
+                  `${item.pctShare.toFixed(2)}%`
                 ) : columnKey === "rewardUSD" ? (
                   `${item.rewardUSD.toFixed(2)}%`
                 ) : columnKey === "score" ? (

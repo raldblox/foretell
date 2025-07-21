@@ -94,79 +94,105 @@ export function useForetell(surveyData: RawEntry[], pool?: Reward) {
 
           return acc;
         },
-        {} as Record<Polarity, RawEntry[]>,
+        {} as Record<Polarity, RawEntry[]>
       ),
-    [surveyData],
+    [surveyData]
   );
 
-  // 2) stats
+  // 2) stats (now includes median)
   const stats = useMemo(
     () =>
       POLARITY_VALUES.reduce(
         (acc, p) => {
           const scores = groups[p].map((u) => u.score);
-          const avg = scores.reduce((s, x) => s + x, 0) / scores.length;
-          const maxDiff = Math.max(...scores.map((x) => Math.abs(x - avg)));
-
-          acc[p] = { avg, maxDiff };
-
+          // Calculate median
+          const sorted = [...scores].sort((a, b) => a - b);
+          let median = 0;
+          if (sorted.length > 0) {
+            const mid = Math.floor(sorted.length / 2);
+            median =
+              sorted.length % 2 !== 0
+                ? sorted[mid]
+                : (sorted[mid - 1] + sorted[mid]) / 2;
+          }
+          // Max possible distance from median in this group
+          const maxDist =
+            sorted.length > 0
+              ? Math.max(...sorted.map((x) => Math.abs(x - median)))
+              : 0;
+          acc[p] = { median, maxDist };
           return acc;
         },
-        {} as Record<Polarity, { avg: number; maxDiff: number }>,
+        {} as Record<Polarity, { median: number; maxDist: number }>
       ),
-    [groups],
+    [groups]
   );
 
-  // 3) weighted
+  // 3) weighted (closeness to median, no zero rewards)
   const weighted: WeightedEntry[] = useMemo(
     () =>
       surveyData.map((u) => {
-        const { avg, maxDiff } = stats[u.polarity];
-        const closeness =
-          maxDiff > 0 ? 1 - Math.abs(u.score - avg) / maxDiff : 1;
-
+        const { median, maxDist } = stats[u.polarity];
+        // Closeness to median (1 if at median, 0 if farthest in group)
+        let closeness = 1;
+        if (maxDist > 0) {
+          closeness = 1 - Math.abs(u.score - median) / maxDist;
+        }
+        // Ensure no one gets zero: add MIN_WEIGHT
         return { ...u, rawWeight: closeness + MIN_WEIGHT };
       }),
-    [surveyData, stats],
+    [surveyData, stats]
   );
 
-  // 4) process
+  // 4) process (normalize within group, calculate rewards)
   const processed: ProcessedEntry[] = useMemo(
     () =>
       weighted.map((u) => {
-        const groupSum = weighted
-          .filter((x) => x.polarity === u.polarity)
-          .reduce((s, x) => s + x.rawWeight, 0);
+        // Sum of weights in this group
+        const groupWeights = weighted.filter((x) => x.polarity === u.polarity);
+        const groupSum = groupWeights.reduce((s, x) => s + x.rawWeight, 0);
         const shareInGroup = u.rawWeight / groupSum;
-        const rewardUSD = parseFloat(
-          (
-            shareInGroup *
-            ((groups[u.polarity].length / surveyData.length) * totalPool)
-          ).toFixed(2),
-        );
-        const pctShare = parseFloat(((rewardUSD / totalPool) * 100).toFixed(1));
-
+        // Group reward pool
+        const groupSize = groups[u.polarity].length;
+        const groupReward = (groupSize / surveyData.length) * totalPool;
+        const rewardUSD = parseFloat((shareInGroup * groupReward).toFixed(2));
+        const pctShare = parseFloat(((rewardUSD / totalPool) * 100).toFixed(2));
         return { ...u, shareInGroup, rewardUSD, pctShare };
       }),
-    [weighted, groups, surveyData.length, totalPool],
+    [weighted, groups, surveyData.length, totalPool]
   );
 
-  // 5) combined chart surveyData
-  const chartData: CombinedPoint[] = useMemo(() => {
-    const sorted = processed
-      .sort((a, b) => a.score - b.score)
-      .map((u) => ({
-        score: u.score,
-        negPS: u.polarity === -1 ? u.pctShare : undefined,
-        neuPS: u.polarity === 0 ? u.pctShare : undefined,
-        posPS: u.polarity === 1 ? u.pctShare : undefined,
-      }));
-
-    return [
-      { score: 0, negPS: 0, neuPS: 0, posPS: 0 },
-      ...sorted,
-      { score: 1, negPS: 0, neuPS: 0, posPS: 0 },
-    ];
+  // 5) combined chart surveyData (per-group score and usdReward for chart)
+  const chartData = useMemo(() => {
+    // Collect all unique scores from all processed entries
+    const allScores = Array.from(new Set(processed.map((u) => u.score))).sort(
+      (a, b) => a - b
+    );
+    // For each score, build a data point with per-group values
+    return allScores.map((score) => {
+      const point: any = { score };
+      POLARITY_VALUES.forEach((p) => {
+        const entry = processed.find(
+          (u) => u.polarity === p && u.score === score
+        );
+        if (entry) {
+          if (p === -1) {
+            point.negScore = entry.score;
+            point.negUSD = entry.rewardUSD;
+            point.negUID = entry.uid;
+          } else if (p === 0) {
+            point.neuScore = entry.score;
+            point.neuUSD = entry.rewardUSD;
+            point.neuUID = entry.uid;
+          } else if (p === 1) {
+            point.posScore = entry.score;
+            point.posUSD = entry.rewardUSD;
+            point.posUID = entry.uid;
+          }
+        }
+      });
+      return point;
+    });
   }, [processed]);
 
   // 6) mini spark surveyData
