@@ -248,7 +248,7 @@ export default function Home() {
       >
         {isLoadingSurvey ? (
           <>
-            <div className="w-full flex justify-center items-center absolute top-[45%]">
+            <div className="w-full flex justify-center animate-pulse items-center absolute top-[45%]">
               <Logo />
             </div>
           </>
