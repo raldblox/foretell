@@ -296,7 +296,7 @@ export default function Home() {
                   variant="light"
                   total={surveys.length}
                   onChange={setIdx}
-                  loop={true}
+                  // loop={true}
                 />
               </div>
 
