@@ -304,7 +304,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
               onPress={() => setLiveAnalysis((v) => !v)}
             >
               Live Analyzer
-              <div className="flex text-xs items-center px-2 py-1 gap-3 rounded-lg bg-default-50 border border-default-200">
+              <div className="flex text-xs items-center px-2 py-0.5 gap-3 rounded-lg bg-default-50 border border-default-200">
                 <span
                   className={
                     livePolarity === 1
