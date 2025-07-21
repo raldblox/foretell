@@ -179,15 +179,15 @@ export function useForetell(surveyData: RawEntry[], pool?: Reward) {
           if (p === -1) {
             point.negScore = entry.score;
             point.negUSD = entry.rewardUSD;
-            point.negUID = entry.uid;
+            point.uid = entry.uid;
           } else if (p === 0) {
             point.neuScore = entry.score;
             point.neuUSD = entry.rewardUSD;
-            point.neuUID = entry.uid;
+            point.uid = entry.uid;
           } else if (p === 1) {
             point.posScore = entry.score;
             point.posUSD = entry.rewardUSD;
-            point.posUID = entry.uid;
+            point.uid = entry.uid;
           }
         }
       });

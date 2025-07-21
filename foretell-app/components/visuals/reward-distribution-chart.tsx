@@ -150,7 +150,53 @@ const RewardDistributionChart = ({
             );
           })}
 
-          <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+          <Tooltip
+            content={({ active, payload, label }) => {
+              if (active && payload && payload.length > 0) {
+                const { uid, score, color, value } = payload[0].payload;
+                console.log(payload[0].payload);
+                return (
+                  <div
+                    style={{
+                      background: "#222",
+                      color: "#fff",
+                      borderRadius: 8,
+                      padding: 10,
+                      fontSize: 13,
+                      minWidth: 160,
+                    }}
+                  >
+                    <div style={{ marginBottom: 4 }}>
+                      <strong className="pr-2">UID:</strong>
+                      <span style={{ float: "right" }}>{uid}</span>
+                    </div>
+
+                    {payload.map((entry: any, idx: number) => (
+                      <>
+                        <div key={idx} style={{ marginBottom: 4 }}>
+                          <strong>Score:</strong>
+                          <span style={{ float: "right", color: entry.color }}>
+                            {score.toFixed(3)}
+                          </span>
+                        </div>
+                        <div style={{ marginBottom: 4 }}>
+                          <strong>Est. Reward:</strong>{" "}
+                          <span style={{ float: "right", color: color }}>
+                            {typeof entry.value === "number"
+                              ? entry.value.toFixed(2)
+                              : "-"}
+                            %
+                          </span>
+                        </div>
+                      </>
+                    ))}
+                  </div>
+                );
+              }
+              return null;
+            }}
+            cursor={{ strokeDasharray: "3 3" }}
+          />
           <Legend />
         </ComposedChart>
       </ResponsiveContainer>
