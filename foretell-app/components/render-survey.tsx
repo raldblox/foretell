@@ -13,21 +13,16 @@ export const RenderSurvey = ({ surveyId }: { surveyId: string }) => {
 
   useEffect(() => {
     async function getSurvey() {
-      let url = "/api/survey";
-
       if (surveyId) {
-        url += `?surveyId=${surveyId}`;
-      }
-
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (data.surveys) {
-        setSurveys([...data.surveys]);
+        const res = await fetch(`/api/survey?surveyId=${surveyId}`);
+        const data = await res.json();
+        if (data.surveys) {
+          setSurveys(data.surveys);
+        }
       }
     }
     getSurvey();
-  }, [surveyId]);
+  }, [surveyId, setSurveys]);
 
   const currentSurvey = surveys[0];
 

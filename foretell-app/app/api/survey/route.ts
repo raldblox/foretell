@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   if (existing) {
     return NextResponse.json(
       { error: "Survey with this ID already exists." },
-      { status: 409 },
+      { status: 409 }
     );
   }
   await collection.insertOne(survey);
@@ -51,24 +51,40 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const surveyId = url.searchParams.get("surveyId");
-  const limit = parseInt(url.searchParams.get("limit") || "10", 10);
-  const offset = parseInt(url.searchParams.get("offset") || "0", 10);
+  const limitParam = url.searchParams.get("limit");
+  const offsetParam = url.searchParams.get("offset");
 
   const collection = await getCollection("surveys");
 
+  // Case 1: Request for a single survey (e.g., from /[surveyId] page)
+  // This is identified by the presence of surveyId but NOT pagination params.
+  if (surveyId && !limitParam) {
+    const survey = await collection.findOne({ surveyId });
+    return NextResponse.json({ surveys: survey ? [survey] : [] });
+  }
+
+  // Case 2: Request for a paginated list of surveys (e.g., from the main page)
+  const limit = parseInt(limitParam || "10", 10);
+  const offset = parseInt(offsetParam || "0", 10);
   let surveys = [];
   let mainSurvey = null;
 
-  if (surveyId) {
+  // If a surveyId is provided, it should be the first item on the first page.
+  if (surveyId && offset === 0) {
     mainSurvey = await collection.findOne({ surveyId });
   }
 
-  // Build query to exclude the main survey if surveyId is present
+  // Find the rest of the surveys, excluding the main one if it's present.
   const query = surveyId ? { surveyId: { $ne: surveyId } } : {};
+  
+  // Adjust limit and offset for the query.
+  // If we're including the mainSurvey, we need one less from the rest.
+  const adjustedLimit = mainSurvey ? limit - 1 : limit;
+  // The offset for the rest of the surveys doesn't need to change.
   const restSurveys = await collection
     .find(query)
     .skip(offset)
-    .limit(limit)
+    .limit(adjustedLimit > 0 ? adjustedLimit : 0) // ensure limit is not negative
     .toArray();
 
   if (mainSurvey) {

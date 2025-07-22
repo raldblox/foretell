@@ -112,13 +112,21 @@ export default function Home() {
     }
   }, [searchParams, pathname]);
 
-  // Auto-fetch more when near the end (last 3)
   useEffect(() => {
-    if (!hasMore || loading) return;
+    if (isInitialLoading || !hasMore || loading) return;
     if (surveys.length - idx <= 3) {
-      fetchSurveys();
+      const surveyId = searchParams?.get("surveyId");
+      fetchSurveys(surveyId || undefined);
     }
-  }, [idx, surveys.length, hasMore, loading]);
+  }, [
+    idx,
+    surveys.length,
+    hasMore,
+    loading,
+    fetchSurveys,
+    searchParams,
+    isInitialLoading,
+  ]);
 
   // When URL changes, update idx to match the surveyId in the URL
   useEffect(() => {
@@ -309,13 +317,12 @@ export default function Home() {
             <div className="z-20 w-full px-3 max-w-6xl">
               <div className="mx-auto w-fit pb-6">
                 <Pagination
-                  showControls
                   color="default"
-                  page={idx}
+                  page={idx + 1}
                   total={surveys.length}
                   variant="light"
-                  onChange={setIdx}
-                  // loop={true}
+                  onChange={(page) => setIdx(page - 1)}
+                  showControls
                 />
               </div>
 
