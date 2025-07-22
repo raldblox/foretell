@@ -46,7 +46,7 @@ const RewardDistributionChart = ({
       d.negUSD ?? 0,
       d.neuUSD ?? 0,
       d.posUSD ?? 0,
-    ]),
+    ])
   );
 
   return (
@@ -143,7 +143,7 @@ const RewardDistributionChart = ({
               const points = chartData
                 .filter(
                   (d: any) =>
-                    typeof d[rewardKey] === "number" && !isNaN(d[rewardKey]),
+                    typeof d[rewardKey] === "number" && !isNaN(d[rewardKey])
                 )
                 .map((d: any) => ({
                   score: d.score,

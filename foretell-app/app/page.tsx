@@ -1,6 +1,6 @@
 "use client";
 
-import { Chip, Pagination, Spacer } from "@heroui/react";
+import { Button, Chip, Link, Pagination, Spacer } from "@heroui/react";
 import React, {
   useState,
   useCallback,
@@ -20,6 +20,7 @@ import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
 import { dummySurveys } from "@/lib/dummySurvey";
 import { Logo } from "@/components/icons";
+import Image from "next/image";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -37,10 +38,10 @@ export default function Home() {
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
-    null,
+    null
   );
   const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(
-    null,
+    null
   );
   const [isSwiping, setIsSwiping] = useState(false);
 
@@ -78,7 +79,7 @@ export default function Home() {
           if (reset) return data.surveys;
           // Append only new surveys (no duplicates)
           const newSurveys = data.surveys.filter(
-            (s: any) => !prev.some((p) => p.surveyId === s.surveyId),
+            (s: any) => !prev.some((p) => p.surveyId === s.surveyId)
           );
 
           return [...prev, ...newSurveys];
@@ -86,13 +87,13 @@ export default function Home() {
         if (reset) setIdx(0); // Only reset idx if we're resetting, not appending
         setHasMore(
           data.surveys.length === limit ||
-            (!!surveyId && data.surveys.length > 1),
+            (!!surveyId && data.surveys.length > 1)
         );
         offsetRef.current = reset ? limit : offsetRef.current + limit;
       }
       setLoading(false);
     },
-    [setSurveys, setIdx],
+    [setSurveys, setIdx]
   );
 
   // On mount or when surveyId changes:
@@ -278,13 +279,28 @@ export default function Home() {
                   </h1>
                   <Spacer y={4} />
                   <h2 className="text-large text-default-500 text-balance">
-                    Ask any question, open a live 3-way market, and
-                    automatically distribute your reward pool—no extra tools
-                    required.
+                    Ask anything, open a live 3-way market, and automate
+                    distribution of rewards—no extra tools required.
                   </h2>
                   <Spacer y={4} />
                   <div className="flex w-full justify-center gap-2">
                     <CreateSurvey />
+                    <Button
+                      className="bg-[#6746f9] text-white flex items-center gap-2"
+                      radius="full"
+                      variant="solid"
+                      as={Link}
+                      isExternal
+                      href="https://farcaster.xyz/miniapps/ibjZObityvsY/foretell"
+                    >
+                      <Image
+                        alt="Farcaster"
+                        height={18}
+                        src="/farcaster.svg"
+                        width={18}
+                      />
+                      Launch on Farcater
+                    </Button>
                   </div>
                 </div>
               </section>
