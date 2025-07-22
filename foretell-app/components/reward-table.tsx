@@ -30,6 +30,7 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
 
   return (
     <Table
+      isCompact
       isHeaderSticky
       aria-label="Rewards Table"
       classNames={{ base: "max-h-[520px] overflow-auto", table: "min-w-full " }}
@@ -41,7 +42,7 @@ export function RewardTable({ data, isLoading = false }: RewardTableProps) {
         <TableColumn key="polarity">Polarity</TableColumn>
         <TableColumn key="score">Score, x</TableColumn>
         <TableColumn key="pctShare">Closeness, {`|x - x\u0303|`}</TableColumn>
-        <TableColumn key="rewardUSD">Rewards</TableColumn>
+        <TableColumn key="rewardUSD">% Rewards</TableColumn>
       </TableHeader>
 
       <TableBody

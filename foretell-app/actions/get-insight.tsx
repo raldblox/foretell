@@ -341,15 +341,11 @@ export default function GetInsight(survey: Survey) {
       </section>
 
       <section className="bg-default-50/50 p-3 rounded-xl space-y-3">
-        <RewardDistributionChart chartData={chartData} stats={stats} />
-
-        {/* Connect X Button */}
-        <section className="p-3 pt-4 rounded-lg border border-default-100">
-          <h2 className="text-xl md:px-3 text-left font-medium">Rewards</h2>
-          <div className="mt-4">
-            <RewardTable data={processed} isLoading={false} />
-          </div>
-        </section>
+        <RewardDistributionChart
+          chartData={chartData}
+          stats={stats}
+          processed={processed}
+        />
       </section>
 
       {/* Reward Distribution Chart */}
