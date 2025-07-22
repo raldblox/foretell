@@ -1,4 +1,5 @@
 import { Metadata, ResolvingMetadata } from "next";
+import { RenderSurvey } from "@/components/render-survey";
 
 type Props = {
   params: Promise<{ surveyId: string }>;
@@ -7,7 +8,7 @@ type Props = {
 
 export async function generateMetadata(
   { params, searchParams }: Props,
-  parent: ResolvingMetadata,
+  parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { surveyId } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
@@ -55,4 +56,12 @@ export async function generateMetadata(
   };
 }
 
-export default function Page({ params, searchParams }: Props) {}
+export default async function Page({ params }: Props) {
+  const { surveyId } = await params;
+
+  return (
+    <section className="flex flex-col h-full w-screen items-center rounded-2xl md:rounded-3xl md:py-3">
+      <RenderSurvey surveyId={surveyId} />
+    </section>
+  );
+}

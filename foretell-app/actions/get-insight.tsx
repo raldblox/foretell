@@ -47,7 +47,7 @@ export default function GetInsight(survey: Survey) {
 
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
-    rewardPool,
+    rewardPool
   );
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function GetInsight(survey: Survey) {
         { width: 200, margin: 2 },
         (error: Error | null | undefined, url: string) => {
           if (!error && url) setQrCodeUrl(url);
-        },
+        }
       );
     }
   }, [surveyId]);
@@ -132,7 +132,11 @@ export default function GetInsight(survey: Survey) {
                 )}
                 <div className="flex items-center flex-col text-xs justify-center">
                   {/* <span className="font-semibold">Survey ID:</span> */}
-                  <Link showAnchorIcon className="text-xs" href={codeString}>
+                  <Link
+                    showAnchorIcon
+                    className="text-xs"
+                    href={`/${surveyId}`}
+                  >
                     {surveyId}
                   </Link>
                 </div>
@@ -278,7 +282,7 @@ export default function GetInsight(survey: Survey) {
                           domain={[
                             0,
                             Math.ceil(
-                              Math.max(...miniData[p].map((d) => d.value)),
+                              Math.max(...miniData[p].map((d) => d.value))
                             ),
                           ]}
                         />
