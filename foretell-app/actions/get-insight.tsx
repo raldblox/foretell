@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   AreaChart,
@@ -17,17 +17,16 @@ import QRCode from "qrcode";
 import SubmitResponse from "./submit-response";
 import CreateSurveyModal from "./create-survey";
 
+import { Survey } from "@/types";
+import { useForetell } from "@/hooks/useForetell";
+import MessageCard from "@/components/ui/message-card";
+import RewardDistributionChart from "@/components/visualize/reward-distribution-chart";
 import {
   CHANGE_TYPE,
   POLARITY_COLOR,
   POLARITY_LABEL,
   POLARITY_VALUES,
-  useForetell,
-  Survey,
-} from "@/hooks/useForetell";
-import { AppContext } from "@/app/providers";
-import MessageCard from "@/components/message-card";
-import RewardDistributionChart from "@/components/visuals/reward-distribution-chart";
+} from "@/lib/constants";
 
 export default function GetInsight(survey: Survey) {
   const {
@@ -41,7 +40,7 @@ export default function GetInsight(survey: Survey) {
     description,
   } = survey;
 
-  const { userId } = useContext(AppContext);
+  // const { userId } = useContext(AppContext);
   const [codeString, setCodeString] = useState("");
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
 
@@ -72,18 +71,18 @@ export default function GetInsight(survey: Survey) {
         <section className="grid grid-cols-1 md:grid-cols-4 gap-3 min-h-[300px]">
           {/* Response Container */}
           <div className="col-span-1 md:col-span-3 flex flex-col gap-3 rounded-lg border border-default-100 p-3">
-            <div className="bg-default-50 flex flex-col p-3 rounded-lg gap-1">
+            <div className="bg-default-50 flex flex-col px-4 py-4 rounded-lg gap-1">
               <motion.div
                 key={title} // Trigger animation when title changes
-                animate={{ opacity: 1, height: "auto" }}
+                animate={{ opacity: 1, x: 0, height: "auto" }}
                 className="overflow-hidden"
                 exit={{ opacity: 0, height: "auto" }}
-                initial={{ opacity: 0, height: "auto" }}
+                initial={{ opacity: 0, x: -5, height: "auto" }}
                 transition={{
                   duration: 0.3,
                   ease: "easeInOut",
                   height: {
-                    duration: 0.4,
+                    duration: 1,
                     ease: "easeInOut",
                   },
                 }}
@@ -95,12 +94,13 @@ export default function GetInsight(survey: Survey) {
               {description && (
                 <motion.div
                   key={description}
-                  animate={{ opacity: 1, height: "auto" }}
+                  animate={{ opacity: 1, x: 0, height: "auto" }}
                   className="overflow-hidden"
                   exit={{ opacity: 0, height: "auto" }}
-                  initial={{ opacity: 0, height: "auto" }}
+                  initial={{ opacity: 0, x: -2, height: "auto" }}
                   transition={{
                     duration: 0.3,
+                    delay: 0.1,
                     ease: "easeInOut",
                     height: {
                       duration: 0.4,

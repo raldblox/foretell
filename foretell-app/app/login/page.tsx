@@ -10,13 +10,10 @@ import { Icon } from "@iconify/react";
 
 export default function LoginPage() {
   const { data: session } = useSession();
-  const [error, setError] = useState(false);
 
   const getNonce = useCallback(async () => {
     const nonce = await getCsrfToken();
-
     if (!nonce) throw new Error("Unable to generate nonce");
-
     return nonce;
   }, []);
 
@@ -39,7 +36,6 @@ export default function LoginPage() {
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="bg-default-50 p-8 rounded-lg shadow-lg flex flex-col items-center gap-6 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-2">Sign in to Foretell</h2>
-
         <>
           <div className="w-full flex flex-col items-center gap-2">
             <Button
@@ -62,7 +58,6 @@ export default function LoginPage() {
           <div className="w-full flex flex-col items-center gap-2">
             <FarcasterSignInButton
               nonce={getNonce}
-              onError={() => setError(true)}
               onSignOut={() => signOut()}
               onSuccess={handleFarcasterSuccess}
             />

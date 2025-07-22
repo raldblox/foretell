@@ -1,15 +1,11 @@
-import { Metadata, ResolvingMetadata } from "next";
-import { RenderSurvey } from "@/components/render-survey";
+import { Metadata } from "next";
 
-type Props = {
-  params: Promise<{ surveyId: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+import { RenderSurvey } from "@/components/visualize/render-survey";
+import { AsyncProps } from "@/types";
 
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: AsyncProps): Promise<Metadata> {
   const { surveyId } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
@@ -57,7 +53,7 @@ export async function generateMetadata(
   };
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params }: AsyncProps) {
   const { surveyId } = await params;
 
   return (

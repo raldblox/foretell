@@ -8,14 +8,21 @@ import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { SessionProvider, useSession } from "next-auth/react";
 import { ToastProvider } from "@heroui/react";
-
 import "@farcaster/auth-kit/styles.css";
 import { AuthKitProvider } from "@farcaster/auth-kit";
 import sdk from "@farcaster/miniapp-sdk";
 
 import { loadTextClassifier } from "@/model/text-classify";
 import { dummySurveys } from "@/lib/dummySurvey";
-import { Survey } from "@/hooks/useForetell";
+import { Survey } from "@/types";
+
+declare module "@react-types/shared" {
+  interface RouterConfig {
+    routerOptions: NonNullable<
+      Parameters<ReturnType<typeof useRouter>["push"]>[1]
+    >;
+  }
+}
 
 const farcasterConfig = {
   rpcUrl: "https://mainnet.optimism.io",
@@ -100,18 +107,9 @@ export const ContextProvider = ({
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
-
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
-}
-
-declare module "@react-types/shared" {
-  interface RouterConfig {
-    routerOptions: NonNullable<
-      Parameters<ReturnType<typeof useRouter>["push"]>[1]
-    >;
-  }
 }
 
 export function Providers({ children, themeProps }: ProvidersProps) {

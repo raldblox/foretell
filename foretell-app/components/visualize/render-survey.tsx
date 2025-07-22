@@ -1,12 +1,12 @@
 "use client";
 
-import GetInsight from "@/actions/get-insight";
-import { AppContext } from "@/app/providers";
-import { Survey } from "@/hooks/useForetell";
-import { dummySurveys } from "@/lib/dummySurvey";
 import { Chip } from "@heroui/react";
 import React, { Suspense, useContext, useEffect } from "react";
-import { Logo } from "./icons";
+
+import { Logo } from "../icons";
+
+import { AppContext } from "@/app/providers";
+import GetInsight from "@/actions/get-insight";
 
 export const RenderSurvey = ({ surveyId }: { surveyId: string }) => {
   const { setSurveys, surveys, bertLoaded } = useContext(AppContext);
@@ -16,6 +16,7 @@ export const RenderSurvey = ({ surveyId }: { surveyId: string }) => {
       if (surveyId) {
         const res = await fetch(`/api/survey?surveyId=${surveyId}`);
         const data = await res.json();
+
         if (data.surveys) {
           setSurveys(data.surveys);
         }

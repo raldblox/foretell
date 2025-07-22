@@ -13,13 +13,13 @@ import {
   ComposedChart,
 } from "recharts";
 
-import { RewardTable } from "../reward-table";
+import { RewardTable } from "./reward-table";
 
 import {
   POLARITY_COLOR,
   POLARITY_LABEL,
   POLARITY_VALUES,
-} from "@/hooks/useForetell";
+} from "@/lib/constants";
 
 const CustomDot = (props: any) => {
   const { cx, cy, fill } = props;
@@ -46,7 +46,7 @@ const RewardDistributionChart = ({
       d.negUSD ?? 0,
       d.neuUSD ?? 0,
       d.posUSD ?? 0,
-    ])
+    ]),
   );
 
   return (
@@ -143,7 +143,7 @@ const RewardDistributionChart = ({
               const points = chartData
                 .filter(
                   (d: any) =>
-                    typeof d[rewardKey] === "number" && !isNaN(d[rewardKey])
+                    typeof d[rewardKey] === "number" && !isNaN(d[rewardKey]),
                 )
                 .map((d: any) => ({
                   score: d.score,

@@ -10,22 +10,20 @@ import React, {
   Suspense,
 } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
+import Image from "next/image";
 
 import { AppContext } from "./providers";
 
-import { Survey } from "@/hooks/useForetell";
 import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
 import { dummySurveys } from "@/lib/dummySurvey";
 import { Logo } from "@/components/icons";
-import Image from "next/image";
+import { Survey } from "@/types";
 
 export default function Home() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
   const [showHero, setShowHero] = useState(true);
   const { surveys, setSurveys, idx, setIdx, bertLoaded, isMiniApp } =
     useContext(AppContext)!;
@@ -38,10 +36,10 @@ export default function Home() {
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const [isSwiping, setIsSwiping] = useState(false);
 
@@ -71,29 +69,34 @@ export default function Home() {
         url += `?limit=${limit}&offset=${reset ? 0 : offsetRef.current}`;
       }
 
-      const res = await fetch(url);
-      const data = await res.json();
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
 
-      if (data.surveys) {
-        setSurveys((prev: Survey[]) => {
-          if (reset) return data.surveys;
-          // Append only new surveys (no duplicates)
-          const newSurveys = data.surveys.filter(
-            (s: any) => !prev.some((p) => p.surveyId === s.surveyId)
+        if (data.surveys) {
+          setSurveys((prev: Survey[]) => {
+            if (reset) return data.surveys;
+            // Append only new surveys (no duplicates)
+            const newSurveys = data.surveys.filter(
+              (s: any) => !prev.some((p) => p.surveyId === s.surveyId),
+            );
+
+            return [...prev, ...newSurveys];
+          });
+          if (reset) setIdx(0); // Only reset idx if we're resetting, not appending
+          setHasMore(
+            data.surveys.length === limit ||
+              (!!surveyId && data.surveys.length > 1),
           );
-
-          return [...prev, ...newSurveys];
-        });
-        if (reset) setIdx(0); // Only reset idx if we're resetting, not appending
-        setHasMore(
-          data.surveys.length === limit ||
-            (!!surveyId && data.surveys.length > 1)
-        );
-        offsetRef.current = reset ? limit : offsetRef.current + limit;
+          offsetRef.current = reset ? limit : offsetRef.current + limit;
+        }
+        setLoading(false);
+      } catch (error) {
+        setSurveys(dummySurveys);
+        console.error(error);
       }
-      setLoading(false);
     },
-    [setSurveys, setIdx]
+    [setSurveys, setIdx],
   );
 
   // On mount or when surveyId changes:
@@ -107,6 +110,7 @@ export default function Home() {
       fetchSurveys(undefined, true).then(() => setIsInitialLoading(false));
       setShowHero(true);
     }
+
     if (isMiniApp) {
       setShowHero(false);
     }
@@ -116,6 +120,7 @@ export default function Home() {
     if (isInitialLoading || !hasMore || loading) return;
     if (surveys.length - idx <= 3) {
       const surveyId = searchParams?.get("surveyId");
+
       fetchSurveys(surveyId || undefined);
     }
   }, [
@@ -294,12 +299,12 @@ export default function Home() {
                   <div className="flex w-full flex-wrap justify-center gap-2">
                     <CreateSurvey />
                     <Button
+                      isExternal
+                      as={Link}
                       className="bg-[#6746f9] text-white flex items-center gap-2"
+                      href="https://farcaster.xyz/miniapps/ibjZObityvsY/foretell"
                       radius="full"
                       variant="solid"
-                      as={Link}
-                      isExternal
-                      href="https://farcaster.xyz/miniapps/ibjZObityvsY/foretell"
                     >
                       <Image
                         alt="Farcaster"
@@ -317,12 +322,13 @@ export default function Home() {
             <div className="z-20 w-full px-3 max-w-6xl">
               <div className="mx-auto w-fit pb-6">
                 <Pagination
+                  loop
+                  showControls
                   color="default"
                   page={idx + 1}
                   total={surveys.length}
                   variant="light"
                   onChange={(page) => setIdx(page - 1)}
-                  showControls
                 />
               </div>
 

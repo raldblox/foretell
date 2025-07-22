@@ -4,7 +4,7 @@ import { Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import React from "react";
 
-import GradientText from "./GradientText/GradientText";
+import GradientText from "./ui/gradient-text";
 
 const Hero = () => {
   return (

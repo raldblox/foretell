@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   if (existing) {
     return NextResponse.json(
       { error: "Survey with this ID already exists." },
-      { status: 409 }
+      { status: 409 },
     );
   }
   await collection.insertOne(survey);
@@ -60,6 +60,7 @@ export async function GET(req: NextRequest) {
   // This is identified by the presence of surveyId but NOT pagination params.
   if (surveyId && !limitParam) {
     const survey = await collection.findOne({ surveyId });
+
     return NextResponse.json({ surveys: survey ? [survey] : [] });
   }
 

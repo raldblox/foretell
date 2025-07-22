@@ -21,8 +21,8 @@ import {
 import { parseDate } from "@internationalized/date";
 
 import { AppContext } from "@/app/providers";
-import { Survey } from "@/hooks/useForetell";
 import ConnectButton from "@/components/connect";
+import { Survey } from "@/types";
 
 const SurveySchema = z.object({
   surveyId: z.string().optional(),
@@ -121,9 +121,6 @@ export default function CreateSurveyModal({
     }
     setLoading(true);
     const survey = parsed.data;
-
-    console.log("Creating survey:", survey);
-
     const res = await fetch("/api/survey", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -136,8 +133,6 @@ export default function CreateSurveyModal({
       const updated = await fetch("/api/survey");
 
       if (updated.ok) {
-        const data = await updated.json();
-
         setSurveys((prev: Survey[]) => {
           const updated = [...prev, survey];
 

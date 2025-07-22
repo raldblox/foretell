@@ -7,7 +7,7 @@ import { Icon } from "@iconify/react";
 import { useRef } from "react";
 
 import { AppContext } from "@/app/providers";
-import { Survey } from "@/hooks/useForetell";
+import { Survey } from "@/types";
 
 interface ResponseProps {
   idx?: number;
@@ -63,7 +63,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     setSurveys,
     idx: contextIdx,
     userId,
-    setIdx,
+    bertLoaded,
     classifier,
   } = useContext(AppContext)!;
   const idx = propIdx !== undefined ? propIdx : contextIdx;
@@ -178,8 +178,8 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       classifier,
       response,
     );
-    // Create RawEntry
-    const RawEntry = {
+    // Create ResponseEntry
+    const ResponseEntry = {
       uid: currentSurvey?.allowAnonymity ? anonUid : userId,
       polarity,
       score,
@@ -187,7 +187,6 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
       answer: response,
     };
 
-    console.log(RawEntry);
     // Get the current surveyId
     const surveyId = surveys[idx]?.surveyId;
 
@@ -196,43 +195,39 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
     const res = await fetch("/api/response", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ surveyId, response: RawEntry }),
+      body: JSON.stringify({ surveyId, response: ResponseEntry }),
     });
 
     if (res.ok) {
       // Optionally, re-fetch surveys or update context
-      const updated = await fetch("/api/survey");
+      addToast({
+        title: "Your response has been recorded.",
+        color: "success",
+      });
 
-      if (updated.ok) {
-        const data = await updated.json();
+      // Optimistically add the new response to the corresponding survey
+      setSurveys((prev: Survey[]) => {
+        const newSurveys = prev.map((survey: Survey, i: number) => {
+          if (i === idx) {
+            return {
+              ...survey,
+              responses: [...(survey.responses || []), ResponseEntry],
+            };
+          }
 
-        addToast({
-          title: "Your response has been recorded.",
-          color: "success",
+          return survey;
         });
 
-        // Optimistically add the new response to the corresponding survey
-        setSurveys((prev: Survey[]) => {
-          const newSurveys = prev.map((survey: Survey, i: number) => {
-            if (i === idx) {
-              return {
-                ...survey,
-                responses: [...(survey.responses || []), RawEntry],
-              };
-            }
+        return newSurveys;
+      });
 
-            return survey;
-          });
+      // After updating, check if there is a next survey
+      // if (idx + 1 < (data.surveys?.length || 0)) {
+      //   setIdx(idx + 1);
+      // } else {
+      //   setIdx(0);
+      // }
 
-          return newSurveys;
-        });
-        // After updating, check if there is a next survey
-        // if (idx + 1 < (data.surveys?.length || 0)) {
-        //   setIdx(idx + 1);
-        // } else {
-        //   setIdx(0);
-        // }
-      }
       setResponse("");
       setLivePolarity(0);
       setLiveIntensity(0);
@@ -296,7 +291,7 @@ const SubmitResponse = ({ idx: propIdx }: ResponseProps) => {
           <div className="flex flex-wrap gap-3">
             <Button
               className="p-0.5 px-2"
-              isDisabled={false}
+              isDisabled={!bertLoaded}
               size="sm"
               startContent={
                 <Icon

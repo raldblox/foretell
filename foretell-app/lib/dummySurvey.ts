@@ -1,4 +1,4 @@
-import { Survey } from "@/hooks/useForetell";
+import { Survey } from "@/types";
 
 export const dummySurveys: Survey[] = [
   {

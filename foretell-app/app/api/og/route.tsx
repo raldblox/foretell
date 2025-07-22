@@ -20,8 +20,8 @@ export async function GET(request: Request) {
       if (survey && survey.title) {
         title = survey.title;
       }
-    } catch (e) {
-      // fallback to image
+    } catch (error) {
+      console.error(error);
     }
   }
 

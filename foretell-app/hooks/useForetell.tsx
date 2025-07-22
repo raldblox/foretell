@@ -1,88 +1,15 @@
 import { useMemo } from "react";
 
-// --- Types & Interfaces ---
-export type Polarity = -1 | 0 | 1;
-export type Resolution = "time" | "quantity";
-export interface RawEntry {
-  uid: string;
-  polarity: Polarity;
-  score: number;
-  intensity?: number;
-  answer?: string;
-  createdAt?: string; // ISO string, server-side timestamp
-}
-
-export interface Reward {
-  chainId: string;
-  nativeToken: boolean;
-  rewardPool: number;
-  tokenAddress: string;
-}
-export interface Survey {
-  surveyId: string;
-  title: string;
-  description?: string;
-  createdBy: string;
-  createdAt: string;
-  expiry?: string;
-  maxResponses?: number;
-  responses?: RawEntry[];
-  rewardPool?: Reward;
-  allowAnonymity?: boolean;
-  discoverable?: boolean;
-}
-export interface SurveyProps {
-  question: string;
-  rewardPool?: Reward;
-  surveyData: RawEntry[];
-  isLoading?: boolean;
-  visibility?: boolean;
-  allowAnonymity?: boolean;
-  resolution?: Resolution;
-  expiry?: number;
-  idx?: number;
-}
-
-export interface WeightedEntry extends RawEntry {
-  rawWeight: number;
-}
-
-export interface ProcessedEntry extends WeightedEntry {
-  shareInGroup: number;
-  rewardUSD: number;
-  pctShare: number;
-}
-
-export interface CombinedPoint {
-  score: number;
-  negPS?: number;
-  neuPS?: number;
-  posPS?: number;
-}
-
-// --- Constants ---
-export const POLARITY_VALUES: Polarity[] = [-1, 0, 1];
-export const POLARITY_LABEL: Record<Polarity, string> = {
-  [-1]: "Negative",
-  0: "Neutral",
-  1: "Positive",
-};
-export const POLARITY_COLOR: Record<Polarity, string> = {
-  [-1]: "#ff4d4f",
-  0: "#faad14",
-  1: "#52c41a",
-};
-export const MIN_WEIGHT = 0.05;
-export const CHANGE_TYPE: Record<
+import { MIN_WEIGHT, POLARITY_VALUES } from "@/lib/constants";
+import {
   Polarity,
-  "negative" | "neutral" | "positive"
-> = {
-  [-1]: "negative",
-  0: "neutral",
-  1: "positive",
-};
+  ProcessedEntry,
+  ResponseEntry,
+  Reward,
+  WeightedEntry,
+} from "@/types";
 
-export function useForetell(surveyData: RawEntry[], pool?: Reward) {
+export function useForetell(surveyData: ResponseEntry[], pool?: Reward) {
   const totalPool = pool?.rewardPool ? pool.rewardPool : 100;
 
   // 1) group
@@ -94,7 +21,7 @@ export function useForetell(surveyData: RawEntry[], pool?: Reward) {
 
           return acc;
         },
-        {} as Record<Polarity, RawEntry[]>,
+        {} as Record<Polarity, ResponseEntry[]>,
       ),
     [surveyData],
   );

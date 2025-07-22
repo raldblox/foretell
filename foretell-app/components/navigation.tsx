@@ -14,7 +14,7 @@ import {
 } from "@heroui/react";
 
 import { Logo } from "./icons";
-import GradientText from "./GradientText/GradientText";
+import GradientText from "./ui/gradient-text";
 import ConnectButton from "./connect";
 
 import CreateSurveyModal from "@/actions/create-survey";
