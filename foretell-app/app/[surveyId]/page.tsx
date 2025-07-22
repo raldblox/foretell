@@ -12,17 +12,18 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { surveyId } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
-  const ogUrl = surveyId
-    ? `${baseUrl}/api/og?surveyId=${encodeURIComponent(surveyId as string)}`
-    : `${baseUrl}/api/og`;
 
-  const previousImages = (await parent).openGraph?.images || [];
+  let ogUrl = `${baseUrl}/api/og`;
+
+  if (surveyId) {
+    ogUrl = `${baseUrl}/api/og?surveyId=${encodeURIComponent(surveyId as string)}`;
+  }
 
   return {
     title: "Foretell",
     description: "It's foretelling time!",
     openGraph: {
-      images: [ogUrl, ...previousImages],
+      images: [ogUrl],
     },
     metadataBase: new URL(baseUrl),
     other: {
