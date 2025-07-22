@@ -37,10 +37,10 @@ export default function Home() {
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const [isSwiping, setIsSwiping] = useState(false);
 
@@ -78,20 +78,21 @@ export default function Home() {
           if (reset) return data.surveys;
           // Append only new surveys (no duplicates)
           const newSurveys = data.surveys.filter(
-            (s: any) => !prev.some((p) => p.surveyId === s.surveyId)
+            (s: any) => !prev.some((p) => p.surveyId === s.surveyId),
           );
+
           return [...prev, ...newSurveys];
         });
         if (reset) setIdx(0); // Only reset idx if we're resetting, not appending
         setHasMore(
           data.surveys.length === limit ||
-            (!!surveyId && data.surveys.length > 1)
+            (!!surveyId && data.surveys.length > 1),
         );
         offsetRef.current = reset ? limit : offsetRef.current + limit;
       }
       setLoading(false);
     },
-    [setSurveys, setIdx]
+    [setSurveys, setIdx],
   );
 
   // On mount or when surveyId changes:
@@ -121,13 +122,14 @@ export default function Home() {
   // When URL changes, update idx to match the surveyId in the URL
   useEffect(() => {
     const invite = searchParams?.get("surveyId");
+
     if (invite && surveys.length > 0) {
       const foundIdx = surveys.findIndex((s: Survey) => s.surveyId === invite);
+
       if (foundIdx !== -1 && foundIdx !== idx) {
         setIdx(foundIdx);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, surveys]);
 
   const currentSurvey = surveys[idx] || dummySurveys[0];
@@ -291,11 +293,11 @@ export default function Home() {
             <div className="z-20 w-full px-3 max-w-6xl">
               <div className="mx-auto w-fit pb-6">
                 <Pagination
-                  color="default"
                   showControls
+                  color="default"
                   page={idx}
-                  variant="light"
                   total={surveys.length}
+                  variant="light"
                   onChange={setIdx}
                   // loop={true}
                 />

@@ -16,7 +16,7 @@ export type MessageCardProps = React.HTMLAttributes<HTMLDivElement> & {
 const MessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
   (
     { avatar, message, polarity, className, messageClassName, ...props },
-    ref
+    ref,
   ) => {
     const messageRef = React.useRef<HTMLDivElement>(null);
 
@@ -44,7 +44,7 @@ const MessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
           <div
             className={cn(
               "relative w-full rounded-medium bg-default-100 px-4 py-3 text-default-600",
-              messageClassName
+              messageClassName,
             )}
           >
             <div ref={messageRef} className={"pr-6 text-small"}>
@@ -54,7 +54,7 @@ const MessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default MessageCard;

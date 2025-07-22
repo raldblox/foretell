@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+
 import { getCollection } from "@/lib/mongodb";
 
 const size = {
@@ -10,10 +11,12 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const surveyId = searchParams.get("surveyId");
   let title: string | null = null;
+
   if (surveyId) {
     try {
       const collection = await getCollection("surveys");
       const survey = await collection.findOne({ surveyId });
+
       if (survey && survey.title) {
         title = survey.title;
       }
@@ -42,7 +45,7 @@ export async function GET(request: Request) {
       ),
       {
         ...size,
-      }
+      },
     );
   } else {
     // Always use a text fallback, never <img>
@@ -63,7 +66,7 @@ export async function GET(request: Request) {
           Foretell
         </div>
       ),
-      { ...size }
+      { ...size },
     );
   }
 }

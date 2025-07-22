@@ -94,9 +94,9 @@ export function useForetell(surveyData: RawEntry[], pool?: Reward) {
 
           return acc;
         },
-        {} as Record<Polarity, RawEntry[]>
+        {} as Record<Polarity, RawEntry[]>,
       ),
-    [surveyData]
+    [surveyData],
   );
 
   // 2) stats (now includes median)
@@ -108,8 +108,10 @@ export function useForetell(surveyData: RawEntry[], pool?: Reward) {
           // Calculate median
           const sorted = [...scores].sort((a, b) => a - b);
           let median = 0;
+
           if (sorted.length > 0) {
             const mid = Math.floor(sorted.length / 2);
+
             median =
               sorted.length % 2 !== 0
                 ? sorted[mid]
@@ -120,12 +122,14 @@ export function useForetell(surveyData: RawEntry[], pool?: Reward) {
             sorted.length > 0
               ? Math.max(...sorted.map((x) => Math.abs(x - median)))
               : 0;
+
           acc[p] = { median, maxDist };
+
           return acc;
         },
-        {} as Record<Polarity, { median: number; maxDist: number }>
+        {} as Record<Polarity, { median: number; maxDist: number }>,
       ),
-    [groups]
+    [groups],
   );
 
   // 3) weighted (closeness to median, no zero rewards)
@@ -135,13 +139,15 @@ export function useForetell(surveyData: RawEntry[], pool?: Reward) {
         const { median, maxDist } = stats[u.polarity];
         // Closeness to median (1 if at median, 0 if farthest in group)
         let closeness = 1;
+
         if (maxDist > 0) {
           closeness = 1 - Math.abs(u.score - median) / maxDist;
         }
+
         // Ensure no one gets zero: add MIN_WEIGHT
         return { ...u, rawWeight: closeness + MIN_WEIGHT };
       }),
-    [surveyData, stats]
+    [surveyData, stats],
   );
 
   // 4) process (normalize within group, calculate rewards)
@@ -157,24 +163,28 @@ export function useForetell(surveyData: RawEntry[], pool?: Reward) {
         const groupReward = (groupSize / surveyData.length) * totalPool;
         const rewardUSD = parseFloat((shareInGroup * groupReward).toFixed(2));
         const pctShare = parseFloat(((rewardUSD / totalPool) * 100).toFixed(2));
+
         return { ...u, shareInGroup, rewardUSD, pctShare };
       }),
-    [weighted, groups, surveyData.length, totalPool]
+    [weighted, groups, surveyData.length, totalPool],
   );
 
   // 5) combined chart surveyData (per-group score and usdReward for chart)
   const chartData = useMemo(() => {
     // Collect all unique scores from all processed entries
     const allScores = Array.from(new Set(processed.map((u) => u.score))).sort(
-      (a, b) => a - b
+      (a, b) => a - b,
     );
+
     // For each score, build a data point with per-group values
     return allScores.map((score) => {
       const point: any = { score };
+
       POLARITY_VALUES.forEach((p) => {
         const entry = processed.find(
-          (u) => u.polarity === p && u.score === score
+          (u) => u.polarity === p && u.score === score,
         );
+
         if (entry) {
           if (p === -1) {
             point.score = entry.score;
@@ -191,6 +201,7 @@ export function useForetell(surveyData: RawEntry[], pool?: Reward) {
           }
         }
       });
+
       return point;
     });
   }, [processed]);

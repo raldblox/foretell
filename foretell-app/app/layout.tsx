@@ -68,7 +68,7 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-dvh text-foreground bg-background font-sans antialiased",
-          fontSans.variable
+          fontSans.variable,
         )}
       >
         <NextAuthProvider>

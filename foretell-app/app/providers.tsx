@@ -46,12 +46,13 @@ export const ContextProvider = ({
       if (typeof window !== "undefined") {
         try {
           const result = await sdk.isInMiniApp();
+
           setIsMiniApp(result);
           if (result) {
             const context = await sdk.context;
 
             setMiniAppFid(
-              context?.user?.fid ? context.user.fid.toString() : null
+              context?.user?.fid ? context.user.fid.toString() : null,
             );
           }
         } catch {}

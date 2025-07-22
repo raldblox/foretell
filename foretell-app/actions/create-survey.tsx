@@ -64,7 +64,7 @@ export default function CreateSurveyModal({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -175,10 +175,10 @@ export default function CreateSurveyModal({
     <>
       <Button
         className="bg-default-foreground text-small font-medium leading-5 text-background"
+        fullWidth={fullWidth}
         radius="full"
         size={size}
         onPress={onOpen}
-        fullWidth={fullWidth}
       >
         {customMessage ? customMessage : "Create survey on Foretell"}
       </Button>
@@ -250,29 +250,29 @@ export default function CreateSurveyModal({
 
               <div className="flex items-center gap-1 w-full">
                 <Button
-                  radius="full"
                   color="default"
                   isLoading={loading}
+                  radius="full"
                   size="lg"
                   type="submit"
-                  onPress={onClose}
                   variant="flat"
+                  onPress={onClose}
                 >
                   Cancel
                 </Button>
                 {userId ? (
                   <Button
-                    radius="full"
                     fullWidth
                     color="primary"
                     isLoading={loading}
+                    radius="full"
                     size="lg"
                     type="submit"
                   >
                     Create Survey
                   </Button>
                 ) : (
-                  <ConnectButton size="lg" fullWidth />
+                  <ConnectButton fullWidth size="lg" />
                 )}
               </div>
             </form>

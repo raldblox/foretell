@@ -1,32 +1,31 @@
 "use client";
 
-import {
-  POLARITY_COLOR,
-  POLARITY_LABEL,
-  POLARITY_VALUES,
-} from "@/hooks/useForetell";
 import React from "react";
 import {
-  AreaChart,
   CartesianGrid,
-  Legend,
-  Line,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  Layer,
   Area,
   Scatter,
   ComposedChart,
 } from "recharts";
+
 import { RewardTable } from "../reward-table";
+
+import {
+  POLARITY_COLOR,
+  POLARITY_LABEL,
+  POLARITY_VALUES,
+} from "@/hooks/useForetell";
 
 const CustomDot = (props: any) => {
   const { cx, cy, fill } = props;
+
   return (
-    <circle cx={cx} cy={cy} r={5} fill={fill} stroke="#000" strokeWidth={1} />
+    <circle cx={cx} cy={cy} fill={fill} r={5} stroke="#000" strokeWidth={1} />
   );
 };
 
@@ -47,8 +46,9 @@ const RewardDistributionChart = ({
       d.negUSD ?? 0,
       d.neuUSD ?? 0,
       d.posUSD ?? 0,
-    ])
+    ]),
   );
+
   return (
     <>
       <section className="p-3 pt-4 rounded-lg border border-default-100 space-y-3">
@@ -90,18 +90,18 @@ const RewardDistributionChart = ({
               dataKey="score"
               domain={[0, 1]}
               fontSize={10}
-              tickCount={11}
-              type="number"
               label={{
                 value: "Sentiment Score",
                 position: "outsideLeft",
                 fontSize: 12,
                 dy: 15,
               }}
+              tickCount={11}
+              type="number"
             />
             <YAxis
-              fontSize={10}
               domain={[0, maxUSD || 1]}
+              fontSize={10}
               label={{
                 value: "% Rewards",
                 angle: -90,
@@ -128,11 +128,11 @@ const RewardDistributionChart = ({
                   p === -1 ? "negReward" : p === 0 ? "neuReward" : "posReward"
                 }
                 fill={`url(#grad${p})`}
+                fontSize={10}
                 name={`${POLARITY_LABEL[p]}`}
                 stroke={POLARITY_COLOR[p]}
                 strokeWidth={3}
                 type="stepAfter"
-                fontSize={10}
               />
             ))}
 
@@ -143,45 +143,49 @@ const RewardDistributionChart = ({
               const points = chartData
                 .filter(
                   (d: any) =>
-                    typeof d[rewardKey] === "number" && !isNaN(d[rewardKey])
+                    typeof d[rewardKey] === "number" && !isNaN(d[rewardKey]),
                 )
                 .map((d: any) => ({
                   score: d.score,
                   reward: d[rewardKey],
                   uid: d.uid,
                 }));
+
               if (!points.length) return null;
+
               return (
                 <Scatter
                   key={`scatter-${p}`}
                   data={points}
-                  name={`UID`}
-                  fill={POLARITY_COLOR[p]}
-                  yAxisId="left"
-                  line={false}
-                  shape={CustomDot}
                   dataKey="reward"
+                  fill={POLARITY_COLOR[p]}
+                  line={false}
+                  name={`UID`}
+                  shape={CustomDot}
+                  yAxisId="left"
                 />
               );
             })}
 
             {POLARITY_VALUES.map((p) => {
               const median = Number(stats[p].median);
+
               if (median === 0 || median == null || isNaN(median)) return null;
               console.log(median, p);
+
               return (
                 <ReferenceLine
                   key={`median-${p}`}
-                  x={median}
-                  stroke={POLARITY_COLOR[p]}
-                  strokeWidth={1}
-                  strokeDasharray="5 2"
                   label={{
                     value: "x\u0303",
                     position: "top",
                     fill: POLARITY_COLOR[p],
                     fontSize: 12,
                   }}
+                  stroke={POLARITY_COLOR[p]}
+                  strokeDasharray="5 2"
+                  strokeWidth={1}
+                  x={median}
                 />
               );
             })}
@@ -191,6 +195,7 @@ const RewardDistributionChart = ({
                 if (active && payload && payload.length > 0) {
                   const { uid, score } = payload[0].payload;
                   const reward = payload[0].value;
+
                   return (
                     <div
                       style={{
@@ -223,6 +228,7 @@ const RewardDistributionChart = ({
                     </div>
                   );
                 }
+
                 return null;
               }}
               cursor={{ strokeDasharray: "3 3" }}

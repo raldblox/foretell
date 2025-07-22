@@ -1,12 +1,13 @@
 import { Metadata, ResolvingMetadata } from "next";
 
 type Props = {
-  params: Promise<{ surveyId: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}
- 
-export async function generateMetadata({ params, searchParams }: Props,
-  parent: ResolvingMetadata
+  params: Promise<{ surveyId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const { surveyId } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";

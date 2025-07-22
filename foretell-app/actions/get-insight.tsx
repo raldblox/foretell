@@ -4,17 +4,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
   Tooltip,
-  Legend,
-  ReferenceLine,
   ResponsiveContainer,
   Area as MiniArea,
   YAxis as MiniYAxis,
-  Line,
 } from "recharts";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/theme";
@@ -32,10 +25,8 @@ import {
   useForetell,
   Survey,
 } from "@/hooks/useForetell";
-import { RewardTable } from "@/components/reward-table";
 import { AppContext } from "@/app/providers";
 import MessageCard from "@/components/message-card";
-import { toUnicode } from "punycode";
 import RewardDistributionChart from "@/components/visuals/reward-distribution-chart";
 
 export default function GetInsight(survey: Survey) {
@@ -56,7 +47,7 @@ export default function GetInsight(survey: Survey) {
 
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
-    rewardPool
+    rewardPool,
   );
 
   useEffect(() => {
@@ -69,7 +60,7 @@ export default function GetInsight(survey: Survey) {
         { width: 200, margin: 2 },
         (error: Error | null | undefined, url: string) => {
           if (!error && url) setQrCodeUrl(url);
-        }
+        },
       );
     }
   }, [surveyId]);
@@ -287,7 +278,7 @@ export default function GetInsight(survey: Survey) {
                           domain={[
                             0,
                             Math.ceil(
-                              Math.max(...miniData[p].map((d) => d.value))
+                              Math.max(...miniData[p].map((d) => d.value)),
                             ),
                           ]}
                         />
@@ -343,8 +334,8 @@ export default function GetInsight(survey: Survey) {
       <section className="bg-default-50/50 p-3 rounded-xl space-y-3">
         <RewardDistributionChart
           chartData={chartData}
-          stats={stats}
           processed={processed}
+          stats={stats}
         />
       </section>
 

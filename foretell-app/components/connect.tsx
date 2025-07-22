@@ -132,10 +132,10 @@ export default function ConnectButton({
     return (
       <Button
         className="flex text-small font-medium leading-5 items-center gap-2 "
+        fullWidth={fullWidth}
         radius="full"
         size={size}
         variant="solid"
-        fullWidth={fullWidth}
         onPress={() => signIn("twitter", { callbackUrl: "/" })}
       >
         Connect
