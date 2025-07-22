@@ -31,7 +31,7 @@ export const RenderSurvey = ({ surveyId }: { surveyId: string }) => {
   const currentSurvey = surveys[0] || dummySurveys[0];
 
   return (
-    <section className="w-full gap-3 z-10 flex flex-col items-center justify-center">
+    <section className="w-full gap-6 z-10 flex flex-col items-center justify-center">
       <div className="flex text-xs items-center border-1 gap-2 rounded-full p-1 w-fit border-default-100">
         <span className="pl-3 font-semibold">AI Sentiment Analyzer</span>
         <Chip
