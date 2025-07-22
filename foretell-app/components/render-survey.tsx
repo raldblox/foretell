@@ -8,7 +8,7 @@ import { Chip } from "@heroui/react";
 import React, { useContext, useEffect } from "react";
 
 export const RenderSurvey = ({ surveyId }: { surveyId: string }) => {
-  const { setSurveys, surveys, idx, bertLoaded } = useContext(AppContext);
+  const { setSurveys, surveys, bertLoaded } = useContext(AppContext);
 
   useEffect(() => {
     async function getSurvey() {
@@ -28,7 +28,8 @@ export const RenderSurvey = ({ surveyId }: { surveyId: string }) => {
     getSurvey();
   }, [surveyId]);
 
-  const currentSurvey = surveys[idx] || dummySurveys[0];
+  const currentSurvey = surveys[0] || dummySurveys[0];
+
   return (
     <section className="container gap-6 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center px-6">
       <div className="flex text-xs items-center border-1 gap-2 rounded-full p-1 w-fit border-default-100">
