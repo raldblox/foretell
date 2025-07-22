@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
 
   // Find the rest of the surveys, excluding the main one if it's present.
   const query = surveyId ? { surveyId: { $ne: surveyId } } : {};
-  
+
   // Adjust limit and offset for the query.
   // If we're including the mainSurvey, we need one less from the rest.
   const adjustedLimit = mainSurvey ? limit - 1 : limit;
