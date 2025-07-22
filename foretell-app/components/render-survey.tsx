@@ -5,7 +5,7 @@ import { AppContext } from "@/app/providers";
 import { Survey } from "@/hooks/useForetell";
 import { dummySurveys } from "@/lib/dummySurvey";
 import { Chip } from "@heroui/react";
-import React, { useContext, useEffect } from "react";
+import React, { Suspense, useContext, useEffect } from "react";
 
 export const RenderSurvey = ({ surveyId }: { surveyId: string }) => {
   const { setSurveys, surveys, bertLoaded } = useContext(AppContext);
@@ -31,7 +31,7 @@ export const RenderSurvey = ({ surveyId }: { surveyId: string }) => {
   const currentSurvey = surveys[0] || dummySurveys[0];
 
   return (
-    <section className="container gap-6 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center px-6">
+    <section className="w-full gap-3 z-10 flex flex-col items-center justify-center">
       <div className="flex text-xs items-center border-1 gap-2 rounded-full p-1 w-fit border-default-100">
         <span className="pl-3 font-semibold">AI Sentiment Analyzer</span>
         <Chip
@@ -43,7 +43,13 @@ export const RenderSurvey = ({ surveyId }: { surveyId: string }) => {
           {bertLoaded ? "Running on CPU" : "Loading"}
         </Chip>
       </div>
-      <GetInsight {...currentSurvey} />
+      <div className="z-20 w-full px-3 max-w-6xl">
+        <div className="max-w-7xl backdrop-blur-md mx-auto">
+          <Suspense>
+            <GetInsight {...currentSurvey} />
+          </Suspense>
+        </div>
+      </div>
     </section>
   );
 };

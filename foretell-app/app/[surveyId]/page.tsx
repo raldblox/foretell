@@ -60,7 +60,7 @@ export default async function Page({ params }: Props) {
   const { surveyId } = await params;
 
   return (
-    <section className="flex flex-col h-full w-screen items-center rounded-2xl md:rounded-3xl md:py-3">
+    <section className="flex flex-col w-screen overflow-hidden items-center rounded-2xl md:rounded-3xl md:py-3">
       <RenderSurvey surveyId={surveyId} />
     </section>
   );

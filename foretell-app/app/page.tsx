@@ -243,7 +243,7 @@ export default function Home() {
   return (
     <>
       <main
-        className="flex flex-col h-full items-center rounded-2xl md:rounded-3xl md:px-0"
+        className="flex flex-col h-full items-center rounded-2xl md:rounded-3xl md:px-0 w-screen"
         style={{ touchAction: "pan-y" }} // Allow vertical scrolling but handle horizontal swipes
         onTouchEnd={onTouchEnd}
         onTouchMove={onTouchMove}
@@ -283,7 +283,7 @@ export default function Home() {
                     distribution of rewards—no extra tools required.
                   </h2>
                   <Spacer y={4} />
-                  <div className="flex w-full justify-center gap-2">
+                  <div className="flex w-full flex-wrap justify-center gap-2">
                     <CreateSurvey />
                     <Button
                       className="bg-[#6746f9] text-white flex items-center gap-2"
