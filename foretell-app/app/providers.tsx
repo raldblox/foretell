@@ -15,6 +15,7 @@ import { loadTextClassifier } from "@/model/text-classify";
 import { dummySurveys } from "@/lib/dummySurvey";
 import { Survey } from "@/types";
 import { SequenceConnect, createConfig } from "@0xsequence/connect";
+import { base, etherlink } from "viem/chains";
 
 declare module "@react-types/shared" {
   interface RouterConfig {
@@ -118,7 +119,8 @@ export function Providers({ children, themeProps }: ProvidersProps) {
   // sequence config
   const projectAccessKey = process.env.SEQUENCE_PROJECT_KEY!;
   const waasConfigKey = process.env.SEQUENCE_WAAS_KEY!;
-  
+  const googleClientId = process.env.GOOGLE_CLIENT_ID!; // Google Client ID
+
   const config = createConfig("waas", {
     projectAccessKey,
     position: "center",
@@ -126,11 +128,13 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     signIn: {
       projectName: "Foretell",
     },
-    defaultChainId: 128123,
-    chainIds: [42793, 128123],
+    defaultChainId: etherlink.id,
+    chainIds: [etherlink.id, base.id],
     appName: "Foretell",
     waasConfigKey,
-    google: false,
+    google: {
+      clientId: googleClientId,
+    },
     apple: false,
     walletConnect: false,
     coinbase: false,

@@ -3,12 +3,14 @@ const nextConfig = {
   env: {
     SEQUENCE_PROJECT_KEY: process.env.SEQUENCE_PROJECT_KEY,
     SEQUENCE_WAAS_KEY: process.env.SEQUENCE_WAAS_KEY,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     });
+    config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
   // async redirects() {
