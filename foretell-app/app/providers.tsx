@@ -11,7 +11,7 @@ import { ToastProvider } from "@heroui/react";
 import "@farcaster/auth-kit/styles.css";
 import { AuthKitProvider } from "@farcaster/auth-kit";
 import sdk from "@farcaster/miniapp-sdk";
-import { SequenceConnect, createConfig } from "@0xsequence/connect";
+import { SequenceConnect, createConfig, useWallets } from "@0xsequence/connect";
 import { base, etherlink } from "viem/chains";
 
 import { loadTextClassifier } from "@/model/text-classify";
@@ -43,11 +43,14 @@ export const ContextProvider = ({
   const [bertLoaded, setBertLoaded] = React.useState(false);
   const [classifier, setClassifier] = React.useState<any>(null);
   const { data: session } = useSession();
+  const { wallets } = useWallets();
 
   const [isMiniApp, setIsMiniApp] = React.useState(false);
   const [miniAppFid, setMiniAppFid] = React.useState<string | null>(null);
 
-  const userId = session ? session?.user?.id : miniAppFid;
+  const walletAddress =
+    wallets && wallets.length > 0 ? wallets[0].address : null;
+  const userId = session ? session?.user?.id : miniAppFid || walletAddress;
 
   // checks
   React.useEffect(() => {
@@ -61,7 +64,7 @@ export const ContextProvider = ({
             const context = await sdk.context;
 
             setMiniAppFid(
-              context?.user?.fid ? context.user.fid.toString() : null,
+              context?.user?.fid ? context.user.fid.toString() : null
             );
           }
         } catch {}
