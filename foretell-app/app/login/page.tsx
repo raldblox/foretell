@@ -4,7 +4,7 @@ import {
   SignInButton as FarcasterSignInButton,
   StatusAPIResponse,
 } from "@farcaster/auth-kit";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { Button, addToast } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
@@ -13,7 +13,9 @@ export default function LoginPage() {
 
   const getNonce = useCallback(async () => {
     const nonce = await getCsrfToken();
+
     if (!nonce) throw new Error("Unable to generate nonce");
+
     return nonce;
   }, []);
 

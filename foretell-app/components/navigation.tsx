@@ -31,7 +31,6 @@ const menuItems = [
 ];
 
 export default function Navigation(props: NavbarProps) {
-  
   return (
     <Navbar
       shouldHideOnScroll

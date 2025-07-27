@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   ) {
     return NextResponse.json(
       { error: "You have already submitted a response to this survey." },
-      { status: 400 }
+      { status: 400 },
     );
   }
   // Check maxResponses
@@ -47,14 +47,14 @@ export async function POST(req: NextRequest) {
   ) {
     return NextResponse.json(
       { error: "This survey has reached the maximum number of responses." },
-      { status: 400 }
+      { status: 400 },
     );
   }
   // Check expiry
   if (survey.expiry && new Date() > new Date(survey.expiry)) {
     return NextResponse.json(
       { error: "This survey has expired." },
-      { status: 400 }
+      { status: 400 },
     );
   }
   // Add server-side timestamp
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
   };
   const result = await collection.updateOne(
     { surveyId },
-    { $push: { responses: responseWithTimestamp } }
+    { $push: { responses: responseWithTimestamp } },
   );
 
   if (result.modifiedCount === 1) {
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
   } else {
     return NextResponse.json(
       { error: "Survey not found or not updated" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 }

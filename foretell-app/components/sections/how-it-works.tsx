@@ -1,3 +1,3 @@
 export default function HowItWorks() {
-  return <section></section>;
+  return <section />;
 }

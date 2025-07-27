@@ -3,9 +3,10 @@ import { Button, addToast, Image, ButtonGroup } from "@heroui/react";
 import { signIn, signOut, useSession, getCsrfToken } from "next-auth/react";
 import { Icon } from "@iconify/react";
 import { sdk } from "@farcaster/miniapp-sdk";
-import { AppContext } from "@/app/providers";
 import { useOpenConnectModal } from "@0xsequence/connect";
 import { useWallets } from "@0xsequence/connect";
+
+import { AppContext } from "@/app/providers";
 
 export default function ConnectButton({
   size,
@@ -136,14 +137,14 @@ export default function ConnectButton({
                 {wallet.address.slice(-4)}
               </Button>
               <Button
+                isIconOnly
                 className="text-danger"
                 radius="full"
                 size={size}
                 variant="flat"
                 onPress={() => disconnectWallet(wallet.address)}
-                isIconOnly
               >
-                <Icon icon="memory:alpha-x-fill" width="24" height="24" />
+                <Icon height="24" icon="memory:alpha-x-fill" width="24" />
               </Button>
             </ButtonGroup>
           </div>
@@ -157,27 +158,27 @@ export default function ConnectButton({
           className="flex text-small font-medium leading-5 items-center gap-2 "
           fullWidth={fullWidth}
           radius="full"
-          variant="solid"
           size={size}
+          variant="solid"
           onPress={() => signIn("twitter", { callbackUrl: "/" })}
         >
           Connect
           <Icon
             className=""
+            height="18"
             icon="hugeicons:new-twitter"
             width="18"
-            height="18"
           />
         </Button>
         <Button
-          size={size}
           className="flex text-small font-medium leading-5 items-center gap-2 "
+          endContent={
+            <Icon className="" height="24" icon="memory:email" width="24" />
+          }
           radius="full"
+          size={size}
           variant="solid"
           onPress={() => setOpenConnectModal(true)}
-          endContent={
-            <Icon className="" icon="memory:email" width="24" height="24" />
-          }
         >
           Connect
         </Button>

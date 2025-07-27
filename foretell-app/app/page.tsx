@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Chip, Link, Pagination, Spacer } from "@heroui/react";
+import { Chip, Pagination } from "@heroui/react";
 import React, {
   useState,
   useCallback,
@@ -11,11 +11,9 @@ import React, {
 } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
-import Image from "next/image";
 
 import { AppContext } from "./providers";
 
-import CreateSurvey from "@/actions/create-survey";
 import GetInsight from "@/actions/get-insight";
 import { dummySurveys } from "@/lib/dummySurvey";
 import { Logo } from "@/components/icons";
@@ -38,10 +36,10 @@ export default function Home() {
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const [isSwiping, setIsSwiping] = useState(false);
 
@@ -80,7 +78,7 @@ export default function Home() {
             if (reset) return data.surveys;
             // Append only new surveys (no duplicates)
             const newSurveys = data.surveys.filter(
-              (s: any) => !prev.some((p) => p.surveyId === s.surveyId)
+              (s: any) => !prev.some((p) => p.surveyId === s.surveyId),
             );
 
             return [...prev, ...newSurveys];
@@ -88,7 +86,7 @@ export default function Home() {
           if (reset) setIdx(0); // Only reset idx if we're resetting, not appending
           setHasMore(
             data.surveys.length === limit ||
-              (!!surveyId && data.surveys.length > 1)
+              (!!surveyId && data.surveys.length > 1),
           );
           offsetRef.current = reset ? limit : offsetRef.current + limit;
         }
@@ -98,7 +96,7 @@ export default function Home() {
         console.error(error);
       }
     },
-    [setSurveys, setIdx]
+    [setSurveys, setIdx],
   );
 
   // On mount or when surveyId changes:
@@ -300,7 +298,7 @@ export default function Home() {
 
               {/* Swipe indicator for mobile */}
               {swipeQualified && touchStart && touchEnd && (
-                <SwipeIndicator touchStart={touchStart} touchEnd={touchEnd} />
+                <SwipeIndicator touchEnd={touchEnd} touchStart={touchStart} />
               )}
 
               <motion.div
