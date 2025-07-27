@@ -45,7 +45,7 @@ export default function Navigation(props: NavbarProps) {
       maxWidth="full"
     >
       <NavbarContent
-        className="gap-4 w-full rounded-full bg-background/50 p-1 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
+        className="gap-4 w-full  bg-transparent rounded-full p-1 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
         justify="center"
       >
         {/* Toggle */}

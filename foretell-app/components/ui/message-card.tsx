@@ -41,7 +41,7 @@ const MessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
           <div
             className={cn(
               "relative w-full rounded-medium bg-default-50 px-4 py-3 text-default-600",
-              messageClassName,
+              messageClassName
             )}
           >
             <div ref={messageRef} className={"pr-6 text-small"}>
@@ -51,7 +51,7 @@ const MessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
         </div>
       </div>
     );
-  },
+  }
 );
 
 export default MessageCard;

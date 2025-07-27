@@ -20,6 +20,8 @@ import GetInsight from "@/actions/get-insight";
 import { dummySurveys } from "@/lib/dummySurvey";
 import { Logo } from "@/components/icons";
 import { Survey } from "@/types";
+import Hero from "@/components/sections/hero";
+import SwipeIndicator from "@/components/ui/swipe-indicator";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -36,10 +38,10 @@ export default function Home() {
 
   // Swipe gesture state
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
-    null,
+    null
   );
   const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(
-    null,
+    null
   );
   const [isSwiping, setIsSwiping] = useState(false);
 
@@ -78,7 +80,7 @@ export default function Home() {
             if (reset) return data.surveys;
             // Append only new surveys (no duplicates)
             const newSurveys = data.surveys.filter(
-              (s: any) => !prev.some((p) => p.surveyId === s.surveyId),
+              (s: any) => !prev.some((p) => p.surveyId === s.surveyId)
             );
 
             return [...prev, ...newSurveys];
@@ -86,7 +88,7 @@ export default function Home() {
           if (reset) setIdx(0); // Only reset idx if we're resetting, not appending
           setHasMore(
             data.surveys.length === limit ||
-              (!!surveyId && data.surveys.length > 1),
+              (!!surveyId && data.surveys.length > 1)
           );
           offsetRef.current = reset ? limit : offsetRef.current + limit;
         }
@@ -96,7 +98,7 @@ export default function Home() {
         console.error(error);
       }
     },
-    [setSurveys, setIdx],
+    [setSurveys, setIdx]
   );
 
   // On mount or when surveyId changes:
@@ -281,43 +283,7 @@ export default function Home() {
                 {bertLoaded ? "Running on CPU" : "Loading"}
               </Chip>
             </div>
-            {showHero && (
-              <section
-                className="container py-6 mb-8 z-10 mx-auto max-w-7xl flex flex-col items-center justify-center gap-[18px] p-6"
-                id="hero"
-              >
-                <div className="flex max-w-2xl flex-col text-center">
-                  <h1 className="bg-hero-section-title text-4xl md:text-5xl bg-clip-text font-medium text-balance text-transparent dark:from-[#FFFFFF] dark:to-[#ffffffcd]">
-                    Surveys, Markets & Rewards in One Foretell
-                  </h1>
-                  <Spacer y={4} />
-                  <h2 className="text-large text-default-500 text-balance">
-                    Ask anything, open a live 3-way market, and automate
-                    distribution of rewards—no extra tools required.
-                  </h2>
-                  <Spacer y={4} />
-                  <div className="flex w-full flex-wrap justify-center gap-2">
-                    <CreateSurvey />
-                    <Button
-                      isExternal
-                      as={Link}
-                      className="bg-[#6746f9] text-white flex items-center gap-2"
-                      href="https://farcaster.xyz/miniapps/ibjZObityvsY/foretell"
-                      radius="full"
-                      variant="solid"
-                    >
-                      <Image
-                        alt="Farcaster"
-                        height={18}
-                        src="/farcaster.svg"
-                        width={18}
-                      />
-                      Launch on Farcater
-                    </Button>
-                  </div>
-                </div>
-              </section>
-            )}
+            {showHero && <Hero />}
 
             <div className="z-20 w-full px-3 max-w-6xl">
               <div className="mx-auto w-fit pb-6">
@@ -334,46 +300,7 @@ export default function Home() {
 
               {/* Swipe indicator for mobile */}
               {swipeQualified && touchStart && touchEnd && (
-                <motion.div
-                  animate={{ opacity: 1 }}
-                  className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none"
-                  exit={{ opacity: 0 }}
-                  initial={{ opacity: 0 }}
-                >
-                  <div className="bg-foreground backdrop-blur-sm rounded-full px-4 p-2 text-background text-sm font-medium">
-                    {touchStart.x - touchEnd.x > 0 ? (
-                      <div className="flex items-center pr-4">
-                        <svg
-                          height="24"
-                          viewBox="0 0 24 24"
-                          width="24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="m8.165 11.63l6.63-6.43C15.21 4.799 16 5.042 16 5.57v12.86c0 .528-.79.771-1.205.37l-6.63-6.43a.5.5 0 0 1 0-.74"
-                            fill="currentColor"
-                          />
-                        </svg>
-                        <span>NEXT</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center pl-4">
-                        <span>PREV</span>
-                        <svg
-                          height="24"
-                          viewBox="0 0 24 24"
-                          width="24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M15.835 11.63L9.205 5.2C8.79 4.799 8 5.042 8 5.57v12.86c0 .528.79.771 1.205.37l6.63-6.43a.5.5 0 0 0 0-.74"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
+                <SwipeIndicator touchStart={touchStart} touchEnd={touchEnd} />
               )}
 
               <motion.div
