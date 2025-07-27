@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
-    // RESOURCE_WALLET_ADDRESS: process.env.RESOURCE_WALLET_ADDRESS,
-    // NEXT_PUBLIC_FACILITATOR_URL: process.env.NEXT_PUBLIC_FACILITATOR_URL,
+    SEQUENCE_PROJECT_KEY: process.env.SEQUENCE_PROJECT_KEY,
+    SEQUENCE_WAAS_KEY: process.env.SEQUENCE_WAAS_KEY,
   },
   webpack(config) {
     config.module.rules.push({

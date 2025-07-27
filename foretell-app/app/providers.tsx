@@ -11,10 +11,10 @@ import { ToastProvider } from "@heroui/react";
 import "@farcaster/auth-kit/styles.css";
 import { AuthKitProvider } from "@farcaster/auth-kit";
 import sdk from "@farcaster/miniapp-sdk";
-
 import { loadTextClassifier } from "@/model/text-classify";
 import { dummySurveys } from "@/lib/dummySurvey";
 import { Survey } from "@/types";
+import { SequenceConnect, createConfig } from "@0xsequence/connect";
 
 declare module "@react-types/shared" {
   interface RouterConfig {
@@ -59,7 +59,7 @@ export const ContextProvider = ({
             const context = await sdk.context;
 
             setMiniAppFid(
-              context?.user?.fid ? context.user.fid.toString() : null,
+              context?.user?.fid ? context.user.fid.toString() : null
             );
           }
         } catch {}
@@ -115,14 +115,42 @@ export interface ProvidersProps {
 export function Providers({ children, themeProps }: ProvidersProps) {
   const router = useRouter();
 
+  // sequence config
+  const projectAccessKey = process.env.SEQUENCE_PROJECT_KEY!;
+  const waasConfigKey = process.env.SEQUENCE_WAAS_KEY!;
+  
+  const config = createConfig("waas", {
+    projectAccessKey,
+    position: "center",
+    defaultTheme: "dark",
+    signIn: {
+      projectName: "Foretell",
+    },
+    defaultChainId: 128123,
+    chainIds: [42793, 128123],
+    appName: "Foretell",
+    waasConfigKey,
+    google: false,
+    apple: false,
+    walletConnect: false,
+    coinbase: false,
+    metaMask: false,
+    wagmiConfig: {
+      multiInjectedProviderDiscovery: true,
+    },
+    enableConfirmationModal: true,
+  });
+
   return (
     <AuthKitProvider config={farcasterConfig}>
-      <HeroUIProvider navigate={router.push}>
-        <ToastProvider />
-        <ContextProvider>
-          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
-        </ContextProvider>
-      </HeroUIProvider>
+      <SequenceConnect config={config}>
+        <HeroUIProvider navigate={router.push}>
+          <ToastProvider />
+          <ContextProvider>
+            <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+          </ContextProvider>
+        </HeroUIProvider>
+      </SequenceConnect>
     </AuthKitProvider>
   );
 }

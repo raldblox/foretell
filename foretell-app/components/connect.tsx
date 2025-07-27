@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
-import { Button, addToast, Image } from "@heroui/react";
+import { Button, addToast, Image, ButtonGroup } from "@heroui/react";
 import { signIn, signOut, useSession, getCsrfToken } from "next-auth/react";
 import { Icon } from "@iconify/react";
 import { sdk } from "@farcaster/miniapp-sdk";
-
 import { AppContext } from "@/app/providers";
+import { useOpenConnectModal } from "@0xsequence/connect";
+import { useWallets } from "@0xsequence/connect";
 
 export default function ConnectButton({
   size,
@@ -14,7 +15,9 @@ export default function ConnectButton({
   fullWidth?: boolean;
 }) {
   const { data: session } = useSession();
-  const { isMiniApp, miniAppFid, isWallet } = useContext(AppContext);
+  const { isMiniApp, miniAppFid } = useContext(AppContext);
+  const { setOpenConnectModal } = useOpenConnectModal(); // Sequence Modal
+  const { wallets, disconnectWallet } = useWallets(); // Sequence Wallet
 
   if (session) {
     const provider = (session.user as any)?.provider;
@@ -114,33 +117,71 @@ export default function ConnectButton({
         Connect Farcaster
       </Button>
     );
-  } else if (isWallet) {
+  } else if (wallets.length > 0) {
     return (
-      <Button
-        disabled
-        className="flex items-center gap-2"
-        radius="full"
-        size={size}
-        variant="flat"
-        onPress={() => {}}
-      >
-        <Icon className="" icon="mdi:coin" width={18} />
-        Connect Wallet
-      </Button>
+      <>
+        {wallets.map((wallet) => (
+          <div key={wallet.address}>
+            <ButtonGroup radius="full">
+              <Button
+                className="flex items-center gap-2"
+                radius="full"
+                size={size}
+                variant="flat"
+                onPress={() => {
+                  setOpenConnectModal(true);
+                }}
+              >
+                {wallet.address.slice(0, 6)}...
+                {wallet.address.slice(-4)}
+              </Button>
+              <Button
+                className="text-danger"
+                radius="full"
+                size={size}
+                variant="flat"
+                onPress={() => disconnectWallet(wallet.address)}
+                isIconOnly
+              >
+                <Icon icon="memory:alpha-x-fill" width="24" height="24" />
+              </Button>
+            </ButtonGroup>
+          </div>
+        ))}
+      </>
     );
   } else {
     return (
-      <Button
-        className="flex text-small font-medium leading-5 items-center gap-2 "
-        fullWidth={fullWidth}
-        radius="full"
-        size={size}
-        variant="solid"
-        onPress={() => signIn("twitter", { callbackUrl: "/" })}
-      >
-        Connect
-        <Icon className="" icon="hugeicons:new-twitter" width={18} />
-      </Button>
+      <>
+        <Button
+          className="flex text-small font-medium leading-5 items-center gap-2 "
+          fullWidth={fullWidth}
+          radius="full"
+          variant="solid"
+          size={size}
+          onPress={() => signIn("twitter", { callbackUrl: "/" })}
+        >
+          Connect
+          <Icon
+            className=""
+            icon="hugeicons:new-twitter"
+            width="18"
+            height="18"
+          />
+        </Button>
+        <Button
+          size={size}
+          className="flex text-small font-medium leading-5 items-center gap-2 "
+          radius="full"
+          variant="solid"
+          onPress={() => setOpenConnectModal(true)}
+          endContent={
+            <Icon className="" icon="memory:email" width="24" height="24" />
+          }
+        >
+          Connect
+        </Button>
+      </>
     );
   }
 }
