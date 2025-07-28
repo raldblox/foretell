@@ -7,11 +7,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 error VaultAlreadyExists();
 
 contract OpenSurveyVaultFactory is Ownable(msg.sender) {
-    mapping(uint256 => address) public vaults;
+    mapping(string => address) public vaults;
 
-    event VaultCreated(uint256 indexed surveyId, address vault);
+    event VaultCreated(string indexed surveyId, address vault);
 
-    function createVault(uint256 surveyId) external onlyOwner {
+    function createVault(string memory surveyId) external onlyOwner {
         if (vaults[surveyId] != address(0)) revert VaultAlreadyExists();
         OpenSurveyRewardVault vault = new OpenSurveyRewardVault(
             surveyId,
@@ -21,12 +21,12 @@ contract OpenSurveyVaultFactory is Ownable(msg.sender) {
         emit VaultCreated(surveyId, address(vault));
     }
 
-    function getVault(uint256 surveyId) external view returns (address) {
+    function getVault(string memory surveyId) external view returns (address) {
         return vaults[surveyId];
     }
 
     function setVaultMerkleRoot(
-        uint256 surveyId,
+        string memory surveyId,
         address token,
         bytes32 newRoot
     ) external onlyOwner {

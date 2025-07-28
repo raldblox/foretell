@@ -6,7 +6,7 @@ const { MerkleTree } = require("merkletreejs");
 describe("OpenSurveyVaultFactory and OpenSurveyRewardVault", function () {
   let factory, vault, token;
   let owner, user1, user2;
-  const surveyId = 42;
+  const surveyId = "surveyID#1";
 
   beforeEach(async () => {
     [owner, user1, user2] = await ethers.getSigners();
@@ -66,10 +66,7 @@ describe("OpenSurveyVaultFactory and OpenSurveyRewardVault", function () {
 
   it("should reject invalid proofs", async () => {
     const invalidLeaf = keccak256(
-      new ethers.AbiCoder().encode(
-        ["address", "uint256"],
-        [user1.address, 300]
-      )
+      new ethers.AbiCoder().encode(["address", "uint256"], [user1.address, 300])
     );
     const tree = new MerkleTree([invalidLeaf], keccak256, { sortPairs: true });
     const root = tree.getHexRoot();

@@ -15,7 +15,7 @@ contract OpenSurveyRewardVault {
     using SafeERC20 for IERC20;
 
     address public immutable factory;
-    uint256 public immutable surveyId;
+    string public surveyId;
 
     mapping(address => bytes32) public merkleRootPerToken;
     mapping(address => mapping(address => uint256)) public claimedPerToken;
@@ -29,7 +29,7 @@ contract OpenSurveyRewardVault {
         _;
     }
 
-    constructor(uint256 _surveyId, address _factory) {
+    constructor(string memory _surveyId, address _factory) {
         if (_factory == address(0)) revert InvalidFactory();
         surveyId = _surveyId;
         factory = _factory;
