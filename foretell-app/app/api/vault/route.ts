@@ -6,6 +6,7 @@ import {
   http,
   parseAbiItem,
   decodeEventLog,
+  formatEther,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -14,12 +15,92 @@ import {
   OpenSurveyVaultFactoryAbi,
   getFactoryAddress,
   getChain,
+  WETH_ADDRESSES,
 } from "@/lib/contracts";
 
 const VaultSchema = z.object({
   surveyId: z.string().min(1),
   chainId: z.number().int().positive(),
 });
+
+// Minimal ABI for ERC20 balanceOf and symbol functions
+const erc20Abi = [
+  {
+    inputs: [{ name: "account", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ name: "balance", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const vaultAddress = searchParams.get("vaultAddress");
+  const chainId = searchParams.get("chainId");
+
+  if (!vaultAddress || !chainId) {
+    return NextResponse.json(
+      { error: "Missing vaultAddress or chainId" },
+      { status: 400 },
+    );
+  }
+
+  const parsedChainId = parseInt(chainId, 10);
+
+  if (isNaN(parsedChainId)) {
+    return NextResponse.json({ error: "Invalid chainId" }, { status: 400 });
+  }
+
+  const chain = getChain(parsedChainId);
+  const tokenAddress = WETH_ADDRESSES[parsedChainId];
+
+  if (!chain || !tokenAddress) {
+    return NextResponse.json(
+      { error: "Chain or WETH address not found for the given chainId" },
+      { status: 400 },
+    );
+  }
+
+  const publicClient = createPublicClient({
+    chain,
+    transport: http(),
+  });
+
+  try {
+    const balance = await publicClient.readContract({
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: "balanceOf",
+      args: [vaultAddress as `0x${string}`],
+    });
+
+    const symbol = await publicClient.readContract({
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: "symbol",
+    });
+
+    return NextResponse.json({
+      balance: formatEther(balance),
+      symbol,
+    });
+  } catch (error: any) {
+    console.error("Error fetching vault balance or symbol:", error);
+
+    return NextResponse.json(
+      { error: error.message || "Failed to fetch vault balance or symbol" },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.json();

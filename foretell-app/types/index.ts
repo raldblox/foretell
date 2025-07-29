@@ -23,7 +23,7 @@ export interface ResponseEntry {
 
 export interface Vault {
   chainId: number;
-  vaultAddress: string;
+  vaultAddress: `0x${string}`;
   merkleProof?: string;
 }
 

@@ -17,6 +17,7 @@ import { base, etherlink } from "viem/chains";
 import { loadTextClassifier } from "@/model/text-classify";
 import { dummySurveys } from "@/lib/dummySurvey";
 import { Survey } from "@/types";
+import { SequenceCheckoutProvider } from "@0xsequence/checkout";
 
 declare module "@react-types/shared" {
   interface RouterConfig {
@@ -64,7 +65,7 @@ export const ContextProvider = ({
             const context = await sdk.context;
 
             setMiniAppFid(
-              context?.user?.fid ? context.user.fid.toString() : null,
+              context?.user?.fid ? context.user.fid.toString() : null
             );
           }
         } catch {}
@@ -152,12 +153,16 @@ export function Providers({ children, themeProps }: ProvidersProps) {
   return (
     <AuthKitProvider config={farcasterConfig}>
       <SequenceConnect config={config}>
-        <HeroUIProvider navigate={router.push}>
-          <ToastProvider />
-          <ContextProvider>
-            <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
-          </ContextProvider>
-        </HeroUIProvider>
+        <SequenceCheckoutProvider>
+          <HeroUIProvider navigate={router.push}>
+            <ToastProvider />
+            <ContextProvider>
+              <NextThemesProvider {...themeProps}>
+                {children}
+              </NextThemesProvider>
+            </ContextProvider>
+          </HeroUIProvider>
+        </SequenceCheckoutProvider>
       </SequenceConnect>
     </AuthKitProvider>
   );

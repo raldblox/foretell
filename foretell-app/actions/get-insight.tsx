@@ -38,6 +38,7 @@ import {
   POLARITY_LABEL,
   POLARITY_VALUES,
 } from "@/lib/constants";
+import { OnchainVault } from "@/components/visualize/onchain-vault";
 
 export default function GetInsight(survey: Survey) {
   const {
@@ -59,7 +60,7 @@ export default function GetInsight(survey: Survey) {
 
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
-    rewardPool,
+    rewardPool
   );
 
   const handleCreateVault = async () => {
@@ -95,7 +96,7 @@ export default function GetInsight(survey: Survey) {
             setSurveys(updatedSurveys);
             // Find the index of the current survey and set it
             const currentSurveyIndex = updatedSurveys.findIndex(
-              (s: Survey) => s.surveyId === surveyId,
+              (s: Survey) => s.surveyId === surveyId
             );
 
             if (currentSurveyIndex !== -1) {
@@ -106,14 +107,14 @@ export default function GetInsight(survey: Survey) {
           const errorData = await updateRes.json();
 
           setVaultError(
-            `Failed to update survey with vault details: ${errorData.error || updateRes.statusText}`,
+            `Failed to update survey with vault details: ${errorData.error || updateRes.statusText}`
           );
         }
       } else {
         const errorData = await vaultRes.json();
 
         setVaultError(
-          `Failed to create vault: ${errorData.error || vaultRes.statusText}`,
+          `Failed to create vault: ${errorData.error || vaultRes.statusText}`
         );
       }
     } catch (err: any) {
@@ -133,7 +134,7 @@ export default function GetInsight(survey: Survey) {
         { width: 200, margin: 2 },
         (error: Error | null | undefined, url: string) => {
           if (!error && url) setQrCodeUrl(url);
-        },
+        }
       );
     }
   }, [surveyId]);
@@ -269,7 +270,7 @@ export default function GetInsight(survey: Survey) {
                         className="text-xs"
                         href={getBlockExplorerUrl(
                           vault.chainId,
-                          vault.vaultAddress,
+                          vault.vaultAddress
                         )}
                       >
                         {`${vault.vaultAddress.slice(0, 6)}...${vault.vaultAddress.slice(-4)}`}
@@ -395,7 +396,7 @@ export default function GetInsight(survey: Survey) {
                           domain={[
                             0,
                             Math.ceil(
-                              Math.max(...miniData[p].map((d) => d.value)),
+                              Math.max(...miniData[p].map((d) => d.value))
                             ),
                           ]}
                         />
@@ -454,6 +455,12 @@ export default function GetInsight(survey: Survey) {
           processed={processed}
           stats={stats}
         />
+      </section>
+
+      <section className="bg-default-50/50 p-3 rounded-xl space-y-3">
+        {survey.vaults && survey.vaults.length > 0 && (
+          <OnchainVault vaults={survey.vaults} />
+        )}
       </section>
 
       {/* Reward Distribution Chart */}
