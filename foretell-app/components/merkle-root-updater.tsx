@@ -2,10 +2,19 @@
 
 import React, { useState, useEffect } from "react";
 import { Button, Input, Spinner } from "@heroui/react";
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId } from "wagmi";
+import {
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useAccount,
+  useChainId,
+} from "wagmi";
 import { Hex, createPublicClient, http } from "viem";
 import * as allChains from "viem/chains";
-import { FACTORY_ADDRESSES, OpenSurveyVaultFactoryAbi, OpenSurveyRewardVaultAbi } from "@/lib/contracts";
+import {
+  FACTORY_ADDRESSES,
+  OpenSurveyVaultFactoryAbi,
+  OpenSurveyRewardVaultAbi,
+} from "@/lib/contracts";
 
 interface MerkleRootUpdaterProps {
   surveyId: string;
@@ -17,8 +26,12 @@ interface MerklePreviewData {
   leaves: Hex[];
 }
 
-export default function MerkleRootUpdater({ surveyId }: MerkleRootUpdaterProps) {
-  const [merklePreview, setMerklePreview] = useState<MerklePreviewData | null>(null);
+export default function MerkleRootUpdater({
+  surveyId,
+}: MerkleRootUpdaterProps) {
+  const [merklePreview, setMerklePreview] = useState<MerklePreviewData | null>(
+    null
+  );
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tokenAddress, setTokenAddress] = useState<Hex | "">("");
@@ -51,7 +64,9 @@ export default function MerkleRootUpdater({ surveyId }: MerkleRootUpdaterProps) 
           setError(data.error || "Failed to fetch Merkle preview");
         }
       } catch (err: any) {
-        setError(err.message || "An error occurred while fetching Merkle preview");
+        setError(
+          err.message || "An error occurred while fetching Merkle preview"
+        );
       } finally {
         setLoadingPreview(false);
       }
@@ -84,7 +99,9 @@ export default function MerkleRootUpdater({ surveyId }: MerkleRootUpdaterProps) 
       }
 
       // Fetch vault address from factory
-      const targetChain = Object.values(allChains).find(chain => chain.id === chainId);
+      const targetChain = Object.values(allChains).find(
+        (chain) => chain.id === chainId
+      );
       if (!targetChain) {
         setError(`Unsupported chainId: ${chainId}`);
         return;
@@ -95,15 +112,17 @@ export default function MerkleRootUpdater({ surveyId }: MerkleRootUpdaterProps) 
         transport: http(),
       });
 
-      const vaultAddress = await publicClient.readContract({
+      const vaultAddress = (await publicClient.readContract({
         address: factoryAddress,
         abi: OpenSurveyVaultFactoryAbi,
         functionName: "getVault",
         args: [surveyId],
-      });
+      })) as `0x${string}`;
 
       if (vaultAddress === "0x0000000000000000000000000000000000000000") {
-        setError(`Vault not found for surveyId: ${surveyId} on chainId: ${chainId}`);
+        setError(
+          `Vault not found for surveyId: ${surveyId} on chainId: ${chainId}`
+        );
         return;
       }
 
@@ -136,12 +155,21 @@ export default function MerkleRootUpdater({ surveyId }: MerkleRootUpdaterProps) 
 
       {merklePreview && (
         <div className="mb-4">
-          <p className="text-sm">Merkle Root: <span className="font-mono break-all">{merklePreview.merkleRoot}</span></p>
-          <p className="text-sm">Total Leaves: {merklePreview.leavesData.length}</p>
+          <p className="text-sm">
+            Merkle Root:{" "}
+            <span className="font-mono break-all">
+              {merklePreview.merkleRoot}
+            </span>
+          </p>
+          <p className="text-sm">
+            Total Leaves: {merklePreview.leavesData.length}
+          </p>
           <h3 className="text-md font-medium mt-2">Preview Leaves:</h3>
           <ul className="text-xs max-h-40 overflow-y-auto border p-2 rounded">
             {merklePreview.leavesData.map((leaf, index) => (
-              <li key={index} className="break-all">{leaf.address}: {leaf.amount.toString()}</li>
+              <li key={index} className="break-all">
+                {leaf.address}: {leaf.amount.toString()}
+              </li>
             ))}
           </ul>
         </div>
@@ -149,7 +177,7 @@ export default function MerkleRootUpdater({ surveyId }: MerkleRootUpdaterProps) 
 
       <Input
         label="Token Address"
-        placeholder="0x..." 
+        placeholder="0x..."
         value={tokenAddress}
         onChange={(e) => setTokenAddress(e.target.value as Hex)}
         className="mb-4"
@@ -160,9 +188,18 @@ export default function MerkleRootUpdater({ surveyId }: MerkleRootUpdaterProps) 
         color="primary"
         onClick={handleSetMerkleRoot}
         isLoading={isSettingRoot || isConfirming}
-        disabled={!merklePreview || !merklePreview.merkleRoot || !tokenAddress || !isConnected}
+        disabled={
+          !merklePreview ||
+          !merklePreview.merkleRoot ||
+          !tokenAddress ||
+          !isConnected
+        }
       >
-        {isSettingRoot ? "Setting Merkle Root..." : isConfirming ? "Confirming..." : "Set Merkle Root on Chain"}
+        {isSettingRoot
+          ? "Setting Merkle Root..."
+          : isConfirming
+            ? "Confirming..."
+            : "Set Merkle Root on Chain"}
       </Button>
     </div>
   );
