@@ -23,6 +23,7 @@ import { parseDate } from "@internationalized/date";
 import { AppContext } from "@/app/providers";
 import ConnectButton from "@/components/connect";
 import { Survey } from "@/types";
+import { etherlinkTestnet } from "viem/chains";
 
 const SurveySchema = z.object({
   surveyId: z.string().optional(),
@@ -64,7 +65,7 @@ export default function CreateSurveyModal({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -101,8 +102,9 @@ export default function CreateSurveyModal({
 
       return;
     }
+    const newSurveyId = nanoid();
     const parsed = SurveySchema.safeParse({
-      surveyId: nanoid(),
+      surveyId: newSurveyId,
       title: form.title,
       description: form.description,
       createdBy: userId,
@@ -129,6 +131,50 @@ export default function CreateSurveyModal({
 
     setLoading(false);
     if (res.ok) {
+      // Create vault
+      const chainId = etherlinkTestnet.id; // Etherlink Testnet Chain ID
+      const vaultRes = await fetch("/api/vault", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ surveyId: newSurveyId, chainId }),
+      });
+
+      if (vaultRes.ok) {
+        const { vaultAddress } = await vaultRes.json();
+        console.log(vaultAddress);
+        // Update survey with vaultAddress and chainId
+        const updateRes = await fetch("/api/survey", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            surveyId: newSurveyId,
+            chainId,
+            vaultAddress,
+          }),
+        });
+
+        if (!updateRes.ok) {
+          const errorData = await updateRes.json();
+          console.error(
+            "Failed to update survey with vault details:",
+            errorData
+          );
+          setError(
+            `Failed to update survey with vault details: ${errorData.error || updateRes.statusText}`
+          );
+          setLoading(false);
+          return;
+        }
+      } else {
+        const errorData = await vaultRes.json();
+        console.error("Failed to create vault:", errorData);
+        setError(
+          `Failed to create vault: ${errorData.error || vaultRes.statusText}`
+        );
+        setLoading(false);
+        return;
+      }
+
       // Fetch latest surveys and update context
       const updated = await fetch("/api/survey");
 
@@ -141,6 +187,7 @@ export default function CreateSurveyModal({
           return updated;
         });
       }
+
       setForm({
         title: "",
         description: "",

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
-
 import { RenderSurvey } from "@/components/visualize/render-survey";
 import { AsyncProps } from "@/types";
+import MerkleRootUpdater from "@/components/merkle-root-updater";
 
 export async function generateMetadata({
   params,
@@ -59,6 +59,7 @@ export default async function Page({ params }: AsyncProps) {
   return (
     <section className="flex flex-col w-screen overflow-hidden items-center rounded-2xl md:rounded-3xl py-3">
       <RenderSurvey surveyId={surveyId} />
+      <MerkleRootUpdater surveyId={surveyId} />
     </section>
   );
 }

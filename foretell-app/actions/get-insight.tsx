@@ -11,7 +11,18 @@ import {
 } from "recharts";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/theme";
-import { Chip, Snippet, Image, Link, ScrollShadow } from "@heroui/react";
+import {
+  Chip,
+  Snippet,
+  Image,
+  Link,
+  ScrollShadow,
+  Button,
+} from "@heroui/react";
+import { useContext } from "react";
+import { AppContext } from "@/app/providers";
+import { etherlinkTestnet } from "viem/chains";
+import { getBlockExplorerUrl } from "@/lib/contracts";
 import QRCode from "qrcode";
 
 import SubmitResponse from "./submit-response";
@@ -40,14 +51,72 @@ export default function GetInsight(survey: Survey) {
     description,
   } = survey;
 
-  // const { userId } = useContext(AppContext);
+  const { setSurveys, setIdx, userId } = useContext(AppContext)!;
   const [codeString, setCodeString] = useState("");
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [creatingVault, setCreatingVault] = useState(false);
+  const [vaultError, setVaultError] = useState<string | null>(null);
 
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
-    rewardPool,
+    rewardPool
   );
+
+  const handleCreateVault = async () => {
+    setCreatingVault(true);
+    setVaultError(null);
+    try {
+      const chainId = etherlinkTestnet.id; // Or dynamically get chainId if multiple chains are supported
+      const vaultRes = await fetch("/api/vault", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ surveyId, chainId }),
+      });
+
+      if (vaultRes.ok) {
+        const { vaultAddress } = await vaultRes.json();
+        const updateRes = await fetch("/api/survey", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            surveyId,
+            chainId,
+            vaultAddress,
+          }),
+        });
+
+        if (updateRes.ok) {
+          // Refresh survey data in context
+          const updated = await fetch("/api/survey");
+          if (updated.ok) {
+            const { surveys: updatedSurveys } = await updated.json();
+            setSurveys(updatedSurveys);
+            // Find the index of the current survey and set it
+            const currentSurveyIndex = updatedSurveys.findIndex(
+              (s: Survey) => s.surveyId === surveyId
+            );
+            if (currentSurveyIndex !== -1) {
+              setIdx(currentSurveyIndex);
+            }
+          }
+        } else {
+          const errorData = await updateRes.json();
+          setVaultError(
+            `Failed to update survey with vault details: ${errorData.error || updateRes.statusText}`
+          );
+        }
+      } else {
+        const errorData = await vaultRes.json();
+        setVaultError(
+          `Failed to create vault: ${errorData.error || vaultRes.statusText}`
+        );
+      }
+    } catch (err: any) {
+      setVaultError(err.message || "An unexpected error occurred.");
+    } finally {
+      setCreatingVault(false);
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -59,7 +128,7 @@ export default function GetInsight(survey: Survey) {
         { width: 200, margin: 2 },
         (error: Error | null | undefined, url: string) => {
           if (!error && url) setQrCodeUrl(url);
-        },
+        }
       );
     }
   }, [surveyId]);
@@ -165,7 +234,8 @@ export default function GetInsight(survey: Survey) {
                   size="sm"
                   variant="flat"
                 >
-                  <span className="font-semibold">Created By:</span> {createdBy}
+                  <span className="font-semibold">Created By:</span>{" "}
+                  {createdBy.slice(0, 7)}...{createdBy.slice(-5)}
                 </Chip>
                 {expiry && (
                   <Chip
@@ -176,6 +246,44 @@ export default function GetInsight(survey: Survey) {
                     <span className="font-semibold">Expiry:</span>{" "}
                     {new Date(expiry).toLocaleString()}
                   </Chip>
+                )}
+                {survey.vaults && survey.vaults.length > 0 ? (
+                  survey.vaults.map((vault) => (
+                    <Chip
+                      key={vault.vaultAddress}
+                      className="text-default-500 bg-default-50"
+                      size="sm"
+                      variant="flat"
+                    >
+                      <span className="font-semibold">
+                        Vault ({vault.chainId}):
+                      </span>{" "}
+                      <Link
+                        isExternal
+                        showAnchorIcon
+                        href={getBlockExplorerUrl(
+                          vault.chainId,
+                          vault.vaultAddress
+                        )}
+                        className="text-xs"
+                      >
+                        {`${vault.vaultAddress.slice(0, 6)}...${vault.vaultAddress.slice(-4)}`}
+                      </Link>
+                    </Chip>
+                  ))
+                ) : (
+                  <Button
+                    onPress={handleCreateVault}
+                    isLoading={creatingVault}
+                    isDisabled={creatingVault}
+                    size="sm"
+                    color="primary"
+                  >
+                    Create Vault
+                  </Button>
+                )}
+                {vaultError && (
+                  <p className="text-danger text-sm">{vaultError}</p>
                 )}
               </div>
             </div>
@@ -282,7 +390,7 @@ export default function GetInsight(survey: Survey) {
                           domain={[
                             0,
                             Math.ceil(
-                              Math.max(...miniData[p].map((d) => d.value)),
+                              Math.max(...miniData[p].map((d) => d.value))
                             ),
                           ]}
                         />

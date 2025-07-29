@@ -18,6 +18,13 @@ export interface ResponseEntry {
   intensity?: number;
   answer?: string;
   createdAt?: string; // ISO string, server-side timestamp
+  rewardAmount?: number;
+}
+
+export interface Vault {
+  chainId: number;
+  vaultAddress: string;
+  merkleProof?: string;
 }
 
 export interface Survey {
@@ -34,6 +41,7 @@ export interface Survey {
   discoverable?: boolean;
   rewards?: Reward;
   isDemo?: boolean;
+  vaults?: Vault[];
 }
 
 export interface Reward {

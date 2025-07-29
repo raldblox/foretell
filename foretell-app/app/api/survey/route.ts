@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { nanoid } from "nanoid";
+import { UpdateFilter, Collection } from "mongodb";
 
 import { getCollection } from "@/lib/mongodb";
+import { Survey } from "@/types";
 
 const SurveySchema = z.object({
   surveyId: z.string().min(1),
@@ -15,6 +17,8 @@ const SurveySchema = z.object({
   responses: z.array(z.any()).optional(),
   allowAnonymity: z.boolean().optional(),
   discoverable: z.boolean().optional(),
+  chainId: z.string().optional(),
+  vaultAddress: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -40,12 +44,60 @@ export async function POST(req: NextRequest) {
   if (existing) {
     return NextResponse.json(
       { error: "Survey with this ID already exists." },
-      { status: 409 },
+      { status: 409 }
     );
   }
   await collection.insertOne(survey);
 
   return NextResponse.json({ ok: true, survey });
+}
+
+export async function PUT(req: NextRequest) {
+  const body = await req.json();
+  const { surveyId, chainId, vaultAddress } = body;
+
+  if (!surveyId || !chainId || !vaultAddress) {
+    return NextResponse.json(
+      { error: "surveyId, chainId, and vaultAddress are required" },
+      { status: 400 }
+    );
+  }
+
+  const collection: Collection<Survey> = await getCollection("surveys");
+
+  const survey = await collection.findOne({ surveyId });
+
+  if (!survey) {
+    return NextResponse.json({ error: "Survey not found" }, { status: 404 });
+  }
+
+  const existingVaultIndex = survey.vaults?.findIndex(
+    (vault: any) => vault.chainId === chainId
+  );
+
+  let updateQuery: UpdateFilter<Document>;
+  if (existingVaultIndex !== undefined && existingVaultIndex !== -1) {
+    // Update existing vault
+    updateQuery = {
+      $set: { [`vaults.${existingVaultIndex}.vaultAddress`]: vaultAddress },
+    };
+  } else {
+    // Add new vault
+    updateQuery = {
+      $push: { vaults: { chainId, vaultAddress, merkleProof: null } },
+    };
+  }
+
+  const result = await collection.updateOne({ surveyId }, updateQuery);
+
+  if (result.matchedCount === 0) {
+    return NextResponse.json(
+      { error: "Failed to update survey" },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ ok: true });
 }
 
 export async function GET(req: NextRequest) {
