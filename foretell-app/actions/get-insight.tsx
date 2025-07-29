@@ -20,14 +20,14 @@ import {
   Button,
 } from "@heroui/react";
 import { useContext } from "react";
-import { AppContext } from "@/app/providers";
 import { etherlinkTestnet } from "viem/chains";
-import { getBlockExplorerUrl } from "@/lib/contracts";
 import QRCode from "qrcode";
 
 import SubmitResponse from "./submit-response";
 import CreateSurveyModal from "./create-survey";
 
+import { getBlockExplorerUrl } from "@/lib/contracts";
+import { AppContext } from "@/app/providers";
 import { Survey } from "@/types";
 import { useForetell } from "@/hooks/useForetell";
 import MessageCard from "@/components/ui/message-card";
@@ -59,7 +59,7 @@ export default function GetInsight(survey: Survey) {
 
   const { groups, stats, processed, chartData, miniData } = useForetell(
     responses || [],
-    rewardPool
+    rewardPool,
   );
 
   const handleCreateVault = async () => {
@@ -88,27 +88,32 @@ export default function GetInsight(survey: Survey) {
         if (updateRes.ok) {
           // Refresh survey data in context
           const updated = await fetch("/api/survey");
+
           if (updated.ok) {
             const { surveys: updatedSurveys } = await updated.json();
+
             setSurveys(updatedSurveys);
             // Find the index of the current survey and set it
             const currentSurveyIndex = updatedSurveys.findIndex(
-              (s: Survey) => s.surveyId === surveyId
+              (s: Survey) => s.surveyId === surveyId,
             );
+
             if (currentSurveyIndex !== -1) {
               setIdx(currentSurveyIndex);
             }
           }
         } else {
           const errorData = await updateRes.json();
+
           setVaultError(
-            `Failed to update survey with vault details: ${errorData.error || updateRes.statusText}`
+            `Failed to update survey with vault details: ${errorData.error || updateRes.statusText}`,
           );
         }
       } else {
         const errorData = await vaultRes.json();
+
         setVaultError(
-          `Failed to create vault: ${errorData.error || vaultRes.statusText}`
+          `Failed to create vault: ${errorData.error || vaultRes.statusText}`,
         );
       }
     } catch (err: any) {
@@ -128,7 +133,7 @@ export default function GetInsight(survey: Survey) {
         { width: 200, margin: 2 },
         (error: Error | null | undefined, url: string) => {
           if (!error && url) setQrCodeUrl(url);
-        }
+        },
       );
     }
   }, [surveyId]);
@@ -261,11 +266,11 @@ export default function GetInsight(survey: Survey) {
                       <Link
                         isExternal
                         showAnchorIcon
+                        className="text-xs"
                         href={getBlockExplorerUrl(
                           vault.chainId,
-                          vault.vaultAddress
+                          vault.vaultAddress,
                         )}
-                        className="text-xs"
                       >
                         {`${vault.vaultAddress.slice(0, 6)}...${vault.vaultAddress.slice(-4)}`}
                       </Link>
@@ -273,11 +278,11 @@ export default function GetInsight(survey: Survey) {
                   ))
                 ) : (
                   <Button
-                    onPress={handleCreateVault}
-                    isLoading={creatingVault}
-                    isDisabled={creatingVault}
-                    size="sm"
                     color="primary"
+                    isDisabled={creatingVault}
+                    isLoading={creatingVault}
+                    size="sm"
+                    onPress={handleCreateVault}
                   >
                     Create Vault
                   </Button>
@@ -390,7 +395,7 @@ export default function GetInsight(survey: Survey) {
                           domain={[
                             0,
                             Math.ceil(
-                              Math.max(...miniData[p].map((d) => d.value))
+                              Math.max(...miniData[p].map((d) => d.value)),
                             ),
                           ]}
                         />

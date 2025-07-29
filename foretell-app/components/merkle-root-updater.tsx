@@ -10,6 +10,7 @@ import {
 } from "wagmi";
 import { Hex, createPublicClient, http } from "viem";
 import * as allChains from "viem/chains";
+
 import {
   FACTORY_ADDRESSES,
   OpenSurveyVaultFactoryAbi,
@@ -30,7 +31,7 @@ export default function MerkleRootUpdater({
   surveyId,
 }: MerkleRootUpdaterProps) {
   const [merklePreview, setMerklePreview] = useState<MerklePreviewData | null>(
-    null
+    null,
   );
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,6 +59,7 @@ export default function MerkleRootUpdater({
       try {
         const res = await fetch(`/api/vault?surveyId=${surveyId}`);
         const data = await res.json();
+
         if (res.ok) {
           setMerklePreview(data);
         } else {
@@ -65,7 +67,7 @@ export default function MerkleRootUpdater({
         }
       } catch (err: any) {
         setError(
-          err.message || "An error occurred while fetching Merkle preview"
+          err.message || "An error occurred while fetching Merkle preview",
         );
       } finally {
         setLoadingPreview(false);
@@ -80,30 +82,37 @@ export default function MerkleRootUpdater({
   const handleSetMerkleRoot = async () => {
     if (!merklePreview || !merklePreview.merkleRoot) {
       setError("No Merkle root to set.");
+
       return;
     }
     if (!tokenAddress) {
       setError("Please enter a token address.");
+
       return;
     }
     if (!address || !isConnected) {
       setError("Wallet not connected.");
+
       return;
     }
 
     try {
       const factoryAddress = FACTORY_ADDRESSES[chainId];
+
       if (!factoryAddress) {
         setError(`No factory address found for chainId: ${chainId}`);
+
         return;
       }
 
       // Fetch vault address from factory
       const targetChain = Object.values(allChains).find(
-        (chain) => chain.id === chainId
+        (chain) => chain.id === chainId,
       );
+
       if (!targetChain) {
         setError(`Unsupported chainId: ${chainId}`);
+
         return;
       }
 
@@ -121,8 +130,9 @@ export default function MerkleRootUpdater({
 
       if (vaultAddress === "0x0000000000000000000000000000000000000000") {
         setError(
-          `Vault not found for surveyId: ${surveyId} on chainId: ${chainId}`
+          `Vault not found for surveyId: ${surveyId} on chainId: ${chainId}`,
         );
+
         return;
       }
 
@@ -176,24 +186,24 @@ export default function MerkleRootUpdater({
       )}
 
       <Input
+        className="mb-4"
         label="Token Address"
         placeholder="0x..."
         value={tokenAddress}
         onChange={(e) => setTokenAddress(e.target.value as Hex)}
-        className="mb-4"
       />
 
       <Button
         fullWidth
         color="primary"
-        onClick={handleSetMerkleRoot}
-        isLoading={isSettingRoot || isConfirming}
         disabled={
           !merklePreview ||
           !merklePreview.merkleRoot ||
           !tokenAddress ||
           !isConnected
         }
+        isLoading={isSettingRoot || isConfirming}
+        onClick={handleSetMerkleRoot}
       >
         {isSettingRoot
           ? "Setting Merkle Root..."

@@ -11,9 +11,7 @@ export function generateMerkleTree(leavesData: MerkleLeaf[]): {
   leaves: Hex[];
   root: Hex;
 } {
-  const leaves = leavesData.map((data) =>
-    keccak256(encodeMerkleLeaf(data))
-  );
+  const leaves = leavesData.map((data) => keccak256(encodeMerkleLeaf(data)));
   const tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
   const root = `0x${tree.getRoot().toString("hex")}` as Hex;
 
@@ -23,12 +21,15 @@ export function generateMerkleTree(leavesData: MerkleLeaf[]): {
 export function encodeMerkleLeaf(leaf: MerkleLeaf): Hex {
   return keccak256(
     new TextEncoder().encode(
-      JSON.stringify({ address: leaf.address, amount: leaf.amount.toString() })
-    )
+      JSON.stringify({ address: leaf.address, amount: leaf.amount.toString() }),
+    ),
   );
 }
 
 export function getMerkleProof(tree: MerkleTree, leaf: Hex): Hex[] {
-  const proof = tree.getProof(leaf).map((x) => `0x${x.data.toString("hex")}` as Hex);
+  const proof = tree
+    .getProof(leaf)
+    .map((x) => `0x${x.data.toString("hex")}` as Hex);
+
   return proof;
 }

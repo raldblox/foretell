@@ -19,11 +19,11 @@ import {
   Link,
 } from "@heroui/react";
 import { parseDate } from "@internationalized/date";
+import { etherlinkTestnet } from "viem/chains";
 
 import { AppContext } from "@/app/providers";
 import ConnectButton from "@/components/connect";
 import { Survey } from "@/types";
-import { etherlinkTestnet } from "viem/chains";
 
 const SurveySchema = z.object({
   surveyId: z.string().optional(),
@@ -65,7 +65,7 @@ export default function CreateSurveyModal({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -141,6 +141,7 @@ export default function CreateSurveyModal({
 
       if (vaultRes.ok) {
         const { vaultAddress } = await vaultRes.json();
+
         console.log(vaultAddress);
         // Update survey with vaultAddress and chainId
         const updateRes = await fetch("/api/survey", {
@@ -155,23 +156,27 @@ export default function CreateSurveyModal({
 
         if (!updateRes.ok) {
           const errorData = await updateRes.json();
+
           console.error(
             "Failed to update survey with vault details:",
-            errorData
+            errorData,
           );
           setError(
-            `Failed to update survey with vault details: ${errorData.error || updateRes.statusText}`
+            `Failed to update survey with vault details: ${errorData.error || updateRes.statusText}`,
           );
           setLoading(false);
+
           return;
         }
       } else {
         const errorData = await vaultRes.json();
+
         console.error("Failed to create vault:", errorData);
         setError(
-          `Failed to create vault: ${errorData.error || vaultRes.statusText}`
+          `Failed to create vault: ${errorData.error || vaultRes.statusText}`,
         );
         setLoading(false);
+
         return;
       }
 

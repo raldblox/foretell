@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   if (existing) {
     return NextResponse.json(
       { error: "Survey with this ID already exists." },
-      { status: 409 }
+      { status: 409 },
     );
   }
   await collection.insertOne(survey);
@@ -59,7 +59,7 @@ export async function PUT(req: NextRequest) {
   if (!surveyId || !chainId || !vaultAddress) {
     return NextResponse.json(
       { error: "surveyId, chainId, and vaultAddress are required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -72,10 +72,11 @@ export async function PUT(req: NextRequest) {
   }
 
   const existingVaultIndex = survey.vaults?.findIndex(
-    (vault: any) => vault.chainId === chainId
+    (vault: any) => vault.chainId === chainId,
   );
 
   let updateQuery: UpdateFilter<Document>;
+
   if (existingVaultIndex !== undefined && existingVaultIndex !== -1) {
     // Update existing vault
     updateQuery = {
@@ -93,7 +94,7 @@ export async function PUT(req: NextRequest) {
   if (result.matchedCount === 0) {
     return NextResponse.json(
       { error: "Failed to update survey" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

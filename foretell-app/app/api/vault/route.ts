@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getCollection } from "@/lib/mongodb";
 import {
   createPublicClient,
   createWalletClient,
@@ -9,6 +8,8 @@ import {
   decodeEventLog,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+
+import { getCollection } from "@/lib/mongodb";
 import {
   OpenSurveyVaultFactoryAbi,
   getFactoryAddress,
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
   if (!factoryAddress || !chain) {
     return NextResponse.json(
       { error: "Factory contract address or chain not found." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const account = privateKeyToAccount(
-      process.env.WALLET_PRIVATE_KEY as `0x${string}`
+      process.env.WALLET_PRIVATE_KEY as `0x${string}`,
     );
 
     const walletClient = createWalletClient({
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
     const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
     const vaultCreatedEvent = parseAbiItem(
-      "event VaultCreated(string indexed surveyId, address vault)"
+      "event VaultCreated(string indexed surveyId, address vault)",
     );
 
     let vaultAddress: string | null = null;
@@ -121,9 +122,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ vaultAddress });
   } catch (error: any) {
     console.error("Vault creation error:", error);
+
     return NextResponse.json(
       { error: error.message || "Failed to create vault on chain." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

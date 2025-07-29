@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+
 import { RenderSurvey } from "@/components/visualize/render-survey";
 import { AsyncProps } from "@/types";
 import MerkleRootUpdater from "@/components/merkle-root-updater";
