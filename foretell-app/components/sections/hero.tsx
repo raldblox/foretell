@@ -10,12 +10,12 @@ export default function Hero() {
     >
       <div className="flex max-w-2xl flex-col text-center">
         <h1 className="bg-hero-section-title text-4xl md:text-5xl bg-clip-text font-medium text-balance text-transparent dark:from-[#FFFFFF] dark:to-[#ffffffcd]">
-          Surveys, Markets & Rewards in One Foretell
+          Surveys, Sentiments & Rewards in One Foretell
         </h1>
         <Spacer y={4} />
         <h2 className="text-large text-default-500 text-balance">
-          Ask anything, open a live 3-way market, and automate distribution of
-          rewards—no extra tools required.
+          Ask anything, gather freeform responses, and automatically distribute
+          rewards based on shared sentiment—no extra tools required.
         </h2>
         <Spacer y={4} />
         <div className="flex w-full flex-wrap justify-center gap-2">
