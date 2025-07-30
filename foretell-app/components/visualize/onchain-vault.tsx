@@ -17,17 +17,16 @@ export const OnchainVault = ({ vaults }: { vaults: Vault[] }) => {
       <section className="md:p-3 pt-4 rounded-lg border border-default-100 space-y-3">
         <h2 className="text-xl px-3 font-medium">Vaults</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-3">
           {vaults?.map((vault, i) => (
             <div
               key={i}
-              className=" p-3 flex flex-col rounded-lg bg-default-50 space-y-3"
+              className="p-3 flex flex-col rounded-lg bg-default-50 space-y-3 overflow-x-scroll"
             >
-              <div className="flex gap-3 items-center justify-between">
+              <div className="flex gap-3 items-center justify-between w-full">
                 <span className="font-semibold text-sm">
                   {getChainName(vault.chainId)}
                 </span>
-
                 <Link
                   isExternal
                   showAnchorIcon
@@ -37,9 +36,8 @@ export const OnchainVault = ({ vaults }: { vaults: Vault[] }) => {
                   {`${vault.vaultAddress.slice(0, 6)}...${vault.vaultAddress.slice(-4)}`}
                 </Link>
               </div>
-
               <VaultBalance vault={vault} />
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center ">
                 <Button
                   size="sm"
                   color="primary"
@@ -56,16 +54,13 @@ export const OnchainVault = ({ vaults }: { vaults: Vault[] }) => {
 
                 <Snippet
                   variant="flat"
-                  symbol="Vault:"
-                  className="pl-4 w-full rounded-lg bg-default-100"
+                  symbol="Vault Address:"
+                  className="pl-4 rounded-lg w-full bg-default-100"
                   codeString={vault.vaultAddress}
                   radius="sm"
                   size="sm"
                 >
-                  <span>
-                    {vault.vaultAddress.slice(0, 6)}...
-                    {vault.vaultAddress.slice(-4)}
-                  </span>
+                  <span className="">{vault.vaultAddress}</span>
                 </Snippet>
               </div>
             </div>

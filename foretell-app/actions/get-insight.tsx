@@ -253,41 +253,7 @@ export default function GetInsight(survey: Survey) {
                     {new Date(expiry).toLocaleString()}
                   </Chip>
                 )}
-                {survey.vaults && survey.vaults.length > 0 ? (
-                  survey.vaults.map((vault) => (
-                    <Chip
-                      key={vault.vaultAddress}
-                      className="text-default-500 bg-default-50"
-                      size="sm"
-                      variant="flat"
-                    >
-                      <span className="font-semibold">
-                        Vault ({vault.chainId}):
-                      </span>{" "}
-                      <Link
-                        isExternal
-                        showAnchorIcon
-                        className="text-xs"
-                        href={getBlockExplorerUrl(
-                          vault.chainId,
-                          vault.vaultAddress
-                        )}
-                      >
-                        {`${vault.vaultAddress.slice(0, 6)}...${vault.vaultAddress.slice(-4)}`}
-                      </Link>
-                    </Chip>
-                  ))
-                ) : (
-                  <Button
-                    color="primary"
-                    isDisabled={creatingVault}
-                    isLoading={creatingVault}
-                    size="sm"
-                    onPress={handleCreateVault}
-                  >
-                    Create Vault
-                  </Button>
-                )}
+
                 {vaultError && (
                   <p className="text-danger text-sm">{vaultError}</p>
                 )}
@@ -458,8 +424,20 @@ export default function GetInsight(survey: Survey) {
       </section>
 
       <section className="bg-default-50/50 p-3 rounded-xl space-y-3">
-        {survey.vaults && survey.vaults.length > 0 && (
+        {survey.vaults && survey.vaults.length > 0 ? (
           <OnchainVault vaults={survey.vaults} />
+        ) : (
+          <div className="w-full flex justify-center items-center rounded-lg p-6">
+            <Button
+              color="primary"
+              isDisabled={creatingVault}
+              isLoading={creatingVault}
+              size="sm"
+              onPress={handleCreateVault}
+            >
+              Create Vault
+            </Button>
+          </div>
         )}
       </section>
 
