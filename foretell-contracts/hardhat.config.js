@@ -26,12 +26,23 @@ module.exports = {
       url: "https://node.ghostnet.etherlink.com",
       accounts: [process.env.WALLET_PRIVATE_KEY],
     },
+    coreTestnet: {
+      url: "https://rpc.test2.btcs.network",
+      accounts: [process.env.WALLET_PRIVATE_KEY],
+      chainId: 1114,
+    },
+    seiTestnet: {
+      url: "https://evm-rpc-testnet.sei-apis.com",
+      accounts: [process.env.WALLET_PRIVATE_KEY],
+      chainId: 1328,
+    },
   },
 
   etherscan: {
     apiKey: {
       etherlinkMainnet: "abc",
       etherlinkTestnet: "abc",
+      coreTestnet: "abc",
     },
     customChains: [
       {
@@ -54,7 +65,7 @@ module.exports = {
         network: "coreTestnet",
         chainId: 1114,
         urls: {
-          apiURL: "https://rpc.test2.btcs.network",
+          apiURL: "https://scan.test2.btcs.network",
           browserURL: "https://scan.test.btcs.network/",
         },
       },
