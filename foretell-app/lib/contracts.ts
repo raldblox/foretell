@@ -1,6 +1,6 @@
 import type { Chain } from "viem/chains";
 
-import { etherlink, etherlinkTestnet } from "viem/chains";
+import { etherlink, etherlinkTestnet, coreTestnet2 } from "viem/chains";
 
 import OpenSurveyRewardVaultJson from "@/lib/abis/OpenSurveyRewardVault.json";
 import OpenSurveyVaultFactoryJson from "@/lib/abis/OpenSurveyVaultFactory.json";
@@ -16,14 +16,17 @@ export const WETH_ADDRESSES: { [chainId: number]: `0x${string}` } = {
 export const FACTORY_ADDRESSES: { [chainId: number]: `0x${string}` } = {
   [etherlinkTestnet.id]: "0xf1805Bc3F6C8dA9b3D7A69257BA3888F7194fFE7",
   [etherlink.id]: "0xd04f8B4c51e4C111486f2F2C6633a8729a14A82a",
+  [coreTestnet2.id]: "0xE8aF1AbCBa8dFaD191031AEEC35F4965847a2192",
 };
 
 export const CHAINS: { [chainId: number]: Chain } = {
   [etherlinkTestnet.id]: etherlinkTestnet,
+  [etherlink.id]: etherlink,
+  [coreTestnet2.id]: coreTestnet2,
 };
 
 export const getFactoryAddress = (
-  chainId: number,
+  chainId: number
 ): `0x${string}` | undefined => {
   return FACTORY_ADDRESSES[chainId];
 };
@@ -34,7 +37,7 @@ export const getChain = (chainId: number): Chain | undefined => {
 
 export const getBlockExplorerUrl = (
   chainId: number,
-  address: string,
+  address: string
 ): string | undefined => {
   const chain = getChain(chainId);
 

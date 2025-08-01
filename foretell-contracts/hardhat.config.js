@@ -50,6 +50,22 @@ module.exports = {
           browserURL: "https://testnet.explorer.etherlink.com",
         },
       },
+      {
+        network: "coreTestnet",
+        chainId: 1114,
+        urls: {
+          apiURL: "https://rpc.test2.btcs.network",
+          browserURL: "https://scan.test.btcs.network/",
+        },
+      },
+      {
+        network: "coreMainnet",
+        chainId: 1115,
+        urls: {
+          apiURL: "https://rpc.coredao.org",
+          browserURL: "https://scan.coredao.org",
+        },
+      },
     ],
   },
   sourcify: {
