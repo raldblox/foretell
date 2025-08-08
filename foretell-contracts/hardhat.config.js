@@ -36,6 +36,12 @@ module.exports = {
       accounts: [process.env.WALLET_PRIVATE_KEY],
       chainId: 1328,
     },
+    morphTestnet: {
+      url: 'https://rpc-quicknode-holesky.morphl2.io',
+      accounts: [process.env.WALLET_PRIVATE_KEY],
+      gasprice: 2000000000,
+      chainId: 17000
+    },
   },
 
   etherscan: {
@@ -75,6 +81,14 @@ module.exports = {
         urls: {
           apiURL: "https://rpc.coredao.org",
           browserURL: "https://scan.coredao.org",
+        },
+      },
+      {
+        network: 'morph',
+        chainId: 2818,
+        urls: {
+          apiURL: 'https://explorer-api.morphl2.io/api? ',
+          browserURL: 'https://explorer.morphl2.io/',
         },
       },
     ],
